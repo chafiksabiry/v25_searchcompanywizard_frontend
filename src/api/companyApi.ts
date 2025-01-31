@@ -1,10 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
 export const saveCompanyData = async (companyData: any) => {
   try {
-    const response = await axios.post(`${API_URL}/companies`, companyData, {
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -12,6 +10,10 @@ export const saveCompanyData = async (companyData: any) => {
     return response.data;
   } catch (error: any) {
     console.error('Error saving company data:', error.response?.data || error.message);
+    if (error.response) {
+      console.error('Response error details:', error.response);
+    }
     throw error;
   }
+  
 };
