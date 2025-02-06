@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Globe2, TrendingUp, DollarSign, Rocket,
-  Award, Users, ShieldCheck,
-  Zap, ChevronLeft, Search,
-  Edit2, Check, ArrowRight
-} from 'lucide-react';
-import type { CompanyProfile } from '../api/openai';
-import { DifferentiatorsPanel } from './DifferentiatorsPanel';
+  Globe2,
+  TrendingUp,
+  DollarSign,
+  Rocket,
+  Award,
+  Users,
+  ShieldCheck,
+  Zap,
+  ChevronLeft,
+  Search,
+  Edit2,
+  Check,
+  ArrowRight,
+} from "lucide-react";
+import type { CompanyProfile } from "../api/openai";
+import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
-import { LucideProps } from 'lucide-react';
+import { LucideProps } from "lucide-react";
 
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
 }
-
 
 interface UniquenessCategory {
   title: string;
@@ -27,108 +35,110 @@ interface UniquenessCategory {
 export function UniquenessPanel({ profile, onBack }: Props) {
   const [editMode, setEditMode] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [tempValue, setTempValue] = useState('');
+  const [tempValue, setTempValue] = useState("");
   const [categories, setCategories] = useState<UniquenessCategory[]>(
     getIndustrySpecificFeatures(profile.industry)
   );
   const [showDifferentiators, setShowDifferentiators] = useState(false);
 
-  function getIndustrySpecificFeatures(industry?: string): UniquenessCategory[] {
+  function getIndustrySpecificFeatures(
+    industry?: string
+  ): UniquenessCategory[] {
     const baseCategories: UniquenessCategory[] = [
       {
-        title: 'Brand Recognition',
+        title: "Brand Recognition",
         icon: Award,
-        description: 'Market presence and brand value',
+        description: "Market presence and brand value",
         score: 4,
         details: [
-          'Established market presence',
-          'Strong brand reputation',
-          'Recognized industry leader',
-          'High customer trust'
-        ]
+          "Established market presence",
+          "Strong brand reputation",
+          "Recognized industry leader",
+          "High customer trust",
+        ],
       },
       {
-        title: 'Geographic Reach',
+        title: "Geographic Reach",
         icon: Globe2,
-        description: 'Market coverage and expansion',
+        description: "Market coverage and expansion",
         score: 4,
         details: [
-          'Wide market coverage',
-          'Strategic locations',
-          'Growing market presence',
-          'International opportunities'
-        ]
+          "Wide market coverage",
+          "Strategic locations",
+          "Growing market presence",
+          "International opportunities",
+        ],
       },
       {
-        title: 'Financial Benefits',
+        title: "Financial Benefits",
         icon: DollarSign,
-        description: 'Compensation and payment structure',
+        description: "Compensation and payment structure",
         score: 5,
         details: [
-          'Competitive commission rates',
-          'Fast payment processing',
-          'Performance bonuses',
-          'Recurring revenue opportunities',
-          'Attractive incentive programs'
-        ]
+          "Competitive commission rates",
+          "Fast payment processing",
+          "Performance bonuses",
+          "Recurring revenue opportunities",
+          "Attractive incentive programs",
+        ],
       },
       {
-        title: 'Growth Potential',
+        title: "Growth Potential",
         icon: TrendingUp,
-        description: 'Career and earning opportunities',
+        description: "Career and earning opportunities",
         score: 4,
         details: [
-          'Unlimited earning potential',
-          'Career advancement paths',
-          'Market expansion plans',
-          'Training and development'
-        ]
-      }
+          "Unlimited earning potential",
+          "Career advancement paths",
+          "Market expansion plans",
+          "Training and development",
+        ],
+      },
     ];
 
     // Add industry-specific categories
-    if (industry?.toLowerCase().includes('tech')) {
+    if (industry?.toLowerCase().includes("tech")) {
       baseCategories.push({
-        title: 'Innovation Leadership',
+        title: "Innovation Leadership",
         icon: Rocket,
-        description: 'Cutting-edge technology and solutions',
+        description: "Cutting-edge technology and solutions",
         score: 5,
         details: [
-          'Latest technology products',
-          'Innovation-driven culture',
-          'High-demand solutions',
-          'Competitive advantage through tech'
-        ]
+          "Latest technology products",
+          "Innovation-driven culture",
+          "High-demand solutions",
+          "Competitive advantage through tech",
+        ],
       });
     }
 
-    if (industry?.toLowerCase().includes('healthcare')) {
+    if (industry?.toLowerCase().includes("healthcare")) {
       baseCategories.push({
-        title: 'Social Impact',
+        title: "Social Impact",
         icon: Users,
-        description: 'Making a difference in healthcare',
+        description: "Making a difference in healthcare",
         score: 5,
         details: [
-          'Improving patient care',
-          'Healthcare innovation',
-          'Growing healthcare market',
-          'Essential services'
-        ]
+          "Improving patient care",
+          "Healthcare innovation",
+          "Growing healthcare market",
+          "Essential services",
+        ],
       });
     }
 
-    if (industry?.toLowerCase().includes('finance')) {
+    if (industry?.toLowerCase().includes("finance")) {
       baseCategories.push({
-        title: 'Market Stability',
+        title: "Market Stability",
         icon: ShieldCheck,
-        description: 'Secure and stable market position',
+        description: "Secure and stable market position",
         score: 5,
         details: [
-          'Financial sector stability',
-          'Regulatory compliance',
-          'Established client base',
-          'Recurring revenue model'
-        ]
+          "Financial sector stability",
+          "Regulatory compliance",
+          "Established client base",
+          "Recurring revenue model",
+        ],
       });
     }
 
@@ -141,15 +151,15 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   };
 
   const handleSave = (field: string) => {
-    const [categoryIndex, fieldType, detailIndex] = field.split('.');
+    const [categoryIndex, fieldType, detailIndex] = field.split(".");
     const newCategories = [...categories];
     const category = newCategories[parseInt(categoryIndex)];
 
-    if (fieldType === 'title') {
+    if (fieldType === "title") {
       category.title = tempValue;
-    } else if (fieldType === 'description') {
+    } else if (fieldType === "description") {
       category.description = tempValue;
-    } else if (fieldType === 'details') {
+    } else if (fieldType === "details") {
       category.details[parseInt(detailIndex)] = tempValue;
     }
 
@@ -157,25 +167,32 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     setEditingField(null);
   };
 
-  const EditableField = ({ 
-    value, 
-    field, 
-    className = ''
+  const EditableField = ({
+    value,
+    field,
+    icon: Icon,
+    type = "text",
+    className = "",
   }: {
     value: string;
     field: string;
+    icon?: React.ComponentType<LucideProps>;
+    type?: string;
     className?: string;
   }) => (
     <div className={`group relative ${className}`}>
       {editingField === field ? (
         <div className="flex items-center gap-2">
           <input
-            type="text"
+            type={type}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
             className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
-            onKeyDown={(e) => e.key === 'Enter' && handleSave(field)}
+            onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+            autoFocus
+            onBlur={() => handleSave(field)}
           />
+
           <button
             onClick={() => handleSave(field)}
             className="p-1 text-green-600 hover:text-green-700"
@@ -185,6 +202,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
         </div>
       ) : (
         <div className="flex items-center gap-2">
+          {Icon && <Icon size={18} className="text-gray-600" />}
           <span>{value}</span>
           {editMode && (
             <button
@@ -201,7 +219,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
 
   if (showDifferentiators) {
     return (
-      <DifferentiatorsPanel 
+      <DifferentiatorsPanel
         profile={profile}
         onBack={() => setShowDifferentiators(false)}
         onComplete={onBack}
@@ -232,15 +250,17 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             <button
               onClick={() => setEditMode(!editMode)}
               className={`p-2 rounded-full transition-all duration-300 ${
-                editMode 
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                editMode
+                  ? "bg-green-500 text-white hover:bg-green-600"
+                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >
               <Edit2 size={20} />
             </button>
             <div className="text-right">
-              <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {profile.name}
+              </h1>
               <p className="text-gray-500 mt-1">{profile.industry}</p>
             </div>
           </div>
@@ -254,8 +274,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               Why Partner With Us?
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Join a company that values innovation, growth, and success. We offer unique opportunities
-              for representatives to thrive in a dynamic market environment.
+              Join a company that values innovation, growth, and success. We
+              offer unique opportunities for representatives to thrive in a
+              dynamic market environment.
             </p>
           </section>
 
@@ -283,8 +304,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                             key={i}
                             className={`w-2 h-2 rounded-full ${
                               i < category.score
-                                ? 'bg-indigo-500'
-                                : 'bg-gray-200'
+                                ? "bg-indigo-500"
+                                : "bg-gray-200"
                             }`}
                           />
                         ))}
@@ -301,7 +322,10 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                           key={i}
                           className="flex items-center gap-2 text-gray-700"
                         >
-                          <Zap size={14} className="text-indigo-500 flex-shrink-0" />
+                          <Zap
+                            size={14}
+                            className="text-indigo-500 flex-shrink-0"
+                          />
                           <EditableField
                             value={detail}
                             field={`${index}.details.${i}`}
@@ -321,7 +345,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               Ready to Explore Opportunities?
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover exciting gigs and partnership opportunities with {profile.name}. Browse our available opportunities and find the perfect match for your skills and interests.
+              Discover exciting gigs and partnership opportunities with{" "}
+              {profile.name}. Browse our available opportunities and find the
+              perfect match for your skills and interests.
             </p>
             <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
               <Search size={18} />
