@@ -15,7 +15,7 @@ export default defineConfig({
     qiankun('app-name', { useDevMode: true }), // Plugin Qiankun, si utilisé
   ],
   server: {
-    port: 5173, // Set the development server to use port 5172
+    port: 5176, // Set the development server to use port 5172
     cors: true, // Enable CORS to allow cross-origin requests
     headers: {
       'Access-Control-Allow-Origin': '*', // Required for Qiankun cross-origin isolation
@@ -28,8 +28,8 @@ export default defineConfig({
     cssCodeSplit: true, // Enable CSS splitting for modular builds
     rollupOptions: {
       output: {
-        format: 'system', // Use SystemJS for Qiankun integration
-        entryFileNames: '[name].js', // Output JavaScript files with `.js` extensions
+        format: 'es', // Necessary for Qiankun integration
+        entryFileNames : '[name].js',
         chunkFileNames: '[name].js',
         assetFileNames: '[name].[ext]',
       },

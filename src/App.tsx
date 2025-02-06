@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { Search, Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
@@ -5,7 +6,7 @@ import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 
 function App() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<GoogleSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
