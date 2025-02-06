@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check } from 'lucide-react';
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function DifferentiatorsPanel({ profile, onBack, onComplete }: Props) {
-  const [selectedDifferentiators, setSelectedDifferentiators] = useState<string[]>([]);
+  const [selectedDifferentiators, setSelectedDifferentiators] = React.useState<string[]>([]);
 
   const differentiators = [
     {
