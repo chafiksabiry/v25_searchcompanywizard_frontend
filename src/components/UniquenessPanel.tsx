@@ -22,6 +22,7 @@ import { LucideProps } from "lucide-react";
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
+  onComplete?: () => void; // Make it optional if necessary
 }
 
 interface UniquenessCategory {

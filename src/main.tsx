@@ -1,4 +1,4 @@
-import React from 'react';
+//import React from 'react';
 import './public-path';  // For proper Qiankun integration
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper';
 
