@@ -22,7 +22,7 @@ import { LucideProps } from "lucide-react";
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
-  onComplete?: () => void; // Make it optional if necessary
+  
 }
 
 interface UniquenessCategory {
@@ -223,7 +223,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
       <DifferentiatorsPanel
         profile={profile}
         onBack={() => setShowDifferentiators(false)}
-        onComplete={onBack}
+        //onComplete={onBack}
       />
     );
   }
