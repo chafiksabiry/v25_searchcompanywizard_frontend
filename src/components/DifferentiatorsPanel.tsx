@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check } from 'lucide-react';
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
@@ -6,10 +7,10 @@ import { saveCompanyData } from '../api/companyApi';
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
-  onComplete: () => void;
 }
 
-export function DifferentiatorsPanel({ profile, onBack, onComplete }: Props) {
+export function DifferentiatorsPanel({ profile, onBack }: Props) {
+  const navigate = useNavigate();
   const [selectedDifferentiators, setSelectedDifferentiators] = React.useState<string[]>([]);
 
   const differentiators = [
@@ -51,12 +52,10 @@ export function DifferentiatorsPanel({ profile, onBack, onComplete }: Props) {
       differentiators: selectedDifferentiators,
     };
 
-    console.log('Data to be sent:', companyData);
-
     try {
       const data = await saveCompanyData(companyData);
       console.log('Success:', data);
-      onComplete();
+      navigate('/app6'); // Navigate to the "app6" page after saving
     } catch (error) {
       console.error('Error saving company data:', error);
     }
