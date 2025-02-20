@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check } from 'lucide-react';
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
