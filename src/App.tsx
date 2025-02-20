@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; // Import React
 import { useState } from 'react';
 import { Search, Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
