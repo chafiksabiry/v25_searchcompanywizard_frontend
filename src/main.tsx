@@ -1,4 +1,4 @@
-//import React from 'react';
+import React from 'react';
 import './public-path';  // For proper Qiankun integration
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper';
 
@@ -6,6 +6,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
+
+
 
 // Store the root instance for proper unmounting
 let root: ReturnType<typeof createRoot> | null = null;
