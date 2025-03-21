@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check, XCircle } from 'lucide-react';
+
+import React from 'react';
+import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check } from 'lucide-react';
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
 
