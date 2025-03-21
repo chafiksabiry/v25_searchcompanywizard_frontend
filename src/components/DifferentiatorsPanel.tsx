@@ -9,6 +9,8 @@ interface Props {
   onBack: () => void;
 }
 
+console.log(typeof React);
+
 export function DifferentiatorsPanel({ profile, onBack }: Props) {
   const [selectedDifferentiators, setSelectedDifferentiators] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -61,8 +63,6 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       //setError('Failed to save company data. Please try again.');
       setTimeout(() => setError('Company already exist. Please try again.'), 0);
       console.log("Error State:", error);
-
-
     }
   };
 
