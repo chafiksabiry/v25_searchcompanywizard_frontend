@@ -59,7 +59,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     } catch (error) {
       console.error('Error saving company data:', error);
       //setError('Failed to save company data. Please try again.');
-      setTimeout(() => setError('Failed to save company data. Please try again.'), 0);
+      setTimeout(() => setError('Company already exist. Please try again.'), 0);
       console.log("Error State:", error);
 
 
