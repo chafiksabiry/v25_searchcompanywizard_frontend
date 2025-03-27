@@ -63,7 +63,12 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       //setError('Failed to save company data. Please try again.');
       setTimeout(() => setError('Company already exist. Please try again.'), 0);
       console.log("Error State:", error);
+      
     }
+  };
+  const handleClose = () => {
+    setError(null);
+    window.location.href ="/app7"
   };
 
   return (
@@ -142,7 +147,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
             <XCircle className="text-red-500 mx-auto" size={40} />
             <h2 className="text-xl font-bold text-gray-900 mt-4">Error</h2>
             <p className="text-gray-600 mt-2">{error}</p>
-            <button onClick={() => setError(null)} className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+            <button onClick={handleClose} className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
               Close
             </button>
           </div>
