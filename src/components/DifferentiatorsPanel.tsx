@@ -57,7 +57,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     try {
       const data = await saveCompanyData(companyData);
       console.log('Success:', data);
-      window.location.href = "/app6";
+      window.location.href = "/gigsai";
     } catch (error) {
       console.error('Error saving company data:', error);
       //setError('Failed to save company data. Please try again.');
@@ -68,7 +68,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app7"
+    window.location.href ="/dashboardcompany"
   };
 
   return (
