@@ -6,17 +6,17 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-import Cookies from 'js-cookie';
+//import Cookies from 'js-cookie';
 
 
 // Store the root instance for proper unmounting
 let root: ReturnType<typeof createRoot> | null = null;
 
-const companyId = '67b4e7f7eff824909f992c81';
+/*/const companyId = '67b4e7f7eff824909f992c81';
 Cookies.set('companyId', companyId, { expires: 7 }); // Expire dans 7 jours
 const storedUserId = Cookies.get('companyId');
 console.log('Stored userId from cookie:', storedUserId);
-
+*/
 function render(props: { container?: HTMLElement }) {
   const { container } = props;
   const rootElement = container
