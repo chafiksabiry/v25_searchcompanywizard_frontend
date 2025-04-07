@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
+
 ENV VITE_GOOGLE_API_KEY=AIzaSyCHEKiraViKIrgvloZI-ZBIJqtDMeBuQD0
 ENV VITE_GOOGLE_SEARCH_ENGINE_ID=e1abd3780ba01461a
 ENV VITE_OPENAI_API_KEY=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
@@ -13,6 +14,7 @@ ENV VITE_SUPABASE_URL=https://himswpxnatldpsmndqlf.supabase.co
 ENV VITE_API_URL=https://api-companysearchwizard.harx.ai/api
 
 RUN npm install
+RUN npm i --save-dev @types/js-cookie
 
 COPY . .
 

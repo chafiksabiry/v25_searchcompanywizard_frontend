@@ -3,6 +3,7 @@ import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Che
 
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
+import Cookies from 'js-cookie';
 
 interface Props {
   profile: CompanyProfile;
@@ -55,8 +56,19 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     };
 
     try {
-      const data = await saveCompanyData(companyData);
-      console.log('Success:', data);
+      const response = await saveCompanyData(companyData);
+      console.log('Complete API Response:', JSON.stringify(response, null, 2));
+      
+      if (response && response.data && response.data._id) {
+        // Store company ID in a cookie that expires in 30 days
+        Cookies.set('companyId', response.data._id, { expires: 30 });
+        console.log("Company ID being saved to cookie:", response.data._id);
+        const savedId = Cookies.get('companyId');
+        console.log("Verified saved Company ID from cookie:", savedId);
+      } else {
+        console.error("No company ID found in response. Response structure:", response);
+      }
+      
       window.location.href = "/app6";
     } catch (error) {
       console.error('Error saving company data:', error);
@@ -67,7 +79,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app7"
+    window.location.href ="/company"
   };
 
   return (
