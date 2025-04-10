@@ -69,7 +69,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
         console.error("No company ID found in response. Response structure:", response);
       }
       
-      window.location.href = "/app6";
+      window.location.href = "/company";
     } catch (error) {
       console.error('Error saving company data:', error);
       setTimeout(() => setError('Company already exist. Please try again.'), 0);
