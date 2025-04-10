@@ -1,8 +1,10 @@
 import OpenAI from "openai";
+import Cookies from "js-cookie"; // 👈 Import Cookies
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
 export interface CompanyProfile {
+  userId: string;
   name: string;
   logo?: string;
   industry?: string;
@@ -47,6 +49,12 @@ export const generateCompanyProfile = async (
 ): Promise<CompanyProfile> => {
   if (!apiKey) {
     throw new Error("OpenAI API key is not configured");
+  }
+
+  const userId = Cookies.get("userId"); // 👈 Read userId from cookies
+
+  if (!userId) {
+    throw new Error("User ID not found in cookies");
   }
 
   try {
@@ -114,8 +122,10 @@ export const generateCompanyProfile = async (
       throw new Error("No content received from OpenAI");
     }
 
-    const parsedProfile = JSON.parse(content) as CompanyProfile;
+    const parsedProfile = JSON.parse(content) as Omit<CompanyProfile, "userId">;
+
     return {
+      userId, // 👈 Attach the userId
       ...parsedProfile,
       culture: {
         ...parsedProfile.culture,
