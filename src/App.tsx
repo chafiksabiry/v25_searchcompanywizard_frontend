@@ -5,7 +5,7 @@ import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
-import { useNavigate } from 'react-router-dom';
+
 
 function App() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function App() {
     };
 
     checkUserCompany();
-  }, [navigate]);
+  });
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
