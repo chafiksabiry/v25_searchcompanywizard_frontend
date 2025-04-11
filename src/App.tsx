@@ -22,7 +22,7 @@ function App() {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
           if (response.ok) {
-            navigate('/company');
+            window.location.href='/company';
           }
         } catch (error) {
           console.error('Error checking user company:', error);
