@@ -79,7 +79,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/company"
+    window.location.href ="/app3"
   };
 
   return (

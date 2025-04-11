@@ -1,16 +1,37 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 function App() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<GoogleSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
+
+  useEffect(() => {
+    const checkUserCompany = async () => {
+      const userId = Cookies.get('userId');
+      if (userId) {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
+          if (response.ok) {
+            navigate('/company');
+          }
+        } catch (error) {
+          console.error('Error checking user company:', error);
+        }
+      }
+    };
+
+    checkUserCompany();
+  }, [navigate]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
