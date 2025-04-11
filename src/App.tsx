@@ -8,8 +8,9 @@ import Cookies from 'js-cookie';
 
 
 function App() {
-  const navigate = useNavigate();
+  
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<GoogleSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -22,16 +23,20 @@ function App() {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
           if (response.ok) {
-            window.location.href='/company';
+            setRedirectMessage('You already have a company profile. Redirecting...');
+            setTimeout(() => {
+              window.location.href = '/company';
+            }, 2000);
           }
         } catch (error) {
           console.error('Error checking user company:', error);
         }
       }
     };
-
+  
     checkUserCompany();
-  });
+  }, []);
+  
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -82,6 +87,12 @@ function App() {
             Search for companies and generate detailed profiles with unique insights
           </p>
         </div>
+         {/* 🔔 Add your message here */}
+  {redirectMessage && (
+    <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
+      {redirectMessage}
+    </div>
+  )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
           <div className="relative">
