@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import {
   Building2,
   Calendar,
@@ -37,10 +38,11 @@ interface Props {
 }
 
 import { LucideProps } from "lucide-react";
-
+const userId= Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
   const defaultProfile = {
+    userId: userId || "",
     name: initialProfile.name || "",
     logo: initialProfile.logo || "",
     industry: initialProfile.industry || "",
