@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check, XCircle } from 'lucide-react';
 
 import type { CompanyProfile } from '../api/openai';
-import { saveCompanyData } from '../api/companyApi';
+import { saveCompanyData, updateCompanyData } from '../api/companyApi';
 import Cookies from 'js-cookie';
+
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 
 interface Props {
   profile: CompanyProfile;
@@ -15,6 +17,7 @@ console.log(typeof React);
 export function DifferentiatorsPanel({ profile, onBack }: Props) {
   const [selectedDifferentiators, setSelectedDifferentiators] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const differentiators = [
     {
@@ -50,36 +53,72 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
 
   const handleSave = async () => {
-    const companyData = {
+    setIsSaving(true);
+    setError(null);
+    
+    // Format social media URLs to ensure they are valid
+    const formattedProfile = {
       ...profile,
       differentiators: selectedDifferentiators,
+      socialMedia: {
+        ...profile.socialMedia,
+        linkedin: profile.socialMedia?.linkedin ? `https://${profile.socialMedia.linkedin.replace(/^https?:\/\//, '')}` : '',
+        twitter: profile.socialMedia?.twitter ? `https://${profile.socialMedia.twitter.replace(/^https?:\/\//, '')}` : '',
+        facebook: profile.socialMedia?.facebook ? `https://${profile.socialMedia.facebook.replace(/^https?:\/\//, '')}` : '',
+        instagram: profile.socialMedia?.instagram ? `https://${profile.socialMedia.instagram.replace(/^https?:\/\//, '')}` : '',
+      }
     };
 
     try {
-      const response = await saveCompanyData(companyData);
-      console.log('Complete API Response:', JSON.stringify(response, null, 2));
-      
-      if (response && response.data && response.data._id) {
-        // Store company ID in a cookie that expires in 30 days
-        Cookies.set('companyId', response.data._id, { expires: 30 });
-        console.log("Company ID being saved to cookie:", response.data._id);
-        const savedId = Cookies.get('companyId');
-        console.log("Verified saved Company ID from cookie:", savedId);
+      if (deploymentMode === 'standalone') {
+
+        // Commented out for now as we don't have a company ID for the standalone mode 
+        const response = await updateCompanyData('680bec7495ee2e5862009486', formattedProfile);
+        console.log('Complete API Response:', JSON.stringify(response, null, 2));
+        
+        if (response && response.data && response.data._id) {
+          Cookies.set('companyId', response.data._id, { expires: 30 });
+          console.log("Company ID being saved to cookie:", response.data._id);
+          const savedId = Cookies.get('companyId');
+          console.log("Verified saved Company ID from cookie:", savedId);
+          // Redirect to home page after successful update in standalone mode
+          window.location.href = "/";
+        }
       } else {
-        console.error("No company ID found in response. Response structure:", response);
+        const response = await saveCompanyData(formattedProfile);
+        console.log('Complete API Response:', JSON.stringify(response, null, 2));
+        if (response && response.data && response.data._id) {
+          Cookies.set('companyId', response.data._id, { expires: 30 });
+          console.log("Company ID being saved to cookie:", response.data._id);
+          const savedId = Cookies.get('companyId');
+          console.log("Verified saved Company ID from cookie:", savedId);
+        }
+      }
+    } catch (error: any) {
+      console.error('Error saving company data:', error);
+      let errorMessage = 'Failed to save company data. ';
+      
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += 'Please try again later.';
       }
       
-      window.location.href = "/company";
-    } catch (error) {
-      console.error('Error saving company data:', error);
-      setTimeout(() => setError('Company already exist. Please try again.'), 0);
-      console.log("Error State:", error);
-      
+      setError(errorMessage);
+    } finally {
+      setIsSaving(false);
     }
   };
+
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app3"
+    if (deploymentMode !== 'standalone') {
+      window.location.href = "/app3";
+    } else {
+      onBack();
+    }
   };
 
   return (
@@ -141,24 +180,34 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
             </button>
             <button
               onClick={handleSave}
-              disabled={selectedDifferentiators.length === 0}
-              className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+              disabled={selectedDifferentiators.length === 0 || isSaving}
+              className={`px-8 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl transition-colors flex items-center gap-2 ${
+                isSaving ? 'opacity-50 cursor-not-allowed' : 'hover:from-indigo-600 hover:to-blue-600'
+              }`}
             >
-              <Zap size={18} />
-              Complete Profile
+              {isSaving ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Zap size={18} />
+                  Complete Profile
+                </>
+              )}
             </button>
           </div>
         </div>
       </div>
 
       {error && (
-        
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
             <XCircle className="text-red-500 mx-auto" size={40} />
             <h2 className="text-xl font-bold text-gray-900 mt-4">Error</h2>
             <p className="text-gray-600 mt-2">{error}</p>
-            <button onClick={handleClose} className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+            <button 
+              onClick={handleClose} 
+              className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
               Close
             </button>
           </div>

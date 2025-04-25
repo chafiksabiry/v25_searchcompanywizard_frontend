@@ -57,10 +57,11 @@ export const generateCompanyProfile = async (
   if (deploymentMode === 'standalone') {
     userId = '680a27ffefa3d29d628d0016';
   } else {
-    userId = Cookies.get("userId");
-    if (!userId) {
+    const cookieUserId = Cookies.get("userId");
+    if (!cookieUserId) {
       throw new Error("User ID not found in cookies");
     }
+    userId = cookieUserId;
   }
 
   try {
