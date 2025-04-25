@@ -71,19 +71,10 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
 
     try {
       if (deploymentMode === 'standalone') {
-
-        // Commented out for now as we don't have a company ID for the standalone mode 
-        const response = await updateCompanyData('680bec7495ee2e5862009486', formattedProfile);
-        console.log('Complete API Response:', JSON.stringify(response, null, 2));
-        
-        if (response && response.data && response.data._id) {
-          Cookies.set('companyId', response.data._id, { expires: 30 });
-          console.log("Company ID being saved to cookie:", response.data._id);
-          const savedId = Cookies.get('companyId');
-          console.log("Verified saved Company ID from cookie:", savedId);
-          // Redirect to home page after successful update in standalone mode
-          window.location.href = "/";
-        }
+        // En mode standalone, on met à jour directement la company avec l'ID fixe
+        await updateCompanyData('680bec7495ee2e5862009486', formattedProfile);
+        // Redirect to home page after successful update in standalone mode
+        window.location.href = "/";
       } else {
         const response = await saveCompanyData(formattedProfile);
         console.log('Complete API Response:', JSON.stringify(response, null, 2));
@@ -98,7 +89,12 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       console.error('Error saving company data:', error);
       let errorMessage = 'Failed to save company data. ';
       
-      if (error.response?.data?.message) {
+      if (error.response?.data?.details) {
+        // Show validation errors
+        errorMessage += error.response.data.details.map((detail: any) => 
+          `${detail.field}: ${detail.message}`
+        ).join('. ');
+      } else if (error.response?.data?.message) {
         errorMessage += error.response.data.message;
       } else if (error.message) {
         errorMessage += error.message;

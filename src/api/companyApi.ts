@@ -12,13 +12,17 @@ export const saveCompanyData = async (companyData: any) => {
     console.error('Error saving company data:', error.response?.data || error.message);
     if (error.response) {
       console.error('Response error details:', error.response);
+      if (error.response.data?.details) {
+        console.error('Validation errors:', error.response.data.details);
+      }
     }
     throw error;
   }
 };
 
-export const updateCompanyData = async (companyId: string, companyData: any) => {
+export const updateCompanyData = async (companyId: string = "680bec7495ee2e5862009486", companyData: any) => {
   try {
+    // const companyId = "680bec7495ee2e5862009486";
     const response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {
       headers: {
         'Content-Type': 'application/json',

@@ -19,10 +19,9 @@ function App() {
 
   useEffect(() => {
     const checkUserCompany = async () => {
-      const userId = deploymentMode === 'standalone' 
-        ? '680a27ffefa3d29d628d0016' 
-        : Cookies.get('userId');
-        
+      if (deploymentMode === 'standalone') return;
+
+      const userId = Cookies.get('userId');
       if (userId) {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
@@ -65,6 +64,16 @@ function App() {
     setError(null);
     
     try {
+      // Check for user ID in cookies if not in standalone mode
+      if (deploymentMode !== 'standalone') {
+        const userId = Cookies.get('userId');
+        if (!userId) {
+          setError('Please log in to generate a company profile');
+          setIsLoading(false);
+          return;
+        }
+      }
+
       const companyInfo = `
         Company Name: ${result.title}
         Website: ${result.link}
