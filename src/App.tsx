@@ -6,6 +6,7 @@ import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
 
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 
 function App() {
   
@@ -18,7 +19,10 @@ function App() {
 
   useEffect(() => {
     const checkUserCompany = async () => {
-      const userId = Cookies.get('userId');
+      const userId = deploymentMode === 'standalone' 
+        ? '680a27ffefa3d29d628d0016' 
+        : Cookies.get('userId');
+        
       if (userId) {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);

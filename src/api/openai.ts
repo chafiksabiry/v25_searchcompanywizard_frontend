@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import Cookies from "js-cookie"; // 👈 Import Cookies
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 
 export interface CompanyProfile {
   userId: string;
@@ -51,10 +52,15 @@ export const generateCompanyProfile = async (
     throw new Error("OpenAI API key is not configured");
   }
 
-  const userId = Cookies.get("userId"); // 👈 Read userId from cookies
-
-  if (!userId) {
-    throw new Error("User ID not found in cookies");
+  let userId: string;
+  
+  if (deploymentMode === 'standalone') {
+    userId = '680a27ffefa3d29d628d0016';
+  } else {
+    userId = Cookies.get("userId");
+    if (!userId) {
+      throw new Error("User ID not found in cookies");
+    }
   }
 
   try {
