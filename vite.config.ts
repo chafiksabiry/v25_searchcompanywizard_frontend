@@ -18,9 +18,12 @@ const removeReactRefreshScript = () => {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  const baseUrl = env.VITE_DEPLOYMENT_MODE === 'standalone' 
+    ? 'https://companysearchwizard.harx.ai/'
+    : 'https://preprod-companysearchwizard.harx.ai/';
 
   return {
-    base: 'https://preprod-companysearchwizard.harx.ai/',
+    base: baseUrl,
     plugins: [
       react({
         jsxRuntime: 'classic',
@@ -28,7 +31,7 @@ export default defineConfig(({ mode }) => {
       qiankun('app4', {
         useDevMode: true,
       }),
-      removeReactRefreshScript(), // Add the script removal plugin
+      removeReactRefreshScript(),
     ],
 
     define: {
