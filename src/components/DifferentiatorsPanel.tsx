@@ -73,8 +73,8 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       if (deploymentMode === 'standalone') {
         // En mode standalone, on met à jour directement la company avec l'ID fixe
         await updateCompanyData('680a036b5736a7a7cf2451ad', formattedProfile);
-        // Redirect to home page after successful update in standalone mode
-        window.location.href = "/";
+        // Redirect to company page after successful update in standalone mode
+        window.location.href = "/company";
       } else {
         const response = await saveCompanyData(formattedProfile);
         console.log('Complete API Response:', JSON.stringify(response, null, 2));
@@ -83,6 +83,8 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
           console.log("Company ID being saved to cookie:", response.data._id);
           const savedId = Cookies.get('companyId');
           console.log("Verified saved Company ID from cookie:", savedId);
+          // Redirect to company page after successful save
+          window.location.href = "/company";
         }
       }
     } catch (error: any) {
