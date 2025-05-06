@@ -38,11 +38,7 @@ interface Props {
 }
 
 import { LucideProps } from "lucide-react";
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
-const userId = deploymentMode === 'standalone' 
-  ? '681a448d2c1ca099fe2b17a4' 
-  : Cookies.get('userId');
-
+const userId= Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
   const defaultProfile = {
