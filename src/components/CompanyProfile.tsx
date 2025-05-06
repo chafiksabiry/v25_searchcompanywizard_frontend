@@ -40,7 +40,7 @@ interface Props {
 import { LucideProps } from "lucide-react";
 const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 const userId = deploymentMode === 'standalone' 
-  ? '680a27ffefa3d29d628d0016' 
+  ? '681a448d2c1ca099fe2b17a4' 
   : Cookies.get('userId');
 
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
