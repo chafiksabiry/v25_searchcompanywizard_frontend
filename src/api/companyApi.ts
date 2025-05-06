@@ -20,7 +20,7 @@ export const saveCompanyData = async (companyData: any) => {
   }
 };
 
-export const updateCompanyData = async (companyId: string = "680bec7495ee2e5862009486", companyData: any) => {
+export const updateCompanyData = async (companyId: string = "680a036b5736a7a7cf2451ad", companyData: any) => {
   try {
     // const companyId = "680bec7495ee2e5862009486";
     const response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {

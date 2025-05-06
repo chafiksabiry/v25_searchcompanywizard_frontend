@@ -72,7 +72,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     try {
       if (deploymentMode === 'standalone') {
         // En mode standalone, on met à jour directement la company avec l'ID fixe
-        await updateCompanyData('680bec7495ee2e5862009486', formattedProfile);
+        await updateCompanyData('680a036b5736a7a7cf2451ad', formattedProfile);
         // Redirect to home page after successful update in standalone mode
         window.location.href = "/";
       } else {
