@@ -19,14 +19,11 @@ function App() {
 
   useEffect(() => {
     const checkUserCompany = async () => {
-      if (deploymentMode === 'standalone') {
-        const userId = '681a91212c1ca099fe2b17df';
-        // No need to check for existing company in standalone mode
-        return;
-      }
-      
-      const userId = Cookies.get('userId');
-      if (userId) {
+      const userId = deploymentMode === 'standalone' 
+        ? '681a91212c1ca099fe2b17df'
+        : Cookies.get('userId');
+
+      if (userId && deploymentMode !== 'standalone') {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
           if (response.ok) {
