@@ -23,6 +23,7 @@ if (deploymentMode !== 'standalone') {
   console.log('Stored userId from cookie:', userId);
 } else {
   const userId = '681a91212c1ca099fe2b17df';
+  console.log('Stored userId from cookie:', userId);
 }
 
 
