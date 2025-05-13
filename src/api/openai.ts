@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import Cookies from "js-cookie"; // 👈 Import Cookies
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
 
 export interface CompanyProfile {
   userId: string;
@@ -55,11 +55,11 @@ export const generateCompanyProfile = async (
   let userId: string;
   
   if (deploymentMode === 'standalone') {
-    userId = '680a27ffefa3d29d628d0016';
+    userId = '681a91212c1ca099fe2b17df';
   } else {
     const cookieUserId = Cookies.get("userId");
     if (!cookieUserId) {
-      throw new Error("User ID not found in cookies");
+      throw new Error("User ID not found in cookies. Please ensure you are logged in.");
     }
     userId = cookieUserId;
   }

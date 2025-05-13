@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-export const saveCompanyData = async (companyData: any) => {
+export const saveCompanyData = async (companyId: string | null, companyData: any) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
+    const url = companyId 
+      ? `${import.meta.env.VITE_API_URL}/companies/${companyId}`
+      : `${import.meta.env.VITE_API_URL}/companies`;
+    
+    const response = await axios[companyId ? 'put' : 'post'](url, companyData, {
       headers: {
         'Content-Type': 'application/json',
       },

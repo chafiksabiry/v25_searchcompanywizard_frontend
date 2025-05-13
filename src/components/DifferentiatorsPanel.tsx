@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check, XCircle } from 'lucide-react';
 
 import type { CompanyProfile } from '../api/openai';
-import { saveCompanyData } from '../api/companyApi';
+import { saveCompanyData, updateCompanyData } from '../api/companyApi';
 import Cookies from 'js-cookie';
+import axios from 'axios';
+
+
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 
 interface Props {
   profile: CompanyProfile;
@@ -56,9 +60,35 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     };
 
     try {
-      const response = await saveCompanyData(companyData);
+      let response;
+
+      if (deploymentMode !== 'standalone') {
+        // Try to update existing company
+        response = await saveCompanyData(Cookies.get('userId') || null, companyData);
+      } else {
+        // Create new company
+        const allCompanies = await axios.get(`${import.meta.env.VITE_API_URL}/companies`);
+        console.log('API Response:', allCompanies.data);
+        
+        // Check if data exists and is an array
+        if (!allCompanies.data?.data || !Array.isArray(allCompanies.data.data)) {
+          throw new Error('Invalid response format from API - expected an array in data property');
+        }
+
+        const companyId = allCompanies.data.data.find((company: any) => company.userId === "681a91212c1ca099fe2b17df")?._id;
+        
+        if (!companyId) {
+          throw new Error('Company not found');
+        }
+
+        response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
       console.log('Complete API Response:', JSON.stringify(response, null, 2));
-      
       if (response && response.data && response.data._id) {
         // Store company ID in a cookie that expires in 30 days
         Cookies.set('companyId', response.data._id, { expires: 30 });
@@ -72,9 +102,8 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       window.location.href = "/company";
     } catch (error) {
       console.error('Error saving company data:', error);
-      setTimeout(() => setError('Company already exist. Please try again.'), 0);
+      setTimeout(() => setError('An error occurred while saving the company data. Please try again.'), 0);
       console.log("Error State:", error);
-      
     }
   };
   const handleClose = () => {

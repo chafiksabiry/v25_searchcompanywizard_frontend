@@ -6,7 +6,7 @@ import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
 
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
+const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
 
 function App() {
   
@@ -19,8 +19,12 @@ function App() {
 
   useEffect(() => {
     const checkUserCompany = async () => {
-      if (deploymentMode === 'standalone') return;
-
+      if (deploymentMode === 'standalone') {
+        const userId = '681a91212c1ca099fe2b17df';
+        // No need to check for existing company in standalone mode
+        return;
+      }
+      
       const userId = Cookies.get('userId');
       if (userId) {
         try {
@@ -64,16 +68,6 @@ function App() {
     setError(null);
     
     try {
-      // Check for user ID in cookies if not in standalone mode
-      if (deploymentMode !== 'standalone') {
-        const userId = Cookies.get('userId');
-        if (!userId) {
-          setError('Please log in to generate a company profile');
-          setIsLoading(false);
-          return;
-        }
-      }
-
       const companyInfo = `
         Company Name: ${result.title}
         Website: ${result.link}
@@ -85,7 +79,7 @@ function App() {
       setCompanyProfile(profile);
     } catch (err) {
       console.error('Profile generation error:', err);
-      setError('Failed to generate company profile. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to generate company profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
