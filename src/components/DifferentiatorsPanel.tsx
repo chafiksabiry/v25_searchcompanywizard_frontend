@@ -96,9 +96,11 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
           // Only redirect after successful onboarding initialization
           console.log('Redirecting to company page...');
           window.location.href = "/company";
-        } catch (onboardingError) {
-          console.error('Error initializing onboarding progress:', onboardingError);
-          console.error('Error stack:', onboardingError.stack);
+        } catch (error: unknown) {
+          console.error('Error initializing onboarding progress:', error);
+          if (error instanceof Error) {
+            console.error('Error stack:', error.stack);
+          }
           setError('Failed to initialize onboarding process. Please try again.');
           return; // Don't redirect on error
         }
