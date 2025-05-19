@@ -95,7 +95,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
           
           // Only redirect after successful onboarding initialization
           console.log('Redirecting to company page...');
-          window.location.href = "/company";
+          window.location.href = "/app11";
         } catch (error: unknown) {
           console.error('Error initializing onboarding progress:', error);
           if (error instanceof Error) {
@@ -116,7 +116,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app11"
+    window.location.href ="/app3"
   };
 
   return (
