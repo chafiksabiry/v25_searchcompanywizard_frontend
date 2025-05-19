@@ -65,6 +65,24 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
         console.log("Company ID being saved to cookie:", response.data._id);
         const savedId = Cookies.get('companyId');
         console.log("Verified saved Company ID from cookie:", savedId);
+
+        // Initialize onboarding progress
+        try {
+          const onboardingResponse = await fetch(`${import.meta.env.VITE_API_URL}/companies/${response.data._id}/onboarding`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!onboardingResponse.ok) {
+            console.error('Failed to initialize onboarding progress:', await onboardingResponse.text());
+          } else {
+            console.log('Successfully initialized onboarding progress');
+          }
+        } catch (onboardingError) {
+          console.error('Error initializing onboarding progress:', onboardingError);
+        }
       } else {
         console.error("No company ID found in response. Response structure:", response);
       }
@@ -74,7 +92,6 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       console.error('Error saving company data:', error);
       setTimeout(() => setError('Company already exist. Please try again.'), 0);
       console.log("Error State:", error);
-      
     }
   };
   const handleClose = () => {
