@@ -116,7 +116,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app3"
+    window.location.href ="/app11"
   };
 
   return (
