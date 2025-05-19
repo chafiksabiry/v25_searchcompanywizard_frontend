@@ -6,7 +6,6 @@ import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
 
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
 
 function App() {
   
@@ -19,11 +18,8 @@ function App() {
 
   useEffect(() => {
     const checkUserCompany = async () => {
-      const userId = deploymentMode === 'standalone' 
-        ? '681a91212c1ca099fe2b17df'
-        : Cookies.get('userId');
-
-      if (userId && deploymentMode !== 'standalone') {
+      const userId = Cookies.get('userId');
+      if (userId) {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/companies/${userId}`);
           if (response.ok) {
@@ -76,7 +72,7 @@ function App() {
       setCompanyProfile(profile);
     } catch (err) {
       console.error('Profile generation error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to generate company profile. Please try again.');
+      setError('Failed to generate company profile. Please try again.');
     } finally {
       setIsLoading(false);
     }

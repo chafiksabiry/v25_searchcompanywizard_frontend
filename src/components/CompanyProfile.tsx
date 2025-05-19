@@ -32,20 +32,15 @@ import type { CompanyProfile as CompanyProfileType } from "../api/openai";
 import { UniquenessPanel } from "./UniquenessPanel";
 // import type { LucideIcon } from 'lucide-react';
 
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
-
 interface Props {
   profile: CompanyProfileType;
   onClose: () => void;
 }
 
 import { LucideProps } from "lucide-react";
-
-const userId = deploymentMode === 'standalone' ? "681a91212c1ca099fe2b17df" : Cookies.get('userId');
-
+const userId= Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
-  console.log("userId : ", userId);
   const defaultProfile = {
     userId: userId || "",
     name: initialProfile.name || "",

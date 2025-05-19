@@ -4,10 +4,6 @@ import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Che
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
 import Cookies from 'js-cookie';
-import axios from 'axios';
-
-
-const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE;
 
 interface Props {
   profile: CompanyProfile;
@@ -60,50 +56,25 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     };
 
     try {
-      let response;
-
-      if (deploymentMode !== 'standalone') {
-        // Try to update existing company
-        response = await saveCompanyData(Cookies.get('userId') || null, companyData);
-      } else {
-        try {
-          // First try to get existing company
-          const allCompanies = await axios.get(`${import.meta.env.VITE_API_URL}/companies`);
-          
-          if (!allCompanies.data?.data || !Array.isArray(allCompanies.data.data)) {
-            throw new Error('Invalid response format from API');
-          }
-
-          const companyId = allCompanies.data.data.find((company: any) => company.userId === companyData.userId)?._id;
-          
-          if (companyId) {
-            // Update existing company
-            response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {
-              headers: { 'Content-Type': 'application/json' },
-            });
-          } else {
-            // Create new company
-            response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
-              headers: { 'Content-Type': 'application/json' },
-            });
-          }
-        } catch (error) {
-          // If GET fails, try to create new company
-          response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
-            headers: { 'Content-Type': 'application/json' },
-          });
-        }
-      }
-
-      if (response?.data?._id) {
+      const response = await saveCompanyData(companyData);
+      console.log('Complete API Response:', JSON.stringify(response, null, 2));
+      
+      if (response && response.data && response.data._id) {
+        // Store company ID in a cookie that expires in 30 days
         Cookies.set('companyId', response.data._id, { expires: 30 });
-        window.location.href = "/company";
+        console.log("Company ID being saved to cookie:", response.data._id);
+        const savedId = Cookies.get('companyId');
+        console.log("Verified saved Company ID from cookie:", savedId);
       } else {
-        throw new Error('No company ID in response');
+        console.error("No company ID found in response. Response structure:", response);
       }
+      
+      window.location.href = "/company";
     } catch (error) {
       console.error('Error saving company data:', error);
-      setError('An error occurred while saving the company data. Please try again.');
+      setTimeout(() => setError('Company already exist. Please try again.'), 0);
+      console.log("Error State:", error);
+      
     }
   };
   const handleClose = () => {
