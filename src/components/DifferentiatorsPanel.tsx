@@ -66,44 +66,44 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
         // Try to update existing company
         response = await saveCompanyData(Cookies.get('userId') || null, companyData);
       } else {
-        // Create new company
-        const allCompanies = await axios.get(`${import.meta.env.VITE_API_URL}/companies`);
-        console.log('API Response:', allCompanies.data);
-        
-        // Check if data exists and is an array
-        if (!allCompanies.data?.data || !Array.isArray(allCompanies.data.data)) {
-          throw new Error('Invalid response format from API - expected an array in data property');
-        }
+        try {
+          // First try to get existing company
+          const allCompanies = await axios.get(`${import.meta.env.VITE_API_URL}/companies`);
+          
+          if (!allCompanies.data?.data || !Array.isArray(allCompanies.data.data)) {
+            throw new Error('Invalid response format from API');
+          }
 
-        const companyId = allCompanies.data.data.find((company: any) => company.userId === "681a91212c1ca099fe2b17df")?._id;
-        
-        if (!companyId) {
-          throw new Error('Company not found');
+          const companyId = allCompanies.data.data.find((company: any) => company.userId === "681a91212c1ca099fe2b17df")?._id;
+          
+          if (companyId) {
+            // Update existing company
+            response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {
+              headers: { 'Content-Type': 'application/json' },
+            });
+          } else {
+            // Create new company
+            response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+        } catch (error) {
+          // If GET fails, try to create new company
+          response = await axios.post(`${import.meta.env.VITE_API_URL}/companies`, companyData, {
+            headers: { 'Content-Type': 'application/json' },
+          });
         }
-
-        response = await axios.put(`${import.meta.env.VITE_API_URL}/companies/${companyId}`, companyData, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
       }
 
-      console.log('Complete API Response:', JSON.stringify(response, null, 2));
-      if (response && response.data && response.data._id) {
-        // Store company ID in a cookie that expires in 30 days
+      if (response?.data?._id) {
         Cookies.set('companyId', response.data._id, { expires: 30 });
-        console.log("Company ID being saved to cookie:", response.data._id);
-        const savedId = Cookies.get('companyId');
-        console.log("Verified saved Company ID from cookie:", savedId);
+        window.location.href = "/company";
       } else {
-        console.error("No company ID found in response. Response structure:", response);
+        throw new Error('No company ID in response');
       }
-      
-      window.location.href = "/company";
     } catch (error) {
       console.error('Error saving company data:', error);
-      setTimeout(() => setError('An error occurred while saving the company data. Please try again.'), 0);
-      console.log("Error State:", error);
+      setError('An error occurred while saving the company data. Please try again.');
     }
   };
   const handleClose = () => {
