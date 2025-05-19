@@ -60,6 +60,8 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       console.log('Complete API Response:', JSON.stringify(response, null, 2));
       
       if (response && response.data && response.data._id) {
+        console.log('Company created successfully with ID:', response.data._id);
+        
         // Store company ID in a cookie that expires in 30 days
         Cookies.set('companyId', response.data._id, { expires: 30 });
         console.log("Company ID being saved to cookie:", response.data._id);
@@ -67,27 +69,43 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
         console.log("Verified saved Company ID from cookie:", savedId);
 
         // Initialize onboarding progress
+        console.log('Starting onboarding initialization for company:', response.data._id);
         try {
-          const onboardingResponse = await fetch(`${import.meta.env.VITE_API_URL}/companies/${response.data._id}/onboarding`, {
+          console.log('Making API call to initialize onboarding...');
+          const onboardingResponse = await fetch(`${import.meta.env.VITE_API_URL}/onboarding/companies/${response.data._id}/onboarding`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
           });
 
+          console.log('Onboarding API response status:', onboardingResponse.status);
+          
           if (!onboardingResponse.ok) {
-            console.error('Failed to initialize onboarding progress:', await onboardingResponse.text());
-          } else {
-            console.log('Successfully initialized onboarding progress');
+            const errorText = await onboardingResponse.text();
+            console.error('Failed to initialize onboarding progress. Status:', onboardingResponse.status);
+            console.error('Error details:', errorText);
+            throw new Error(`Failed to initialize onboarding: ${errorText}`);
           }
+
+          const onboardingData = await onboardingResponse.json();
+          console.log('Successfully initialized onboarding progress. Response:', onboardingData);
+          console.log('Current phase:', onboardingData.currentPhase);
+          console.log('Completed steps:', onboardingData.completedSteps);
+          
+          // Only redirect after successful onboarding initialization
+          console.log('Redirecting to company page...');
+          window.location.href = "/company";
         } catch (onboardingError) {
           console.error('Error initializing onboarding progress:', onboardingError);
+          console.error('Error stack:', onboardingError.stack);
+          setError('Failed to initialize onboarding process. Please try again.');
+          return; // Don't redirect on error
         }
       } else {
-        console.error("No company ID found in response. Response structure:", response);
+        console.error("No company ID found in response. Full response:", response);
+        setError('Failed to create company profile. Please try again.');
       }
-      
-      window.location.href = "/company";
     } catch (error) {
       console.error('Error saving company data:', error);
       setTimeout(() => setError('Company already exist. Please try again.'), 0);
