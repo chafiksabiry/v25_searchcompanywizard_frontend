@@ -74,7 +74,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
             throw new Error('Invalid response format from API');
           }
 
-          const companyId = allCompanies.data.data.find((company: any) => company.userId === "681a91212c1ca099fe2b17df")?._id;
+          const companyId = allCompanies.data.data.find((company: any) => company.userId === companyData.userId)?._id;
           
           if (companyId) {
             // Update existing company
