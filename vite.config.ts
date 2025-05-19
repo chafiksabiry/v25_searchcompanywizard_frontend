@@ -18,9 +18,7 @@ const removeReactRefreshScript = () => {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const baseUrl = env.VITE_DEPLOYMENT_MODE === 'standalone' 
-    ? 'https://companysearchwizard.harx.ai/'
-    : 'https://preprod-companysearchwizard.harx.ai/';
+  const baseUrl = 'https://companysearchwizard.harx.ai/';
 
   return {
     base: baseUrl,
