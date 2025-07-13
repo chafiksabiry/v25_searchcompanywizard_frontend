@@ -32,14 +32,12 @@ import {
 import type { CompanyProfile as CompanyProfileType } from "../api/openai";
 import { UniquenessPanel } from "./UniquenessPanel";
 import { uploadImageToCloudinary, validateImageFile } from "../api/cloudinary";
-// import type { LucideIcon } from 'lucide-react';
+import { LucideProps } from "lucide-react";
 
 interface Props {
   profile: CompanyProfileType;
   onClose: () => void;
 }
-
-import { LucideProps } from "lucide-react";
 const userId= Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
@@ -124,13 +122,20 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   };
 
   useEffect(() => {
-    if (!profile.logo && profile.contact.website) {
-      const domain = new URL(profile.contact.website).hostname;
-      setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
-    } else if (!profile.logo) {
+    if (!profile.logo && profile.contact?.website) {
+      try {
+        const domain = new URL(profile.contact.website).hostname;
+        setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
+      } catch (error) {
+        console.warn('Invalid website URL:', profile.contact.website);
+        setLogoUrl(""); // Fallback si l'URL n'est pas valide
+      }
+    } else if (profile.logo) {
+      setLogoUrl(profile.logo); // Utiliser le logo fourni
+    } else {
       setLogoUrl(""); // Fallback si aucun logo ou URL n'est fourni
     }
-  }, [profile.logo, profile.contact.website]);
+  }, [profile.logo, profile.contact?.website]);
 
   const getGoogleMapsDirectionsUrl = () => {
     if (profile.contact?.address) {
@@ -169,10 +174,20 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     setEditingField(null);
   };
 
+  const validateImageUrl = (url: string): boolean => {
+    if (!url) return false;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setLogoUrl(url);
-    setProfile({ ...profile, logo: url });
+    // Ne pas mettre à jour le profile immédiatement, attendre la validation
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -477,8 +492,12 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         alt={profile.name}
                         className="w-full h-full object-contain"
                         onError={(e) => {
-                          e.currentTarget.src = "";
-                          setLogoUrl("");
+                          console.warn('Failed to load logo image:', logoUrl);
+                          e.currentTarget.style.display = 'none';
+                          // Ne pas vider logoUrl ici pour éviter les boucles infinies
+                        }}
+                        onLoad={(e) => {
+                          e.currentTarget.style.display = 'block';
                         }}
                       />
                     ) : (
@@ -536,13 +555,23 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         
                         <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-200">
                           <button
-                            onClick={() => setEditingField(null)}
+                            onClick={() => {
+                              setEditingField(null);
+                              setLogoUrl(profile.logo || ""); // Reset to original value
+                            }}
                             className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
                           >
                             Cancel
                           </button>
                           <button
-                            onClick={() => setEditingField(null)}
+                            onClick={() => {
+                              if (logoUrl && !validateImageUrl(logoUrl)) {
+                                alert('Please enter a valid image URL (http:// or https://)');
+                                return;
+                              }
+                              setProfile({ ...profile, logo: logoUrl });
+                              setEditingField(null);
+                            }}
                             className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                           >
                             Save
@@ -554,9 +583,14 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   
                   {editMode && (
                     <button
-                      onClick={() =>
-                        setEditingField(editingField === "logo" ? null : "logo")
-                      }
+                      onClick={() => {
+                        if (editingField === "logo") {
+                          setEditingField(null);
+                        } else {
+                          setEditingField("logo");
+                          setLogoUrl(profile.logo || ""); // Reset to current logo when opening editor
+                        }
+                      }}
                       className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
                     >
                       <Edit2 size={12} />
