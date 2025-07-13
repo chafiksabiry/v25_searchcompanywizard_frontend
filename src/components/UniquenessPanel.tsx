@@ -180,43 +180,59 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     icon?: React.ComponentType<LucideProps>;
     type?: string;
     className?: string;
-  }) => (
-    <div className={`group relative ${className}`}>
-      {editingField === field ? (
-        <div className="flex items-center gap-2">
-          <input
-            type={type}
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
-            onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
-            autoFocus
-            onBlur={() => handleSave(field)}
-          />
-
-          <button
-            onClick={() => handleSave(field)}
-            className="p-1 text-green-600 hover:text-green-700"
-          >
-            <Check size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          {Icon && <Icon size={18} className="text-gray-600" />}
-          <span>{value}</span>
-          {editMode && (
+  }) => {
+    // Champs multi-lignes : description et details
+    const isMultiline = field.endsWith('.description') || field.includes('.details.');
+    return (
+      <div className={`group relative ${className}`}>
+        {editingField === field ? (
+          <div className="flex items-center gap-2 w-full">
+            {isMultiline ? (
+              <textarea
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="w-full min-h-16 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
+                }}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            ) : (
+              <input
+                type={type}
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
+                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            )}
             <button
-              onClick={() => handleEdit(field, value)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              onClick={() => handleSave(field)}
+              className="p-1 text-green-600 hover:text-green-700"
             >
-              <Edit2 size={14} />
+              <Check size={16} />
             </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {Icon && <Icon size={18} className="text-gray-600" />}
+            <span>{value}</span>
+            {editMode && (
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              >
+                <Edit2 size={14} />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   if (showDifferentiators) {
     return (

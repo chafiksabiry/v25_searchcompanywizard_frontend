@@ -276,7 +276,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             <textarea
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
-              className="w-full min-h-20 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+              className="w-full h-full min-h-24 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
               onKeyDown={(e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
               }}
@@ -719,7 +719,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
                       <Building2 className="text-indigo-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-4">
                         Company Overview
                       </h2>
@@ -761,7 +761,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
                       <Heart className="text-rose-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-6">
                         Culture & Values
                       </h2>
@@ -786,7 +786,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
                       <Trophy className="text-amber-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-6">
                         Benefits & Perks
                       </h2>
@@ -831,7 +831,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
                     <Rocket className="text-blue-600" size={24} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 h-full">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Career Growth & Opportunities
                     </h2>
@@ -888,7 +888,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
                     <Code className="text-emerald-600" size={24} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 h-full">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Technology & Innovation
                     </h2>
