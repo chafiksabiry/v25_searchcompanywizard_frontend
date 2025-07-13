@@ -180,8 +180,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     type?: string;
     className?: string;
   }) => {
-    // Champs multi-lignes : description et details
-    const isMultiline = field.endsWith('.description') || field.includes('.details.');
+    // Champs multi-lignes : description, details, et companyIntro
+    const isMultiline = field === 'companyIntro' || field.endsWith('.description') || field.includes('.details.');
     return (
       <div className={`group relative ${className}`}>
         {editingField === field ? (
@@ -244,8 +244,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-auto">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="min-h-screen w-full bg-white z-50">
+      <div className="max-w-5xl mx-auto px-6 py-12 pb-32"> {/* Ajout pb-32 pour espace bouton */}
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-12">
           <div className="w-full flex items-center justify-between mb-6">
@@ -275,13 +275,6 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               </div>
             </div>
           </div>
-          <button
-            onClick={() => setShowDifferentiators(true)}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2 mb-2"
-          >
-            Next: Choose Differentiators
-            <ArrowRight size={18} />
-          </button>
         </div>
 
         {/* Main Content */}
@@ -360,23 +353,17 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               </div>
             ))}
           </div>
-
-          {/* Call to Action */}
-          {/**
-          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Ready to Explore Opportunities?
-            </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover exciting gigs and partnership opportunities with {profile.name}. Browse our available opportunities and find the perfect match for your skills and interests.
-            </p>
-            <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
-              <Search size={18} />
-              Browse Available Gigs
-            </button>
-          </div>
-          */}
         </div>
+      </div>
+      {/* Bouton Next en bas à droite, toujours visible */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <button
+          onClick={() => setShowDifferentiators(true)}
+          className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2"
+        >
+          Next: Choose Differentiators
+          <ArrowRight size={18} />
+        </button>
       </div>
     </div>
   );
