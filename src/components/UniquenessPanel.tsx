@@ -188,7 +188,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             type={type}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
             onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
             autoFocus
             onBlur={() => handleSave(field)}
