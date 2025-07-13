@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Globe2,
   TrendingUp,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type { CompanyProfile } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
+import { generateCompanyIntro } from "../api/openai";
 
 import { LucideProps } from "lucide-react";
 
@@ -40,6 +41,25 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     getIndustrySpecificFeatures(profile.industry)
   );
   const [showDifferentiators, setShowDifferentiators] = useState(false);
+  const [companyIntro, setCompanyIntro] = useState<string>("");
+  const [loadingIntro, setLoadingIntro] = useState<boolean>(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchIntro() {
+      setLoadingIntro(true);
+      try {
+        const intro = await generateCompanyIntro(profile);
+        if (isMounted) setCompanyIntro(intro);
+      } catch (e) {
+        if (isMounted) setCompanyIntro("Error generating text.");
+      } finally {
+        if (isMounted) setLoadingIntro(false);
+      }
+    }
+    fetchIntro();
+    return () => { isMounted = false; };
+  }, [profile]);
 
   function getIndustrySpecificFeatures(
     industry?: string
@@ -290,9 +310,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               Why Partner With Us?
             </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Join a company that values innovation, growth, and success. We
-              offer unique opportunities for representatives to thrive in a
-              dynamic market environment.
+              {loadingIntro ? "Chargement..." : companyIntro}
             </p>
           </section>
 
