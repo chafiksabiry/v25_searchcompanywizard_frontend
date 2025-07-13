@@ -45,6 +45,57 @@ export interface CompanyProfile {
   };
 }
 
+export const searchCompanyLogo = async (
+  companyName: string,
+  companyWebsite?: string
+): Promise<string | null> => {
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      messages: [
+        {
+          role: "system",
+          content: `You are a logo finder assistant. Based on the company name and website, provide the most likely URL for the company's logo. 
+          Return only the direct URL to the logo image, or null if you cannot find a reliable logo URL.
+          Common logo URL patterns:
+          - https://company.com/logo.png
+          - https://company.com/assets/logo.svg
+          - https://company.com/images/logo.jpg
+          - https://logo.clearbit.com/company.com (for Clearbit logo service)
+          
+          If no direct logo URL is available, use Clearbit's logo service: https://logo.clearbit.com/[domain]
+          Return only the URL string, no explanations.`,
+        },
+        {
+          role: "user",
+          content: `Find the logo URL for company: ${companyName}${companyWebsite ? ` (Website: ${companyWebsite})` : ''}`,
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: 100,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content || content.toLowerCase().includes('null')) {
+      return null;
+    }
+
+    return content.trim();
+  } catch (error) {
+    console.error("OpenAI Logo Search Error:", error);
+    return null;
+  }
+};
+
 export const generateCompanyProfile = async (
   companyInfo: string
 ): Promise<CompanyProfile> => {

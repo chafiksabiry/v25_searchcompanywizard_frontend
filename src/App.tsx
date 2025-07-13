@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
-import { generateCompanyProfile, type CompanyProfile } from './api/openai';
+import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
 
@@ -15,6 +15,7 @@ function App() {
   const [searchResults, setSearchResults] = useState<GoogleSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
+  const [logoCache, setLogoCache] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const checkUserCompany = async () => {
@@ -125,40 +126,73 @@ function App() {
                 <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : (
-              searchResults
-                .filter(result => result.pagemap?.metatags?.[0]?.['og:image'])
-                .map((result, index) => {
-                  const logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
-                  return (
-                    <div
-                      key={index}
-                      className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              searchResults.map((result, index) => {
+                // Essayer d'abord og:image, puis le cache, puis chercher avec OpenAI
+                let logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
+                
+                if (!logoUrl) {
+                  // Vérifier le cache
+                  const cacheKey = `${result.title}-${result.link}`;
+                  logoUrl = logoCache[cacheKey];
+                  
+                  // Si pas dans le cache, chercher avec OpenAI
+                  if (!logoUrl) {
+                    const fetchLogo = async () => {
+                      try {
+                        const domain = new URL(result.link).hostname;
+                        const aiLogoUrl = await searchCompanyLogo(result.title, result.link);
+                        if (aiLogoUrl) {
+                          setLogoCache(prev => ({ ...prev, [cacheKey]: aiLogoUrl }));
+                          return aiLogoUrl;
+                        }
+                        // Fallback vers Clearbit
+                        const clearbitUrl = `https://logo.clearbit.com/${domain}`;
+                        setLogoCache(prev => ({ ...prev, [cacheKey]: clearbitUrl }));
+                        return clearbitUrl;
+                      } catch (e) {
+                        return null;
+                      }
+                    };
+                    
+                    // Lancer la recherche de logo en arrière-plan
+                    fetchLogo();
+                  }
+                }
+
+                return (
+                  <div
+                    key={index}
+                    className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {logoUrl ? (
                           <img
                             src={logoUrl}
                             alt={result.title}
                             className="w-full h-full object-contain"
                             onError={e => { e.currentTarget.style.display = 'none'; }}
                           />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                            {result.title}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
-                          <button
-                            onClick={() => handleSelectResult(result)}
-                            className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-                          >
-                            Generate Profile
-                          </button>
-                        </div>
+                        ) : (
+                          <div className="w-6 h-6 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin"></div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {result.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
+                        <button
+                          onClick={() => handleSelectResult(result)}
+                          className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                          Generate Profile
+                        </button>
                       </div>
                     </div>
-                  );
-                })
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
