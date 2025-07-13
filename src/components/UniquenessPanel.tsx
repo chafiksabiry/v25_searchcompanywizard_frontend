@@ -247,39 +247,41 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Profile</span>
-          </button>
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center justify-center mb-12">
+          <div className="w-full flex items-center justify-between mb-6">
             <button
-              onClick={() => setShowDifferentiators(true)}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2"
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
             >
-              Next: Choose Differentiators
-              <ArrowRight size={18} />
+              <ChevronLeft size={20} />
+              <span>Back to Profile</span>
             </button>
-            <button
-              onClick={() => setEditMode(!editMode)}
-              className={`p-2 rounded-full transition-all duration-300 ${
-                editMode
-                  ? "bg-green-500 text-white hover:bg-green-600"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-              }`}
-            >
-              <Edit2 size={20} />
-            </button>
-            <div className="text-right">
-              <h1 className="text-3xl font-bold text-gray-900">
-                {profile.name}
-              </h1>
-              <p className="text-gray-500 mt-1">{profile.industry}</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setEditMode(!editMode)}
+                className={`p-2 rounded-full transition-all duration-300 ${
+                  editMode
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <Edit2 size={20} />
+              </button>
+              <div className="text-right">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {profile.name}
+                </h1>
+                <p className="text-gray-500 mt-1">{profile.industry}</p>
+              </div>
             </div>
           </div>
+          <button
+            onClick={() => setShowDifferentiators(true)}
+            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2 mb-2"
+          >
+            Next: Choose Differentiators
+            <ArrowRight size={18} />
+          </button>
         </div>
 
         {/* Main Content */}
@@ -289,9 +291,15 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Why Partner With Us?
             </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              {profile.companyIntro || "Loading..."}
-            </p>
+            <div className="flex justify-center">
+              <div className="w-full">
+                <EditableField
+                  value={profile.companyIntro || "Loading..."}
+                  field="companyIntro"
+                  className="text-lg text-gray-600 leading-relaxed"
+                />
+              </div>
+            </div>
           </section>
 
           {/* Categories Grid */}
