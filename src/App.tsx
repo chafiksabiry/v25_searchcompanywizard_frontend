@@ -125,30 +125,51 @@ function App() {
                 <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : (
-              searchResults.map((result, index) => (
-                <div
-                  key={index}
-                  className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="text-indigo-600" size={20} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {result.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
-                      <button
-                        onClick={() => handleSelectResult(result)}
-                        className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-                      >
-                        Generate Profile
-                      </button>
+              searchResults.map((result, index) => {
+                // Déterminer l'URL du logo
+                let logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
+                if (!logoUrl && result.link) {
+                  try {
+                    const domain = new URL(result.link).hostname;
+                    logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                  } catch (e) {
+                    logoUrl = undefined;
+                  }
+                }
+                return (
+                  <div
+                    key={index}
+                    className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {logoUrl ? (
+                          <img
+                            src={logoUrl}
+                            alt={result.title}
+                            className="w-full h-full object-contain"
+                            onError={e => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <Building2 className="text-indigo-600" size={20} />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {result.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
+                        <button
+                          onClick={() => handleSelectResult(result)}
+                          className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                          Generate Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
