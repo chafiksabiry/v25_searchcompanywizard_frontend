@@ -247,6 +247,15 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     }
   };
 
+  const multiLineFields = [
+    "overview",
+    "mission",
+    "culture.workEnvironment",
+    "opportunities.growthPotential",
+    "opportunities.training",
+    "technology.innovation"
+  ];
+
   const EditableField = ({
     value,
     field,
@@ -259,43 +268,61 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     icon?: React.ComponentType<LucideProps>;
     type?: string;
     className?: string;
-  }) => (
-    <div className={`group relative ${className}`}>
-      {editingField === field ? (
-        <div className="flex items-center gap-2">
-          <input
-            type={type}
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
-            onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
-            autoFocus
-            onBlur={() => handleSave(field)}
-          />
-
-          <button
-            onClick={() => handleSave(field)}
-            className="p-1 text-green-600 hover:text-green-700"
-          >
-            <Check size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          {Icon && <Icon size={18} className="text-gray-600" />}
-          <span>{value}</span>
-          {editMode && (
+  }) => {
+    const isMultiline = multiLineFields.includes(field);
+    return (
+      <div className={`group relative ${className}`}>
+        {editingField === field ? (
+          <div className="flex items-center gap-2 w-full">
+            {isMultiline ? (
+              <textarea
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="w-full min-h-24 px-3 py-2 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSave(field);
+                  }
+                }}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            ) : (
+              <input
+                type={type}
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className={`px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 ${className.includes('bg-white/10') ? 'w-28' : 'flex-1'}`}
+                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            )}
             <button
-              onClick={() => handleEdit(field, value)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              onClick={() => handleSave(field)}
+              className="p-1 text-green-600 hover:text-green-700"
             >
-              <Edit2 size={14} />
+              <Check size={16} />
             </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {Icon && <Icon size={18} className="text-gray-600" />}
+            <span>{value}</span>
+            {editMode && (
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              >
+                <Edit2 size={14} />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   if (showUniquenessPanel) {
     return (
@@ -307,8 +334,8 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[90vw] relative max-h-[90vh] overflow-hidden flex">
+    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[900px] relative flex">
         {/* Sidebar - Contact & Digital Presence */}
         <div className="w-80 flex-shrink-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 overflow-y-auto">
           <div className="p-6 space-y-8">
@@ -448,7 +475,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col">
           {/* Hero Section */}
           <div className="relative h-80">
             <div
@@ -688,7 +715,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1">
             <div className="p-12 space-y-16">
               {/* Overview Section */}
               <section className="relative">
