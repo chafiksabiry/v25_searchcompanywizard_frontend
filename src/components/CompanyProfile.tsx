@@ -125,7 +125,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     if (!profile.logo && profile.contact?.website) {
       try {
         const domain = new URL(profile.contact.website).hostname;
-        setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        setLogoUrl(faviconUrl);
+        // Update the profile with the favicon URL
+        setProfile(prev => ({ ...prev, logo: faviconUrl }));
       } catch (error) {
         console.warn('Invalid website URL:', profile.contact.website);
         setLogoUrl(""); // Fallback si l'URL n'est pas valide
