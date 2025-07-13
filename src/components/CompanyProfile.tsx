@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import {
   Building2,
@@ -27,9 +27,11 @@ import {
   Check,
   ArrowRight,
   Upload,
+  Image,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openai";
 import { UniquenessPanel } from "./UniquenessPanel";
+import { uploadImageToCloudinary, validateImageFile } from "../api/cloudinary";
 // import type { LucideIcon } from 'lucide-react';
 
 interface Props {
@@ -84,8 +86,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [logoUrl, setLogoUrl] = useState(profile.logo || "");
-  console.log("Logoooooooooo : ", profile);
   const [showUniquenessPanel, setShowUniquenessPanel] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  console.log("Logoooooooooo : ", profile);
 
   const hasContactInfo =
     profile.contact?.email ||
@@ -169,6 +173,39 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     const url = e.target.value;
     setLogoUrl(url);
     setProfile({ ...profile, logo: url });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // Validate file
+      validateImageFile(file);
+      
+      setIsUploadingLogo(true);
+      
+      // Upload to Cloudinary
+      const cloudinaryUrl = await uploadImageToCloudinary(file);
+      
+      // Update logo URL and profile
+      setLogoUrl(cloudinaryUrl);
+      setProfile({ ...profile, logo: cloudinaryUrl });
+      
+      // Close the edit mode
+      setEditingField(null);
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert(error instanceof Error ? error.message : 'Erreur lors de l\'upload du logo');
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleLogoClick = () => {
+    if (editMode) {
+      fileInputRef.current?.click();
+    }
   };
 
   const EditableField = ({
@@ -415,12 +452,26 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             <div className="relative h-full flex flex-col justify-end p-12 space-y-6">
               <div className="flex items-center gap-6">
                 <div className="relative group">
+                  {/* Hidden file input for logo upload */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  
                   <div
                     className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${
                       editMode ? "cursor-pointer" : ""
                     }`}
+                    onClick={handleLogoClick}
                   >
-                    {logoUrl ? (
+                    {isUploadingLogo ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                      </div>
+                    ) : logoUrl ? (
                       <img
                         src={logoUrl}
                         alt={profile.name}
@@ -431,31 +482,59 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         }}
                       />
                     ) : (
-                      <Globe className="w-full h-full text-indigo-600" />
+                      <Image className="w-full h-full text-indigo-600" />
                     )}
-                    {editMode && (
+                    {editMode && !isUploadingLogo && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="text-white text-center">
                           <Upload size={20} className="mx-auto mb-1" />
-                          <span className="text-xs">Edit Logo</span>
+                          <span className="text-xs">Upload Logo</span>
                         </div>
                       </div>
                     )}
                   </div>
+                  
                   {editMode && editingField === "logo" && (
-                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
-                      <div className="space-y-2">
-                        <label className="text-sm text-gray-600 block">
-                          Logo URL
-                        </label>
-                        <input
-                          type="text"
-                          value={logoUrl}
-                          onChange={handleLogoChange}
-                          placeholder="Enter logo URL..."
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                        />
-                        <div className="flex justify-end gap-2 mt-2">
+                    <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg p-4 border border-gray-200">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Image size={16} className="text-indigo-600" />
+                          <label className="text-sm font-medium text-gray-700">
+                            Logo Options
+                          </label>
+                        </div>
+                        
+                        {/* File Upload Option */}
+                        <div className="space-y-2">
+                          <label className="text-sm text-gray-600 block">
+                            Upload Image
+                          </label>
+                          <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingLogo}
+                            className="w-full px-3 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md hover:border-indigo-400 hover:bg-indigo-50 transition-colors disabled:opacity-50"
+                          >
+                            {isUploadingLogo ? 'Uploading...' : 'Choose Image File'}
+                          </button>
+                        </div>
+                        
+                        <div className="text-center text-gray-400">- or -</div>
+                        
+                        {/* URL Input Option */}
+                        <div className="space-y-2">
+                          <label className="text-sm text-gray-600 block">
+                            Logo URL
+                          </label>
+                          <input
+                            type="text"
+                            value={logoUrl}
+                            onChange={handleLogoChange}
+                            placeholder="Enter logo URL..."
+                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                          />
+                        </div>
+                        
+                        <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-200">
                           <button
                             onClick={() => setEditingField(null)}
                             className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
@@ -472,6 +551,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       </div>
                     </div>
                   )}
+                  
                   {editMode && (
                     <button
                       onClick={() =>
