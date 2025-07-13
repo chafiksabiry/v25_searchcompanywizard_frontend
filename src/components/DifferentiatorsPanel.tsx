@@ -133,11 +133,6 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-center mb-4">Why Partner With Us?</h2>
-        <p className="text-center text-gray-600 max-w-2xl mx-auto mt-4 mb-10">
-          {profile.companyIntro || "Loading..."}
-        </p>
-
         <div className="space-y-12">
           <div className="grid md:grid-cols-2 gap-6">
             {differentiators.map((diff) => (
