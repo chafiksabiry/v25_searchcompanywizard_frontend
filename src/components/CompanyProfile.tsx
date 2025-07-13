@@ -247,12 +247,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     }
   };
 
-  const handleLogoClick = () => {
-    if (editMode) {
-      fileInputRef.current?.click();
-    }
-  };
-
   const EditableField = ({
     value,
     field,
