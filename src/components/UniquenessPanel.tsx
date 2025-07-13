@@ -180,7 +180,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     type?: string;
     className?: string;
   }) => {
-    // Champs multi-lignes : description, details, et companyIntro
+    // Champs multi-lignes : description, details et companyIntro
     const isMultiline = field === 'companyIntro' || field.endsWith('.description') || field.includes('.details.');
     return (
       <div className={`group relative ${className}`}>
@@ -244,7 +244,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-12">
