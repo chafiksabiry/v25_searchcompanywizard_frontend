@@ -137,6 +137,33 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     }
   }, [profile.logo, profile.contact?.website]);
 
+  // Affichage des champs générés par OpenAI et Google Search
+  useEffect(() => {
+    // Champs générés par OpenAI (tous sauf logo favicon)
+    const openAIFields = {
+      name: profile.name,
+      industry: profile.industry,
+      founded: profile.founded,
+      headquarters: profile.headquarters,
+      overview: profile.overview,
+      mission: profile.mission,
+      culture: profile.culture,
+      opportunities: profile.opportunities,
+      technology: profile.technology,
+      contact: profile.contact,
+      socialMedia: profile.socialMedia,
+    };
+    // Logo généré par Google Search si logo vide et website présent
+    let logoSource = 'Aucun';
+    if (!profile.logo && profile.contact?.website) {
+      logoSource = 'Google Search (favicon)';
+    } else if (profile.logo) {
+      logoSource = 'OpenAI ou utilisateur';
+    }
+    console.log('Champs générés par OpenAI:', openAIFields);
+    console.log('Logo généré par:', logoSource, '| logoUrl:', logoUrl);
+  }, [profile, logoUrl]);
+
   const getGoogleMapsDirectionsUrl = () => {
     if (profile.contact?.address) {
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
