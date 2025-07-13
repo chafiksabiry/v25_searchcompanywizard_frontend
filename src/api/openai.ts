@@ -224,7 +224,9 @@ export const generateCompanyProfile = async (
 };
 
 export async function generateCompanyIntro(profile: CompanyProfile): Promise<string> {
-  const prompt = `Write a compelling introduction for a "Why Partner With Us?" page for the company "${profile.name}" in the industry "${profile.industry ?? ''}". Highlight innovation, growth, and unique opportunities, using a modern and dynamic tone suitable for an international audience.`;
+  const prompt = `\nWrite a compelling introduction for a \"Why Partner With Us?\" page for the company \"${profile.name}\".\nIndustry: ${profile.industry ?? 'N/A'}\nMission: ${profile.mission ?? 'N/A'}\nValues: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}\nOpportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}\nHighlight innovation, growth, and unique opportunities, using a modern and dynamic tone suitable for an international audience. Make the text unique and tailored to the company profile.\n`;
+
+  console.log('[OpenAI Prompt]', prompt);
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -240,5 +242,6 @@ export async function generateCompanyIntro(profile: CompanyProfile): Promise<str
   });
 
   const data = await response.json();
+  console.log('[OpenAI Response]', data);
   return data.choices?.[0]?.message?.content || "Error generating text";
 }
