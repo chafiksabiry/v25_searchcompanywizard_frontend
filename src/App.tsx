@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
@@ -199,8 +200,7 @@ function App() {
                             onError={e => { e.currentTarget.style.display = 'none'; }}
                           />
                         ) : logoUrl === 'default' ? (
-                          // Icône SVG d'entreprise par défaut
-                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+                          <Building2 className="text-indigo-600" size={28} />
                         ) : (
                           <div className="w-6 h-6 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin"></div>
                         )}
