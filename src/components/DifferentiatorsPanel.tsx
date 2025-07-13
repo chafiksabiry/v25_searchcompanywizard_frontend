@@ -4,7 +4,6 @@ import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Che
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
 import Cookies from 'js-cookie';
-import { generateCompanyIntro } from '../api/openai';
 
 interface Props {
   profile: CompanyProfile;
@@ -16,25 +15,6 @@ console.log(typeof React);
 export function DifferentiatorsPanel({ profile, onBack }: Props) {
   const [selectedDifferentiators, setSelectedDifferentiators] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [companyIntro, setCompanyIntro] = useState<string>("");
-  const [loadingIntro, setLoadingIntro] = useState<boolean>(true);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function fetchIntro() {
-      setLoadingIntro(true);
-      try {
-        const intro = await generateCompanyIntro(profile);
-        if (isMounted) setCompanyIntro(intro);
-      } catch (e) {
-        if (isMounted) setCompanyIntro("Erreur lors de la génération du texte.");
-      } finally {
-        if (isMounted) setLoadingIntro(false);
-      }
-    }
-    fetchIntro();
-    return () => { isMounted = false; };
-  }, [profile]);
 
   const differentiators = [
     {
@@ -155,7 +135,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
 
         <h2 className="text-2xl font-bold text-center mb-4">Why Partner With Us?</h2>
         <p className="text-center text-gray-600 max-w-2xl mx-auto mt-4 mb-10">
-          {loadingIntro ? "Chargement..." : companyIntro}
+          {profile.companyIntro || "Loading..."}
         </p>
 
         <div className="space-y-12">

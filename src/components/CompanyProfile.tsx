@@ -50,6 +50,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     headquarters: initialProfile.headquarters || "",
     overview: initialProfile.overview || "",
     mission: initialProfile.mission || "",
+    companyIntro: initialProfile.companyIntro || "",
     culture: {
       values: initialProfile.culture?.values || [],
       benefits: initialProfile.culture?.benefits || [],

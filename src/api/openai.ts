@@ -13,6 +13,7 @@ export interface CompanyProfile {
   headquarters?: string;
   overview: string;
   mission?: string;
+  companyIntro?: string;
   culture: {
     values: string[];
     benefits: string[];
@@ -180,10 +181,48 @@ export const generateCompanyProfile = async (
       throw new Error("No content received from OpenAI");
     }
 
-    const parsedProfile = JSON.parse(content) as Omit<CompanyProfile, "userId">;
+    const parsedProfile = JSON.parse(content) as Omit<CompanyProfile, "userId" | "companyIntro">;
+
+    // Generate company intro
+    const companyIntro = await generateCompanyIntro({
+      userId,
+      ...parsedProfile,
+      culture: {
+        ...parsedProfile.culture,
+        values: parsedProfile.culture?.values || [],
+        benefits: parsedProfile.culture?.benefits || [],
+        workEnvironment: parsedProfile.culture?.workEnvironment || "",
+      },
+      opportunities: {
+        ...parsedProfile.opportunities,
+        roles: parsedProfile.opportunities?.roles || [],
+        growthPotential: parsedProfile.opportunities?.growthPotential || "",
+        training: parsedProfile.opportunities?.training || "",
+      },
+      technology: {
+        ...parsedProfile.technology,
+        stack: parsedProfile.technology?.stack || [],
+        innovation: parsedProfile.technology?.innovation || "",
+      },
+      contact: {
+        ...parsedProfile.contact,
+        email: parsedProfile.contact?.email || "",
+        phone: parsedProfile.contact?.phone || "",
+        address: parsedProfile.contact?.address || "",
+        website: parsedProfile.contact?.website || "",
+      },
+      socialMedia: {
+        ...parsedProfile.socialMedia,
+        linkedin: parsedProfile.socialMedia?.linkedin || "",
+        twitter: parsedProfile.socialMedia?.twitter || "",
+        facebook: parsedProfile.socialMedia?.facebook || "",
+        instagram: parsedProfile.socialMedia?.instagram || "",
+      },
+    });
 
     return {
       userId, // 👈 Attach the userId
+      companyIntro, // 👈 Attach the generated company intro
       ...parsedProfile,
       culture: {
         ...parsedProfile.culture,
@@ -224,24 +263,32 @@ export const generateCompanyProfile = async (
 };
 
 export async function generateCompanyIntro(profile: CompanyProfile): Promise<string> {
-  const prompt = `\nWrite a compelling introduction for a \"Why Partner With Us?\" page for the company \"${profile.name}\".\nIndustry: ${profile.industry ?? 'N/A'}\nMission: ${profile.mission ?? 'N/A'}\nValues: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}\nOpportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}\nHighlight innovation, growth, and unique opportunities, using a modern and dynamic tone suitable for an international audience. Make the text unique and tailored to the company profile.\n`;
+  if (!apiKey) {
+    return "Error: OpenAI API key is not configured";
+  }
+
+  const prompt = `\nWrite a compelling introduction for a \"Why Partner With Us?\" page for the company \"${profile.name}\".\nIndustry: ${profile.industry ?? 'N/A'}\nMission: ${profile.mission ?? 'N/A'}\nValues: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}\nOpportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}\n\nWrite exactly 3-4 lines (maximum 4 lines) highlighting innovation, growth, and unique opportunities. Use a modern and dynamic tone suitable for an international audience. Make the text concise and impactful.\n`;
 
   console.log('[OpenAI Prompt]', prompt);
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
       messages: [{ role: "user", content: prompt }],
       max_tokens: 100,
-    }),
-  });
+      temperature: 0.7,
+    });
 
-  const data = await response.json();
-  console.log('[OpenAI Response]', data);
-  return data.choices?.[0]?.message?.content || "Error generating text";
+    const content = response.choices[0]?.message?.content;
+    console.log('[OpenAI Response]', content);
+    return content || "Error generating text";
+  } catch (error) {
+    console.error("OpenAI API Error:", error);
+    return "Error generating text";
+  }
 }
