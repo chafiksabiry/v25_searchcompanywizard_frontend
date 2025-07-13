@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Zap,
   ChevronLeft,
-  Search,
   Edit2,
   Check,
   ArrowRight,
