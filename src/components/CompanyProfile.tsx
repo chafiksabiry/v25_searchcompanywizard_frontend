@@ -505,12 +505,15 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     onChange={handleFileUpload}
                     className="hidden"
                   />
-                  
                   <div
-                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${
-                      editMode ? "cursor-pointer" : ""
-                    }`}
-                    onClick={handleLogoClick}
+                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden transition-all duration-200
+                      ${editMode ? "cursor-pointer ring-4 ring-indigo-200/60" : ""}`}
+                    onClick={() => {
+                      if (editMode) {
+                        setEditingField("logo");
+                        setLogoUrl(profile.logo || "");
+                      }
+                    }}
                   >
                     {isUploadingLogo ? (
                       <div className="flex items-center justify-center">
@@ -524,7 +527,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         onError={(e) => {
                           console.warn('Failed to load logo image:', logoUrl);
                           e.currentTarget.style.display = 'none';
-                          // Ne pas vider logoUrl ici pour éviter les boucles infinies
                         }}
                         onLoad={(e) => {
                           e.currentTarget.style.display = 'block';
@@ -534,17 +536,34 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       <Image className="w-full h-full text-indigo-600" />
                     )}
                     {editMode && !isUploadingLogo && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="text-white text-center">
                           <Upload size={20} className="mx-auto mb-1" />
                           <span className="text-xs">Upload Logo</span>
                         </div>
                       </div>
                     )}
+                    {/* Bouton crayon flottant */}
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingField("logo");
+                          setLogoUrl(profile.logo || "");
+                        }}
+                        className="absolute top-1 right-1 w-8 h-8 bg-white/90 rounded-full shadow flex items-center justify-center text-indigo-600 hover:bg-indigo-100 border border-indigo-200 z-10"
+                        style={{boxShadow: '0 2px 8px 0 rgba(80,80,180,0.10)'}}
+                        tabIndex={-1}
+                        aria-label="Edit logo"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                    )}
                   </div>
-                  
+                  {/* Menu d'édition du logo */}
                   {editMode && editingField === "logo" && (
-                    <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg p-4 border border-gray-200">
+                    <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg p-4 border border-gray-200 z-20">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 mb-3">
                           <Image size={16} className="text-indigo-600" />
@@ -552,7 +571,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                             Logo Options
                           </label>
                         </div>
-                        
                         {/* File Upload Option */}
                         <div className="space-y-2">
                           <label className="text-sm text-gray-600 block">
@@ -566,9 +584,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                             {isUploadingLogo ? 'Uploading...' : 'Choose Image File'}
                           </button>
                         </div>
-                        
                         <div className="text-center text-gray-400">- or -</div>
-                        
                         {/* URL Input Option */}
                         <div className="space-y-2">
                           <label className="text-sm text-gray-600 block">
@@ -582,12 +598,11 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                             className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900"
                           />
                         </div>
-                        
                         <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-200">
                           <button
                             onClick={() => {
                               setEditingField(null);
-                              setLogoUrl(profile.logo || ""); // Reset to original value
+                              setLogoUrl(profile.logo || "");
                             }}
                             className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
                           >
@@ -610,24 +625,8 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       </div>
                     </div>
                   )}
-                  
-                  {editMode && (
-                    <button
-                      onClick={() => {
-                        if (editingField === "logo") {
-                          setEditingField(null);
-                        } else {
-                          setEditingField("logo");
-                          setLogoUrl(profile.logo || ""); // Reset to current logo when opening editor
-                        }
-                      }}
-                      className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
-                    >
-                      <Edit2 size={12} />
-                    </button>
-                  )}
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <EditableField
                     value={profile.name}
                     field="name"
@@ -661,10 +660,25 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   </div>
                 </div>
               </div>
+              {/* Bouton bien positionné */}
+              <div className="w-full flex justify-end mt-6 pr-2">
+                <button
+                  onClick={() => setShowUniquenessPanel(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-3 group"
+                >
+                  <Trophy size={20} />
+                  <span>What makes your company unique and attractive</span>
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </button>
+              </div>
             </div>
 
             {/* What Makes Your Company Unique Button */}
-            <div className="absolute bottom-6 right-6">
+            {/* This button is now positioned absolutely at the bottom-right */}
+            {/* <div className="absolute bottom-6 right-6">
               <button
                 onClick={() => setShowUniquenessPanel(true)}
                 className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-3 group"
@@ -676,7 +690,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   className="group-hover:translate-x-1 transition-transform"
                 />
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Scrollable Content */}
