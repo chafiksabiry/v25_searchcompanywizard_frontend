@@ -357,20 +357,20 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           </div>
 
           {/* Call to Action */}
+          {/**
           <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-12 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Explore Opportunities?
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover exciting gigs and partnership opportunities with{" "}
-              {profile.name}. Browse our available opportunities and find the
-              perfect match for your skills and interests.
+              Discover exciting gigs and partnership opportunities with {profile.name}. Browse our available opportunities and find the perfect match for your skills and interests.
             </p>
             <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
               <Search size={18} />
               Browse Available Gigs
             </button>
           </div>
+          */}
         </div>
       </div>
     </div>

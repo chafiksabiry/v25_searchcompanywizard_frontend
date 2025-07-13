@@ -222,3 +222,23 @@ export const generateCompanyProfile = async (
     throw new Error("Failed to generate company profile");
   }
 };
+
+export async function generateCompanyIntro(profile: CompanyProfile): Promise<string> {
+  const prompt = `Write a compelling introduction for a "Why Partner With Us?" page for the company "${profile.name}" in the industry "${profile.industry ?? ''}". Highlight innovation, growth, and unique opportunities, using a modern and dynamic tone suitable for an international audience.`;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 100,
+    }),
+  });
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "Error generating text";
+}
