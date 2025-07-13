@@ -127,34 +127,59 @@ function App() {
               </div>
             ) : (
               searchResults.map((result, index) => {
-                // Essayer d'abord og:image, puis le cache, puis chercher avec OpenAI
+                // Ordre de fallback : og:image > cache > OpenAI > Clearbit > Google Favicon > logo par défaut
                 let logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
-                
+                const cacheKey = `${result.title}-${result.link}`;
                 if (!logoUrl) {
-                  // Vérifier le cache
-                  const cacheKey = `${result.title}-${result.link}`;
                   logoUrl = logoCache[cacheKey];
-                  
-                  // Si pas dans le cache, chercher avec OpenAI
                   if (!logoUrl) {
                     const fetchLogo = async () => {
                       try {
-                        const domain = new URL(result.link).hostname;
-                        const aiLogoUrl = await searchCompanyLogo(result.title, result.link);
+                        const domain = (() => {
+                          try {
+                            return new URL(result.link).hostname;
+                          } catch {
+                            return null;
+                          }
+                        })();
+                        let aiLogoUrl = null;
+                        if (domain) {
+                          aiLogoUrl = await searchCompanyLogo(result.title, result.link);
+                        }
                         if (aiLogoUrl) {
                           setLogoCache(prev => ({ ...prev, [cacheKey]: aiLogoUrl }));
                           return aiLogoUrl;
                         }
-                        // Fallback vers Clearbit
-                        const clearbitUrl = `https://logo.clearbit.com/${domain}`;
-                        setLogoCache(prev => ({ ...prev, [cacheKey]: clearbitUrl }));
-                        return clearbitUrl;
+                        // Fallback Clearbit
+                        if (domain) {
+                          const clearbitUrl = `https://logo.clearbit.com/${domain}`;
+                          // Test if Clearbit returns a real image
+                          const testImg = new window.Image();
+                          testImg.onload = () => {
+                            setLogoCache(prev => ({ ...prev, [cacheKey]: clearbitUrl }));
+                          };
+                          testImg.onerror = () => {
+                            // Fallback Google Favicon
+                            const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                            setLogoCache(prev => ({ ...prev, [cacheKey]: faviconUrl }));
+                          };
+                          testImg.src = clearbitUrl;
+                          return clearbitUrl;
+                        }
+                        // Fallback Google Favicon (si pas de domaine)
+                        if (domain) {
+                          const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                          setLogoCache(prev => ({ ...prev, [cacheKey]: faviconUrl }));
+                          return faviconUrl;
+                        }
+                        // Fallback logo par défaut
+                        setLogoCache(prev => ({ ...prev, [cacheKey]: 'default' }));
+                        return 'default';
                       } catch (e) {
-                        return null;
+                        setLogoCache(prev => ({ ...prev, [cacheKey]: 'default' }));
+                        return 'default';
                       }
                     };
-                    
-                    // Lancer la recherche de logo en arrière-plan
                     fetchLogo();
                   }
                 }
@@ -166,13 +191,16 @@ function App() {
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        {logoUrl ? (
+                        {logoUrl && logoUrl !== 'default' ? (
                           <img
                             src={logoUrl}
                             alt={result.title}
                             className="w-full h-full object-contain"
                             onError={e => { e.currentTarget.style.display = 'none'; }}
                           />
+                        ) : logoUrl === 'default' ? (
+                          // Icône SVG d'entreprise par défaut
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
                         ) : (
                           <div className="w-6 h-6 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin"></div>
                         )}
