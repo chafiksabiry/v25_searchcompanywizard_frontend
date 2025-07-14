@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import {
   Building2,
@@ -27,17 +27,17 @@ import {
   Check,
   ArrowRight,
   Upload,
+  Image,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openai";
 import { UniquenessPanel } from "./UniquenessPanel";
-// import type { LucideIcon } from 'lucide-react';
+import { uploadImageToCloudinary, validateImageFile } from "../api/cloudinary";
+import { LucideProps } from "lucide-react";
 
 interface Props {
   profile: CompanyProfileType;
   onClose: () => void;
 }
-
-import { LucideProps } from "lucide-react";
 const userId= Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
@@ -50,6 +50,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     headquarters: initialProfile.headquarters || "",
     overview: initialProfile.overview || "",
     mission: initialProfile.mission || "",
+    companyIntro: initialProfile.companyIntro || "",
     culture: {
       values: initialProfile.culture?.values || [],
       benefits: initialProfile.culture?.benefits || [],
@@ -84,8 +85,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [logoUrl, setLogoUrl] = useState(profile.logo || "");
-  console.log("Logoooooooooo : ", profile);
   const [showUniquenessPanel, setShowUniquenessPanel] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  console.log("Logoooooooooo : ", profile);
 
   const hasContactInfo =
     profile.contact?.email ||
@@ -120,13 +123,50 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   };
 
   useEffect(() => {
-    if (!profile.logo && profile.contact.website) {
-      const domain = new URL(profile.contact.website).hostname;
-      setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
-    } else if (!profile.logo) {
+    if (!profile.logo && profile.contact?.website) {
+      try {
+        const domain = new URL(profile.contact.website).hostname;
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        setLogoUrl(faviconUrl);
+        // Update the profile with the favicon URL
+        setProfile(prev => ({ ...prev, logo: faviconUrl }));
+      } catch (error) {
+        console.warn('Invalid website URL:', profile.contact.website);
+        setLogoUrl(""); // Fallback si l'URL n'est pas valide
+      }
+    } else if (profile.logo) {
+      setLogoUrl(profile.logo); // Utiliser le logo fourni
+    } else {
       setLogoUrl(""); // Fallback si aucun logo ou URL n'est fourni
     }
-  }, [profile.logo, profile.contact.website]);
+  }, [profile.logo, profile.contact?.website]);
+
+  // Affichage des champs générés par OpenAI et Google Search
+  useEffect(() => {
+    // Champs générés par OpenAI (tous sauf logo favicon)
+    const openAIFields = {
+      name: profile.name,
+      industry: profile.industry,
+      founded: profile.founded,
+      headquarters: profile.headquarters,
+      overview: profile.overview,
+      mission: profile.mission,
+      culture: profile.culture,
+      opportunities: profile.opportunities,
+      technology: profile.technology,
+      contact: profile.contact,
+      socialMedia: profile.socialMedia,
+    };
+    // Logo généré par Google Search si logo vide et website présent
+    let logoSource = 'Aucun';
+    if (!profile.logo && profile.contact?.website) {
+      logoSource = 'Google Search (favicon)';
+    } else if (profile.logo) {
+      logoSource = 'OpenAI ou utilisateur';
+    }
+    console.log('Champs générés par OpenAI:', openAIFields);
+    console.log('Logo généré par:', logoSource, '| logoUrl:', logoUrl);
+  }, [profile, logoUrl]);
 
   const getGoogleMapsDirectionsUrl = () => {
     if (profile.contact?.address) {
@@ -165,11 +205,57 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     setEditingField(null);
   };
 
+  const validateImageUrl = (url: string): boolean => {
+    if (!url) return false;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setLogoUrl(url);
-    setProfile({ ...profile, logo: url });
+    // Ne pas mettre à jour le profile immédiatement, attendre la validation
   };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      // Validate file
+      validateImageFile(file);
+      
+      setIsUploadingLogo(true);
+      
+      // Upload to Cloudinary
+      const cloudinaryUrl = await uploadImageToCloudinary(file);
+      
+      // Update logo URL and profile
+      setLogoUrl(cloudinaryUrl);
+      setProfile({ ...profile, logo: cloudinaryUrl });
+      
+      // Close the edit mode
+      setEditingField(null);
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert(error instanceof Error ? error.message : 'Erreur lors de l\'upload du logo');
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const multiLineFields = [
+    "overview",
+    "mission",
+    "culture.workEnvironment",
+    "opportunities.growthPotential",
+    "opportunities.training",
+    "technology.innovation",
+  ];
 
   const EditableField = ({
     value,
@@ -186,17 +272,29 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   }) => (
     <div className={`group relative ${className}`}>
       {editingField === field ? (
-        <div className="flex items-center gap-2">
-          <input
-            type={type}
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
-            onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
-            autoFocus
-            onBlur={() => handleSave(field)}
-          />
-
+        <div className="flex items-center gap-2 w-full">
+          {multiLineFields.includes(field) ? (
+            <textarea
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              className="w-full h-full min-h-24 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+              onKeyDown={(e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
+              }}
+              autoFocus
+              onBlur={() => handleSave(field)}
+            />
+          ) : (
+            <input
+              type={type}
+              value={tempValue}
+              onChange={(e) => setTempValue(e.target.value)}
+              className={`px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 ${className.includes('bg-white/10') ? 'w-28' : 'flex-1'}`}
+              onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+              autoFocus
+              onBlur={() => handleSave(field)}
+            />
+          )}
           <button
             onClick={() => handleSave(field)}
             className="p-1 text-green-600 hover:text-green-700"
@@ -415,55 +513,126 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             <div className="relative h-full flex flex-col justify-end p-12 space-y-6">
               <div className="flex items-center gap-6">
                 <div className="relative group">
+                  {/* Hidden file input for logo upload */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
                   <div
-                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${
-                      editMode ? "cursor-pointer" : ""
-                    }`}
+                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden transition-all duration-200
+                      ${editMode ? "cursor-pointer ring-4 ring-indigo-200/60" : ""}`}
+                    onClick={() => {
+                      if (editMode) {
+                        setEditingField("logo");
+                        setLogoUrl(profile.logo || "");
+                      }
+                    }}
                   >
-                    {logoUrl ? (
+                    {isUploadingLogo ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                      </div>
+                    ) : logoUrl ? (
                       <img
                         src={logoUrl}
                         alt={profile.name}
                         className="w-full h-full object-contain"
                         onError={(e) => {
-                          e.currentTarget.src = "";
-                          setLogoUrl("");
+                          console.warn('Failed to load logo image:', logoUrl);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                        onLoad={(e) => {
+                          e.currentTarget.style.display = 'block';
                         }}
                       />
                     ) : (
-                      <Globe className="w-full h-full text-indigo-600" />
+                      <Image className="w-full h-full text-indigo-600" />
                     )}
-                    {editMode && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    {editMode && !isUploadingLogo && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="text-white text-center">
                           <Upload size={20} className="mx-auto mb-1" />
-                          <span className="text-xs">Edit Logo</span>
+                          <span className="text-xs">Upload Logo</span>
                         </div>
                       </div>
                     )}
+                    {/* Bouton crayon flottant */}
+                    {editMode && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingField("logo");
+                          setLogoUrl(profile.logo || "");
+                        }}
+                        className="absolute top-1 right-1 w-8 h-8 bg-white/90 rounded-full shadow flex items-center justify-center text-indigo-600 hover:bg-indigo-100 border border-indigo-200 z-10"
+                        style={{boxShadow: '0 2px 8px 0 rgba(80,80,180,0.10)'}}
+                        tabIndex={-1}
+                        aria-label="Edit logo"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                    )}
                   </div>
+                  {/* Menu d'édition du logo */}
                   {editMode && editingField === "logo" && (
-                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
-                      <div className="space-y-2">
-                        <label className="text-sm text-gray-600 block">
-                          Logo URL
-                        </label>
-                        <input
-                          type="text"
-                          value={logoUrl}
-                          onChange={handleLogoChange}
-                          placeholder="Enter logo URL..."
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                        />
-                        <div className="flex justify-end gap-2 mt-2">
+                    <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg p-4 border border-gray-200 z-20">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Image size={16} className="text-indigo-600" />
+                          <label className="text-sm font-medium text-gray-700">
+                            Logo Options
+                          </label>
+                        </div>
+                        {/* File Upload Option */}
+                        <div className="space-y-2">
+                          <label className="text-sm text-gray-600 block">
+                            Upload Image
+                          </label>
                           <button
-                            onClick={() => setEditingField(null)}
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingLogo}
+                            className="w-full px-3 py-2 text-sm border-2 border-dashed border-gray-300 rounded-md hover:border-indigo-400 hover:bg-indigo-50 transition-colors disabled:opacity-50"
+                          >
+                            {isUploadingLogo ? 'Uploading...' : 'Choose Image File'}
+                          </button>
+                        </div>
+                        <div className="text-center text-gray-400">- or -</div>
+                        {/* URL Input Option */}
+                        <div className="space-y-2">
+                          <label className="text-sm text-gray-600 block">
+                            Logo URL
+                          </label>
+                          <input
+                            type="text"
+                            value={logoUrl}
+                            onChange={handleLogoChange}
+                            placeholder="Enter logo URL..."
+                            className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-200">
+                          <button
+                            onClick={() => {
+                              setEditingField(null);
+                              setLogoUrl(profile.logo || "");
+                            }}
                             className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
                           >
                             Cancel
                           </button>
                           <button
-                            onClick={() => setEditingField(null)}
+                            onClick={() => {
+                              if (logoUrl && !validateImageUrl(logoUrl)) {
+                                alert('Please enter a valid image URL (http:// or https://)');
+                                return;
+                              }
+                              setProfile({ ...profile, logo: logoUrl });
+                              setEditingField(null);
+                            }}
                             className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                           >
                             Save
@@ -472,18 +641,8 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       </div>
                     </div>
                   )}
-                  {editMode && (
-                    <button
-                      onClick={() =>
-                        setEditingField(editingField === "logo" ? null : "logo")
-                      }
-                      className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
-                    >
-                      <Edit2 size={12} />
-                    </button>
-                  )}
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <EditableField
                     value={profile.name}
                     field="name"
@@ -517,10 +676,25 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   </div>
                 </div>
               </div>
+              {/* Bouton bien positionné */}
+              <div className="w-full flex justify-end mt-6 pr-2">
+                <button
+                  onClick={() => setShowUniquenessPanel(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-3 group"
+                >
+                  <Trophy size={20} />
+                  <span>What makes your company unique and attractive</span>
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </button>
+              </div>
             </div>
 
             {/* What Makes Your Company Unique Button */}
-            <div className="absolute bottom-6 right-6">
+            {/* This button is now positioned absolutely at the bottom-right */}
+            {/* <div className="absolute bottom-6 right-6">
               <button
                 onClick={() => setShowUniquenessPanel(true)}
                 className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-3 group"
@@ -532,7 +706,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   className="group-hover:translate-x-1 transition-transform"
                 />
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Scrollable Content */}
@@ -546,7 +720,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
                       <Building2 className="text-indigo-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-4">
                         Company Overview
                       </h2>
@@ -588,7 +762,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
                       <Heart className="text-rose-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-6">
                         Culture & Values
                       </h2>
@@ -613,7 +787,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
                       <Trophy className="text-amber-600" size={24} />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 h-full">
                       <h2 className="text-2xl font-bold text-gray-900 mb-6">
                         Benefits & Perks
                       </h2>
@@ -658,7 +832,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
                     <Rocket className="text-blue-600" size={24} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 h-full">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Career Growth & Opportunities
                     </h2>
@@ -715,7 +889,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
                     <Code className="text-emerald-600" size={24} />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 h-full">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Technology & Innovation
                     </h2>

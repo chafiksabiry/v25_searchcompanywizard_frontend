@@ -13,6 +13,7 @@ export interface CompanyProfile {
   headquarters?: string;
   overview: string;
   mission?: string;
+  companyIntro?: string;
   culture: {
     values: string[];
     benefits: string[];
@@ -44,6 +45,57 @@ export interface CompanyProfile {
     instagram?: string;
   };
 }
+
+export const searchCompanyLogo = async (
+  companyName: string,
+  companyWebsite?: string
+): Promise<string | null> => {
+  if (!apiKey) {
+    return null;
+  }
+
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      messages: [
+        {
+          role: "system",
+          content: `You are a logo finder assistant. Based on the company name and website, provide the most likely URL for the company's logo. 
+          Return only the direct URL to the logo image, or null if you cannot find a reliable logo URL.
+          Common logo URL patterns:
+          - https://company.com/logo.png
+          - https://company.com/assets/logo.svg
+          - https://company.com/images/logo.jpg
+          - https://logo.clearbit.com/company.com (for Clearbit logo service)
+          
+          If no direct logo URL is available, use Clearbit's logo service: https://logo.clearbit.com/[domain]
+          Return only the URL string, no explanations.`,
+        },
+        {
+          role: "user",
+          content: `Find the logo URL for company: ${companyName}${companyWebsite ? ` (Website: ${companyWebsite})` : ''}`,
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: 100,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content || content.toLowerCase().includes('null')) {
+      return null;
+    }
+
+    return content.trim();
+  } catch (error) {
+    console.error("OpenAI Logo Search Error:", error);
+    return null;
+  }
+};
 
 export const generateCompanyProfile = async (
   companyInfo: string
@@ -129,10 +181,48 @@ export const generateCompanyProfile = async (
       throw new Error("No content received from OpenAI");
     }
 
-    const parsedProfile = JSON.parse(content) as Omit<CompanyProfile, "userId">;
+    const parsedProfile = JSON.parse(content) as Omit<CompanyProfile, "userId" | "companyIntro">;
+
+    // Generate company intro
+    const companyIntro = await generateCompanyIntro({
+      userId,
+      ...parsedProfile,
+      culture: {
+        ...parsedProfile.culture,
+        values: parsedProfile.culture?.values || [],
+        benefits: parsedProfile.culture?.benefits || [],
+        workEnvironment: parsedProfile.culture?.workEnvironment || "",
+      },
+      opportunities: {
+        ...parsedProfile.opportunities,
+        roles: parsedProfile.opportunities?.roles || [],
+        growthPotential: parsedProfile.opportunities?.growthPotential || "",
+        training: parsedProfile.opportunities?.training || "",
+      },
+      technology: {
+        ...parsedProfile.technology,
+        stack: parsedProfile.technology?.stack || [],
+        innovation: parsedProfile.technology?.innovation || "",
+      },
+      contact: {
+        ...parsedProfile.contact,
+        email: parsedProfile.contact?.email || "",
+        phone: parsedProfile.contact?.phone || "",
+        address: parsedProfile.contact?.address || "",
+        website: parsedProfile.contact?.website || "",
+      },
+      socialMedia: {
+        ...parsedProfile.socialMedia,
+        linkedin: parsedProfile.socialMedia?.linkedin || "",
+        twitter: parsedProfile.socialMedia?.twitter || "",
+        facebook: parsedProfile.socialMedia?.facebook || "",
+        instagram: parsedProfile.socialMedia?.instagram || "",
+      },
+    });
 
     return {
       userId, // 👈 Attach the userId
+      companyIntro, // 👈 Attach the generated company intro
       ...parsedProfile,
       culture: {
         ...parsedProfile.culture,
@@ -171,3 +261,34 @@ export const generateCompanyProfile = async (
     throw new Error("Failed to generate company profile");
   }
 };
+
+export async function generateCompanyIntro(profile: CompanyProfile): Promise<string> {
+  if (!apiKey) {
+    return "Error: OpenAI API key is not configured";
+  }
+
+  const prompt = `\nWrite a compelling introduction for a \"Why Partner With Us?\" page for the company \"${profile.name}\".\nIndustry: ${profile.industry ?? 'N/A'}\nMission: ${profile.mission ?? 'N/A'}\nValues: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}\nOpportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}\n\nWrite exactly 3-4 lines (maximum 4 lines) highlighting innovation, growth, and unique opportunities. Use a modern and dynamic tone suitable for an international audience. Make the text concise and impactful.\n`;
+
+  console.log('[OpenAI Prompt]', prompt);
+
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 100,
+      temperature: 0.7,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    console.log('[OpenAI Response]', content);
+    return content || "Error generating text";
+  } catch (error) {
+    console.error("OpenAI API Error:", error);
+    return "Error generating text";
+  }
+}

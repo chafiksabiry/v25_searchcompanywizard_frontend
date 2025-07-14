@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   Zap,
   ChevronLeft,
-  Search,
   Edit2,
   Check,
   ArrowRight,
@@ -180,43 +179,59 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     icon?: React.ComponentType<LucideProps>;
     type?: string;
     className?: string;
-  }) => (
-    <div className={`group relative ${className}`}>
-      {editingField === field ? (
-        <div className="flex items-center gap-2">
-          <input
-            type={type}
-            value={tempValue}
-            onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
-            onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
-            autoFocus
-            onBlur={() => handleSave(field)}
-          />
-
-          <button
-            onClick={() => handleSave(field)}
-            className="p-1 text-green-600 hover:text-green-700"
-          >
-            <Check size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          {Icon && <Icon size={18} className="text-gray-600" />}
-          <span>{value}</span>
-          {editMode && (
+  }) => {
+    // Champs multi-lignes : description, details et companyIntro
+    const isMultiline = field === 'companyIntro' || field.endsWith('.description') || field.includes('.details.');
+    return (
+      <div className={`group relative ${className}`}>
+        {editingField === field ? (
+          <div className="flex items-center gap-2 w-full">
+            {isMultiline ? (
+              <textarea
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="w-full min-h-16 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
+                }}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            ) : (
+              <input
+                type={type}
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
+                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            )}
             <button
-              onClick={() => handleEdit(field, value)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              onClick={() => handleSave(field)}
+              className="p-1 text-green-600 hover:text-green-700"
             >
-              <Edit2 size={14} />
+              <Check size={16} />
             </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {Icon && <Icon size={18} className="text-gray-600" />}
+            <span>{value}</span>
+            {editMode && (
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              >
+                <Edit2 size={14} />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   if (showDifferentiators) {
     return (
@@ -232,39 +247,41 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Profile</span>
-          </button>
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center justify-center mb-12">
+          <div className="w-full flex items-center justify-between mb-6">
             <button
-              onClick={() => setShowDifferentiators(true)}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2"
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
             >
-              Next: Choose Differentiators
-              <ArrowRight size={18} />
+              <ChevronLeft size={20} />
+              <span>Back to Profile</span>
             </button>
-            <button
-              onClick={() => setEditMode(!editMode)}
-              className={`p-2 rounded-full transition-all duration-300 ${
-                editMode
-                  ? "bg-green-500 text-white hover:bg-green-600"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-              }`}
-            >
-              <Edit2 size={20} />
-            </button>
-            <div className="text-right">
-              <h1 className="text-3xl font-bold text-gray-900">
-                {profile.name}
-              </h1>
-              <p className="text-gray-500 mt-1">{profile.industry}</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setEditMode(!editMode)}
+                className={`p-2 rounded-full transition-all duration-300 ${
+                  editMode
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <Edit2 size={20} />
+              </button>
+              <div className="text-right">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {profile.name}
+                </h1>
+                <p className="text-gray-500 mt-1">{profile.industry}</p>
+              </div>
             </div>
           </div>
+          <button
+            onClick={() => setShowDifferentiators(true)}
+            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2 mb-2"
+          >
+            Next: Choose Differentiators
+            <ArrowRight size={18} />
+          </button>
         </div>
 
         {/* Main Content */}
@@ -274,11 +291,15 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Why Partner With Us?
             </h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Join a company that values innovation, growth, and success. We
-              offer unique opportunities for representatives to thrive in a
-              dynamic market environment.
-            </p>
+            <div className="flex justify-center">
+              <div className="w-full">
+                <EditableField
+                  value={profile.companyIntro || "Loading..."}
+                  field="companyIntro"
+                  className="text-lg text-gray-600 leading-relaxed"
+                />
+              </div>
+            </div>
           </section>
 
           {/* Categories Grid */}
@@ -341,20 +362,20 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           </div>
 
           {/* Call to Action */}
+          {/**
           <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-12 text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Explore Opportunities?
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover exciting gigs and partnership opportunities with{" "}
-              {profile.name}. Browse our available opportunities and find the
-              perfect match for your skills and interests.
+              Discover exciting gigs and partnership opportunities with {profile.name}. Browse our available opportunities and find the perfect match for your skills and interests.
             </p>
             <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
               <Search size={18} />
               Browse Available Gigs
             </button>
           </div>
+          */}
         </div>
       </div>
     </div>
