@@ -1,159 +1,136 @@
 import React, { useState, useEffect } from "react";
 import {
-  Globe2,
-  TrendingUp,
-  DollarSign,
-  Rocket,
-  Award,
-  Users,
-  ShieldCheck,
-  Zap,
   ChevronLeft,
+  Edit2,
+  Check,
   ArrowRight,
   Loader2,
 } from "lucide-react";
 import type { CompanyProfile, UniquenessCategory } from "../api/openai";
-import { generateAllUniquenessContent } from "../api/openai";
+import { generateUniquenessCategories } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
+
+import { LucideProps } from "lucide-react";
 
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
 }
 
-// Composant d'affichage des caractéristiques uniques de l'entreprise
-// Génère automatiquement le contenu via OpenAI et l'affiche sans possibilité d'édition
-
 export function UniquenessPanel({ profile, onBack }: Props) {
+  const [editMode, setEditMode] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState("");
   const [categories, setCategories] = useState<UniquenessCategory[]>([]);
-  const [companyIntro, setCompanyIntro] = useState("");
   const [showDifferentiators, setShowDifferentiators] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Generate all content when component mounts
+  // Generate categories when component mounts
   useEffect(() => {
-    generateAllContent();
+    generateCategories();
   }, [profile]);
 
-  const generateAllContent = async () => {
+  const generateCategories = async () => {
     setIsGenerating(true);
     try {
-      const { companyIntro: intro, categories: cats } = await generateAllUniquenessContent(profile);
-      setCompanyIntro(intro);
-      setCategories(cats);
+      const generatedCategories = await generateUniquenessCategories(profile);
+      setCategories(generatedCategories);
     } catch (error) {
-      console.error("Failed to generate content:", error);
-      // Fallback to default content if AI generation fails
-      setCompanyIntro("Join our dynamic team and be part of an innovative company that values growth, collaboration, and excellence. We offer competitive opportunities in a supportive environment where your skills and ambitions can thrive.");
-      setCategories(getIndustrySpecificFeatures(profile.industry));
+      console.error("Failed to generate categories:", error);
+      // Show error state instead of fallback
+      setCategories([]);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  function getIndustrySpecificFeatures(
-    industry?: string
-  ): UniquenessCategory[] {
-    const baseCategories: UniquenessCategory[] = [
-      {
-        title: "Brand Recognition",
-        icon: Award,
-        description: "Market presence and brand value",
-        score: 4,
-        details: [
-          "Established market presence",
-          "Strong brand reputation",
-          "Recognized industry leader",
-          "High customer trust",
-        ],
-      },
-      {
-        title: "Geographic Reach",
-        icon: Globe2,
-        description: "Market coverage and expansion",
-        score: 4,
-        details: [
-          "Wide market coverage",
-          "Strategic locations",
-          "Growing market presence",
-          "International opportunities",
-        ],
-      },
-      {
-        title: "Financial Benefits",
-        icon: DollarSign,
-        description: "Compensation and payment structure",
-        score: 5,
-        details: [
-          "Competitive commission rates",
-          "Fast payment processing",
-          "Performance bonuses",
-          "Recurring revenue opportunities",
-          "Attractive incentive programs",
-        ],
-      },
-      {
-        title: "Growth Potential",
-        icon: TrendingUp,
-        description: "Career and earning opportunities",
-        score: 4,
-        details: [
-          "Unlimited earning potential",
-          "Career advancement paths",
-          "Market expansion plans",
-          "Training and development",
-        ],
-      },
-    ];
+  const handleEdit = (field: string, value: string) => {
+    setEditingField(field);
+    setTempValue(value);
+  };
 
-    // Add industry-specific categories
-    if (industry?.toLowerCase().includes("tech")) {
-      baseCategories.push({
-        title: "Innovation Leadership",
-        icon: Rocket,
-        description: "Cutting-edge technology and solutions",
-        score: 5,
-        details: [
-          "Latest technology products",
-          "Innovation-driven culture",
-          "High-demand solutions",
-          "Competitive advantage through tech",
-        ],
-      });
+  const handleSave = (field: string) => {
+    const [categoryIndex, fieldType, detailIndex] = field.split(".");
+    const newCategories = [...categories];
+    const category = newCategories[parseInt(categoryIndex)];
+
+    if (fieldType === "title") {
+      category.title = tempValue;
+    } else if (fieldType === "description") {
+      category.description = tempValue;
+    } else if (fieldType === "details") {
+      category.details[parseInt(detailIndex)] = tempValue;
     }
 
-    if (industry?.toLowerCase().includes("healthcare")) {
-      baseCategories.push({
-        title: "Social Impact",
-        icon: Users,
-        description: "Making a difference in healthcare",
-        score: 5,
-        details: [
-          "Improving patient care",
-          "Healthcare innovation",
-          "Growing healthcare market",
-          "Essential services",
-        ],
-      });
-    }
+    setCategories(newCategories);
+    setEditingField(null);
+  };
 
-    if (industry?.toLowerCase().includes("finance")) {
-      baseCategories.push({
-        title: "Market Stability",
-        icon: ShieldCheck,
-        description: "Secure and stable market position",
-        score: 5,
-        details: [
-          "Financial sector stability",
-          "Regulatory compliance",
-          "Established client base",
-          "Recurring revenue model",
-        ],
-      });
-    }
-
-    return baseCategories;
-  }
+  const EditableField = ({
+    value,
+    field,
+    icon: Icon,
+    type = "text",
+    className = "",
+  }: {
+    value: string;
+    field: string;
+    icon?: React.ComponentType<LucideProps>;
+    type?: string;
+    className?: string;
+  }) => {
+    // Champs multi-lignes : description, details et companyIntro
+    const isMultiline = field === 'companyIntro' || field.endsWith('.description') || field.includes('.details.');
+    return (
+      <div className={`group relative ${className}`}>
+        {editingField === field ? (
+          <div className="flex items-center gap-2 w-full">
+            {isMultiline ? (
+              <textarea
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="w-full min-h-16 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
+                }}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            ) : (
+              <input
+                type={type}
+                value={tempValue}
+                onChange={(e) => setTempValue(e.target.value)}
+                className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
+                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+                autoFocus
+                onBlur={() => handleSave(field)}
+              />
+            )}
+            <button
+              onClick={() => handleSave(field)}
+              className="p-1 text-green-600 hover:text-green-700"
+            >
+              <Check size={16} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            {Icon && <Icon size={18} className="text-gray-600" />}
+            <span>{value}</span>
+            {editMode && (
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              >
+                <Edit2 size={14} />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   if (showDifferentiators) {
     return (
@@ -179,16 +156,26 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             </button>
             <div className="flex items-center gap-4">
               <button
-                onClick={generateAllContent}
+                onClick={() => setEditMode(!editMode)}
+                className={`p-2 rounded-full transition-all duration-300 ${
+                  editMode
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
+              >
+                <Edit2 size={20} />
+              </button>
+              <button
+                onClick={generateCategories}
                 disabled={isGenerating}
                 className={`p-2 rounded-full transition-all duration-300 ${
                   isGenerating
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "bg-blue-500 text-white hover:bg-blue-600"
                 }`}
-                title="Regenerate content with AI"
+                title="Regenerate categories with AI"
               >
-                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
+                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Edit2 size={20} />}
               </button>
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
@@ -216,9 +203,11 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             </h2>
             <div className="flex justify-center">
               <div className="w-full">
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  {companyIntro || "Loading..."}
-                </p>
+                <EditableField
+                  value={profile.companyIntro || "Loading..."}
+                  field="companyIntro"
+                  className="text-lg text-gray-600 leading-relaxed"
+                />
               </div>
             </div>
           </section>
@@ -229,6 +218,18 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               <div className="text-center">
                 <Loader2 className="animate-spin mx-auto mb-4 text-indigo-600" size={32} />
                 <p className="text-gray-600">Generating unique features for {profile.name}...</p>
+              </div>
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">No categories generated. Please try again.</p>
+                <button
+                  onClick={generateCategories}
+                  className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                >
+                  Generate Categories
+                </button>
               </div>
             </div>
           ) : (
@@ -244,9 +245,11 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">
-                          {category.title}
-                        </h3>
+                        <EditableField
+                          value={category.title}
+                          field={`${index}.title`}
+                          className="text-xl font-bold text-gray-900"
+                        />
                         <div className="flex gap-0.5">
                           {[...Array(5)].map((_, i) => (
                             <div
@@ -260,20 +263,25 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                           ))}
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-4">
-                        {category.description}
-                      </p>
+                      <EditableField
+                        value={category.description}
+                        field={`${index}.description`}
+                        className="text-gray-600 mb-4"
+                      />
                       <ul className="space-y-2">
                         {category.details.map((detail, i) => (
                           <li
                             key={i}
                             className="flex items-center gap-2 text-gray-700"
                           >
-                            <Zap
+                            <category.icon
                               size={14}
                               className="text-indigo-500 flex-shrink-0"
                             />
-                            <span>{detail}</span>
+                            <EditableField
+                              value={detail}
+                              field={`${index}.details.${i}`}
+                            />
                           </li>
                         ))}
                       </ul>
