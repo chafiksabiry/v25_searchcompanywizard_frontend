@@ -29,48 +29,77 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   const [showDifferentiators, setShowDifferentiators] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showRegenerateMenu, setShowRegenerateMenu] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Validate profile data
+  const isValidProfile = profile && profile.name && typeof profile.name === 'string';
 
   // Generate all content when component mounts
   useEffect(() => {
-    generateAllContent();
-  }, [profile]);
+    if (isValidProfile) {
+      generateAllContent();
+    } else {
+      setError("Invalid profile data provided");
+    }
+  }, [profile, isValidProfile]);
 
   const generateAllContent = async () => {
+    if (!isValidProfile) {
+      setError("Cannot generate content: invalid profile data");
+      return;
+    }
+
     setIsGenerating(true);
+    setError(null);
     try {
       const { companyIntro: intro, categories: cats } = await generateAllUniquenessContent(profile);
-      setCompanyIntro(intro);
-      setCategories(cats);
+      setCompanyIntro(intro || "Join our dynamic team and be part of an innovative company that values growth, collaboration, and excellence. We offer competitive opportunities in a supportive environment where your skills and ambitions can thrive.");
+      setCategories(cats || []);
     } catch (error) {
       console.error("Failed to generate content:", error);
+      setError("Failed to generate content. Using default content instead.");
       // Fallback to default content if AI generation fails
       setCompanyIntro("Join our dynamic team and be part of an innovative company that values growth, collaboration, and excellence. We offer competitive opportunities in a supportive environment where your skills and ambitions can thrive.");
-      setCategories(getIndustrySpecificFeatures(profile.industry));
+      setCategories(getIndustrySpecificFeatures(profile?.industry));
     } finally {
       setIsGenerating(false);
     }
   };
 
   const regenerateIntro = async () => {
+    if (!isValidProfile) {
+      setError("Cannot regenerate intro: invalid profile data");
+      return;
+    }
+
     setIsGenerating(true);
+    setError(null);
     try {
       const intro = await generateCompanyIntro(profile);
-      setCompanyIntro(intro);
+      setCompanyIntro(intro || "Join our dynamic team and be part of an innovative company that values growth, collaboration, and excellence. We offer competitive opportunities in a supportive environment where your skills and ambitions can thrive.");
     } catch (error) {
       console.error("Failed to regenerate intro:", error);
+      setError("Failed to regenerate introduction. Using default content.");
     } finally {
       setIsGenerating(false);
     }
   };
 
   const regenerateCategories = async () => {
+    if (!isValidProfile) {
+      setError("Cannot regenerate categories: invalid profile data");
+      return;
+    }
+
     setIsGenerating(true);
+    setError(null);
     try {
       const cats = await generateUniquenessCategories(profile);
-      setCategories(cats);
+      setCategories(cats || []);
     } catch (error) {
       console.error("Failed to regenerate categories:", error);
-      setCategories(getIndustrySpecificFeatures(profile.industry));
+      setError("Failed to regenerate categories. Using default content.");
+      setCategories(getIndustrySpecificFeatures(profile?.industry));
     } finally {
       setIsGenerating(false);
     }
@@ -195,6 +224,42 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     return baseCategories;
   }
 
+  // Error state
+  if (error && !isGenerating) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 overflow-auto">
+        <div className="max-w-5xl mx-auto px-6 py-12">
+          <div className="flex flex-col items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="text-red-500 mb-4">
+                <ShieldCheck size={48} className="mx-auto" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
+              <p className="text-gray-600 mb-6">{error}</p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={onBack}
+                  className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all"
+                >
+                  Go Back
+                </button>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    generateAllContent();
+                  }}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (showDifferentiators) {
     return (
       <DifferentiatorsPanel
@@ -270,9 +335,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {profile.name}
+                  {profile?.name || "Company"}
                 </h1>
-                <p className="text-gray-500 mt-1">{profile.industry}</p>
+                <p className="text-gray-500 mt-1">{profile?.industry || "Industry"}</p>
               </div>
             </div>
           </div>
@@ -306,7 +371,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <Loader2 className="animate-spin mx-auto mb-4 text-indigo-600" size={32} />
-                <p className="text-gray-600">Generating unique features for {profile.name}...</p>
+                <p className="text-gray-600">Generating unique features for {profile?.name || "this company"}...</p>
               </div>
             </div>
           ) : (
