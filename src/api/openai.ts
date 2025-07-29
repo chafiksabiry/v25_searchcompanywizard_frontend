@@ -326,16 +326,18 @@ Generate categories that highlight why someone should partner with this company.
 
 Available icons: Award, Globe2, DollarSign, TrendingUp, Rocket, Users, ShieldCheck, Zap
 
-Return the response as a valid JSON array with this exact structure:
-[
-  {
-    "title": "string",
-    "icon": "iconName",
-    "description": "string", 
-    "score": number,
-    "details": ["string", "string", "string"]
-  }
-]
+Return the response as a valid JSON object with this exact structure:
+{
+  "categories": [
+    {
+      "title": "string",
+      "icon": "iconName",
+      "description": "string", 
+      "score": number,
+      "details": ["string", "string", "string"]
+    }
+  ]
+}
 
 Make the categories relevant to the company's industry and strengths. Focus on what makes this company unique and attractive to potential partners.`;
 
@@ -358,7 +360,29 @@ Make the categories relevant to the company's industry and strengths. Focus on w
       throw new Error("No content received from OpenAI");
     }
 
-    const parsedCategories = JSON.parse(content);
+    console.log('[OpenAI Categories Response]', content);
+    
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(content);
+    } catch (parseError) {
+      console.error("Failed to parse OpenAI response:", parseError);
+      console.error("Raw content:", content);
+      throw new Error("Invalid JSON response from OpenAI");
+    }
+    
+    // Handle both array and object responses
+    let categoriesArray: any[];
+    if (Array.isArray(parsedResponse)) {
+      categoriesArray = parsedResponse;
+    } else if (parsedResponse.categories && Array.isArray(parsedResponse.categories)) {
+      categoriesArray = parsedResponse.categories;
+    } else if (parsedResponse.data && Array.isArray(parsedResponse.data)) {
+      categoriesArray = parsedResponse.data;
+    } else {
+      console.error("Unexpected response format:", parsedResponse);
+      throw new Error("Invalid response format from OpenAI");
+    }
     
     // Map icon names to actual icon components
     const iconMap: { [key: string]: any } = {
@@ -372,10 +396,21 @@ Make the categories relevant to the company's industry and strengths. Focus on w
       Zap: Zap,
     };
 
-    return parsedCategories.map((category: any) => ({
-      ...category,
-      icon: iconMap[category.icon] || Award, // Default to Award if icon not found
-    }));
+    return categoriesArray.map((category: any, index: number) => {
+      // Validate required fields
+      if (!category.title || !category.description || !category.details || !Array.isArray(category.details)) {
+        console.error(`Invalid category at index ${index}:`, category);
+        throw new Error(`Invalid category structure at index ${index}`);
+      }
+      
+      return {
+        title: category.title,
+        description: category.description,
+        score: typeof category.score === 'number' ? category.score : 4,
+        details: category.details,
+        icon: iconMap[category.icon] || Award, // Default to Award if icon not found
+      };
+    });
   } catch (error) {
     console.error("OpenAI API Error:", error);
     throw new Error("Failed to generate uniqueness categories");
