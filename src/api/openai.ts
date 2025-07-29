@@ -292,3 +292,72 @@ export async function generateCompanyIntro(profile: CompanyProfile): Promise<str
     return "Error generating text";
   }
 }
+
+export interface UniquenessCategory {
+  title: string;
+  icon: string; // Icon name as string
+  description: string;
+  score: number;
+  details: string[];
+}
+
+export async function generateUniquenessCategories(profile: CompanyProfile): Promise<UniquenessCategory[]> {
+  if (!apiKey) {
+    throw new Error("OpenAI API key is not configured");
+  }
+
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: `You are a business analyst specializing in company differentiation and unique value propositions. 
+          Generate 4-6 uniqueness categories for a company profile that highlight why partners should work with this company.
+          
+          Return a JSON array of categories with the following structure:
+          [
+            {
+              "title": "string (category name)",
+              "icon": "string (icon name from: Award, Globe2, DollarSign, TrendingUp, Rocket, Users, ShieldCheck, Zap)",
+              "description": "string (brief description)",
+              "score": "number (1-5 rating)",
+              "details": ["array of 4-5 specific benefits/features"]
+            }
+          ]
+          
+          Consider the company's industry, mission, values, and opportunities when generating relevant categories.
+          Make categories specific and compelling for potential partners.`,
+        },
+        {
+          role: "user",
+          content: `Generate uniqueness categories for company: ${profile.name}
+          Industry: ${profile.industry ?? 'N/A'}
+          Mission: ${profile.mission ?? 'N/A'}
+          Values: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}
+          Opportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}
+          Technology: ${(profile.technology?.stack ?? []).join(', ') || 'N/A'}`,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 1000,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error("No content received from OpenAI");
+    }
+
+    const categories = JSON.parse(content) as UniquenessCategory[];
+    return categories;
+  } catch (error) {
+    console.error("OpenAI API Error:", error);
+    throw new Error("Failed to generate uniqueness categories");
+  }
+}

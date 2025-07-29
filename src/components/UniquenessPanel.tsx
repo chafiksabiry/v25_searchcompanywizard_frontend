@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Globe2,
   TrendingUp,
@@ -13,7 +13,8 @@ import {
   Check,
   ArrowRight,
 } from "lucide-react";
-import type { CompanyProfile } from "../api/openai";
+import type { CompanyProfile, UniquenessCategory } from "../api/openai";
+import { generateUniquenessCategories } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
 import { LucideProps } from "lucide-react";
@@ -24,7 +25,7 @@ interface Props {
   
 }
 
-interface UniquenessCategory {
+interface LocalUniquenessCategory {
   title: string;
   icon: React.ComponentType<LucideProps>;
   description: string;
@@ -32,19 +33,60 @@ interface UniquenessCategory {
   details: string[];
 }
 
+// Icon mapping
+const iconMap: Record<string, React.ComponentType<LucideProps>> = {
+  Award,
+  Globe2,
+  DollarSign,
+  TrendingUp,
+  Rocket,
+  Users,
+  ShieldCheck,
+  Zap,
+};
+
 export function UniquenessPanel({ profile, onBack }: Props) {
   const [editMode, setEditMode] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [categories, setCategories] = useState<UniquenessCategory[]>(
-    getIndustrySpecificFeatures(profile.industry)
-  );
+  const [categories, setCategories] = useState<LocalUniquenessCategory[]>([]);
   const [showDifferentiators, setShowDifferentiators] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  function getIndustrySpecificFeatures(
-    industry?: string
-  ): UniquenessCategory[] {
-    const baseCategories: UniquenessCategory[] = [
+  useEffect(() => {
+    generateCategories();
+  }, [profile]);
+
+  const generateCategories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const aiCategories = await generateUniquenessCategories(profile);
+      
+      // Convert AI categories to local format with proper icons
+      const localCategories: LocalUniquenessCategory[] = aiCategories.map(category => ({
+        title: category.title,
+        icon: iconMap[category.icon] || Award, // Default to Award if icon not found
+        description: category.description,
+        score: category.score,
+        details: category.details,
+      }));
+      
+      setCategories(localCategories);
+    } catch (err) {
+      console.error("Error generating categories:", err);
+      setError("Failed to generate categories. Please try again.");
+      // Fallback to default categories
+      setCategories(getDefaultCategories());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  function getDefaultCategories(): LocalUniquenessCategory[] {
+    return [
       {
         title: "Brand Recognition",
         icon: Award,
@@ -95,54 +137,6 @@ export function UniquenessPanel({ profile, onBack }: Props) {
         ],
       },
     ];
-
-    // Add industry-specific categories
-    if (industry?.toLowerCase().includes("tech")) {
-      baseCategories.push({
-        title: "Innovation Leadership",
-        icon: Rocket,
-        description: "Cutting-edge technology and solutions",
-        score: 5,
-        details: [
-          "Latest technology products",
-          "Innovation-driven culture",
-          "High-demand solutions",
-          "Competitive advantage through tech",
-        ],
-      });
-    }
-
-    if (industry?.toLowerCase().includes("healthcare")) {
-      baseCategories.push({
-        title: "Social Impact",
-        icon: Users,
-        description: "Making a difference in healthcare",
-        score: 5,
-        details: [
-          "Improving patient care",
-          "Healthcare innovation",
-          "Growing healthcare market",
-          "Essential services",
-        ],
-      });
-    }
-
-    if (industry?.toLowerCase().includes("finance")) {
-      baseCategories.push({
-        title: "Market Stability",
-        icon: ShieldCheck,
-        description: "Secure and stable market position",
-        score: 5,
-        details: [
-          "Financial sector stability",
-          "Regulatory compliance",
-          "Established client base",
-          "Recurring revenue model",
-        ],
-      });
-    }
-
-    return baseCategories;
   }
 
   const handleEdit = (field: string, value: string) => {
@@ -267,6 +261,18 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               >
                 <Edit2 size={20} />
               </button>
+              <button
+                onClick={generateCategories}
+                disabled={loading}
+                className={`p-2 rounded-full transition-all duration-300 ${
+                  loading
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200"
+                }`}
+                title="Regenerate categories with AI"
+              >
+                <Zap size={20} />
+              </button>
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
                   {profile.name}
@@ -302,7 +308,27 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             </div>
           </section>
 
-          {/* Categories Grid */}
+                  {/* Categories Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Generating unique value propositions...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button
+                onClick={generateCategories}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        ) : (
           <div className="grid md:grid-cols-2 gap-8">
             {categories.map((category, index) => (
               <div
@@ -360,6 +386,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               </div>
             ))}
           </div>
+        )}
 
           {/* Call to Action */}
           {/**
