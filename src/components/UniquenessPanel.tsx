@@ -9,16 +9,14 @@ import {
   ShieldCheck,
   Zap,
   ChevronLeft,
-  Edit2,
-  Check,
   ArrowRight,
   Loader2,
+  RefreshCw,
+  ChevronDown,
 } from "lucide-react";
 import type { CompanyProfile, UniquenessCategory } from "../api/openai";
-import { generateUniquenessCategories } from "../api/openai";
+import { generateAllUniquenessContent, generateCompanyIntro, generateUniquenessCategories } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
-
-import { LucideProps } from "lucide-react";
 
 interface Props {
   profile: CompanyProfile;
@@ -26,29 +24,70 @@ interface Props {
 }
 
 export function UniquenessPanel({ profile, onBack }: Props) {
-  const [editMode, setEditMode] = useState(false);
-  const [editingField, setEditingField] = useState<string | null>(null);
-  const [tempValue, setTempValue] = useState("");
   const [categories, setCategories] = useState<UniquenessCategory[]>([]);
+  const [companyIntro, setCompanyIntro] = useState("");
   const [showDifferentiators, setShowDifferentiators] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showRegenerateMenu, setShowRegenerateMenu] = useState(false);
 
-  // Generate categories when component mounts
+  // Generate all content when component mounts
   useEffect(() => {
-    generateCategories();
+    generateAllContent();
   }, [profile]);
 
-  const generateCategories = async () => {
+  const generateAllContent = async () => {
     setIsGenerating(true);
     try {
-      const generatedCategories = await generateUniquenessCategories(profile);
-      setCategories(generatedCategories);
+      const { companyIntro: intro, categories: cats } = await generateAllUniquenessContent(profile);
+      setCompanyIntro(intro);
+      setCategories(cats);
     } catch (error) {
-      console.error("Failed to generate categories:", error);
-      // Fallback to default categories if AI generation fails
+      console.error("Failed to generate content:", error);
+      // Fallback to default content if AI generation fails
+      setCompanyIntro("Join our dynamic team and be part of an innovative company that values growth, collaboration, and excellence. We offer competitive opportunities in a supportive environment where your skills and ambitions can thrive.");
       setCategories(getIndustrySpecificFeatures(profile.industry));
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const regenerateIntro = async () => {
+    setIsGenerating(true);
+    try {
+      const intro = await generateCompanyIntro(profile);
+      setCompanyIntro(intro);
+    } catch (error) {
+      console.error("Failed to regenerate intro:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const regenerateCategories = async () => {
+    setIsGenerating(true);
+    try {
+      const cats = await generateUniquenessCategories(profile);
+      setCategories(cats);
+    } catch (error) {
+      console.error("Failed to regenerate categories:", error);
+      setCategories(getIndustrySpecificFeatures(profile.industry));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleRegenerate = (type: 'all' | 'intro' | 'categories') => {
+    setShowRegenerateMenu(false);
+    switch (type) {
+      case 'all':
+        generateAllContent();
+        break;
+      case 'intro':
+        regenerateIntro();
+        break;
+      case 'categories':
+        regenerateCategories();
+        break;
     }
   };
 
@@ -156,94 +195,6 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     return baseCategories;
   }
 
-  const handleEdit = (field: string, value: string) => {
-    setEditingField(field);
-    setTempValue(value);
-  };
-
-  const handleSave = (field: string) => {
-    const [categoryIndex, fieldType, detailIndex] = field.split(".");
-    const newCategories = [...categories];
-    const category = newCategories[parseInt(categoryIndex)];
-
-    if (fieldType === "title") {
-      category.title = tempValue;
-    } else if (fieldType === "description") {
-      category.description = tempValue;
-    } else if (fieldType === "details") {
-      category.details[parseInt(detailIndex)] = tempValue;
-    }
-
-    setCategories(newCategories);
-    setEditingField(null);
-  };
-
-  const EditableField = ({
-    value,
-    field,
-    icon: Icon,
-    type = "text",
-    className = "",
-  }: {
-    value: string;
-    field: string;
-    icon?: React.ComponentType<LucideProps>;
-    type?: string;
-    className?: string;
-  }) => {
-    // Champs multi-lignes : description, details et companyIntro
-    const isMultiline = field === 'companyIntro' || field.endsWith('.description') || field.includes('.details.');
-    return (
-      <div className={`group relative ${className}`}>
-        {editingField === field ? (
-          <div className="flex items-center gap-2 w-full">
-            {isMultiline ? (
-              <textarea
-                value={tempValue}
-                onChange={(e) => setTempValue(e.target.value)}
-                className="w-full min-h-16 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
-                onKeyDown={(e) => {
-                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
-                }}
-                autoFocus
-                onBlur={() => handleSave(field)}
-              />
-            ) : (
-              <input
-                type={type}
-                value={tempValue}
-                onChange={(e) => setTempValue(e.target.value)}
-                className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
-                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
-                autoFocus
-                onBlur={() => handleSave(field)}
-              />
-            )}
-            <button
-              onClick={() => handleSave(field)}
-              className="p-1 text-green-600 hover:text-green-700"
-            >
-              <Check size={16} />
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            {Icon && <Icon size={18} className="text-gray-600" />}
-            <span>{value}</span>
-            {editMode && (
-              <button
-                onClick={() => handleEdit(field, value)}
-                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
-              >
-                <Edit2 size={14} />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   if (showDifferentiators) {
     return (
       <DifferentiatorsPanel
@@ -267,28 +218,56 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               <span>Back to Profile</span>
             </button>
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => setEditMode(!editMode)}
-                className={`p-2 rounded-full transition-all duration-300 ${
-                  editMode
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
-              >
-                <Edit2 size={20} />
-              </button>
-              <button
-                onClick={generateCategories}
-                disabled={isGenerating}
-                className={`p-2 rounded-full transition-all duration-300 ${
-                  isGenerating
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-                title="Regenerate categories with AI"
-              >
-                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
-              </button>
+              {/* Regenerate Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowRegenerateMenu(!showRegenerateMenu)}
+                  disabled={isGenerating}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isGenerating
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                  title="Regenerate content with AI"
+                >
+                  {isGenerating ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <RefreshCw size={16} />
+                  )}
+                  <span>Regenerate</span>
+                  <ChevronDown size={14} />
+                </button>
+                
+                {showRegenerateMenu && !isGenerating && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                    <div className="py-1">
+                      <button
+                        onClick={() => handleRegenerate('all')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Zap size={14} />
+                        Regenerate All
+                      </button>
+                      <button
+                        onClick={() => handleRegenerate('intro')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <RefreshCw size={14} />
+                        Regenerate Intro
+                      </button>
+                      <button
+                        onClick={() => handleRegenerate('categories')}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      >
+                        <Award size={14} />
+                        Regenerate Categories
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
                   {profile.name}
@@ -315,11 +294,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             </h2>
             <div className="flex justify-center">
               <div className="w-full">
-                <EditableField
-                  value={profile.companyIntro || "Loading..."}
-                  field="companyIntro"
-                  className="text-lg text-gray-600 leading-relaxed"
-                />
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  {companyIntro || "Loading..."}
+                </p>
               </div>
             </div>
           </section>
@@ -345,11 +322,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <EditableField
-                          value={category.title}
-                          field={`${index}.title`}
-                          className="text-xl font-bold text-gray-900"
-                        />
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {category.title}
+                        </h3>
                         <div className="flex gap-0.5">
                           {[...Array(5)].map((_, i) => (
                             <div
@@ -363,11 +338,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                           ))}
                         </div>
                       </div>
-                      <EditableField
-                        value={category.description}
-                        field={`${index}.description`}
-                        className="text-gray-600 mb-4"
-                      />
+                      <p className="text-gray-600 mb-4">
+                        {category.description}
+                      </p>
                       <ul className="space-y-2">
                         {category.details.map((detail, i) => (
                           <li
@@ -378,10 +351,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                               size={14}
                               className="text-indigo-500 flex-shrink-0"
                             />
-                            <EditableField
-                              value={detail}
-                              field={`${index}.details.${i}`}
-                            />
+                            <span>{detail}</span>
                           </li>
                         ))}
                       </ul>
