@@ -1,5 +1,15 @@
 import OpenAI from "openai";
 import Cookies from "js-cookie"; // 👈 Import Cookies
+import {
+  Award,
+  Globe2,
+  DollarSign,
+  TrendingUp,
+  Rocket,
+  Users,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
@@ -291,4 +301,127 @@ export async function generateCompanyIntro(profile: CompanyProfile): Promise<str
     console.error("OpenAI API Error:", error);
     return "Error generating text";
   }
+}
+
+export async function generateUniquenessCategories(profile: CompanyProfile): Promise<UniquenessCategory[]> {
+  if (!apiKey) {
+    throw new Error("OpenAI API key is not configured");
+  }
+
+  const prompt = `Generate 4-6 uniqueness categories for a company profile page. Based on this company information:
+
+Company: ${profile.name}
+Industry: ${profile.industry ?? 'N/A'}
+Mission: ${profile.mission ?? 'N/A'}
+Overview: ${profile.overview ?? 'N/A'}
+Values: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}
+Benefits: ${(profile.culture?.benefits ?? []).join(', ') || 'N/A'}
+Opportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}
+
+Generate categories that highlight why someone should partner with this company. Each category should include:
+- title: A compelling category name
+- description: Brief description of the category
+- score: A number from 1-5 representing the strength
+- details: An array of 3-5 specific benefits or features
+
+Available icons: Award, Globe2, DollarSign, TrendingUp, Rocket, Users, ShieldCheck, Zap
+
+Return the response as a valid JSON object with this exact structure:
+{
+  "categories": [
+    {
+      "title": "string",
+      "icon": "iconName",
+      "description": "string", 
+      "score": number,
+      "details": ["string", "string", "string"]
+    }
+  ]
+}
+
+Make the categories relevant to the company's industry and strengths. Focus on what makes this company unique and attractive to potential partners.`;
+
+  try {
+    const openai = new OpenAI({
+      apiKey,
+      dangerouslyAllowBrowser: true,
+    });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo-1106",
+      response_format: { type: "json_object" },
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 800,
+      temperature: 0.7,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error("No content received from OpenAI");
+    }
+
+    console.log('[OpenAI Categories Response]', content);
+    
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(content);
+    } catch (parseError) {
+      console.error("Failed to parse OpenAI response:", parseError);
+      console.error("Raw content:", content);
+      throw new Error("Invalid JSON response from OpenAI");
+    }
+    
+    // Handle both array and object responses
+    let categoriesArray: any[];
+    if (Array.isArray(parsedResponse)) {
+      categoriesArray = parsedResponse;
+    } else if (parsedResponse.categories && Array.isArray(parsedResponse.categories)) {
+      categoriesArray = parsedResponse.categories;
+    } else if (parsedResponse.data && Array.isArray(parsedResponse.data)) {
+      categoriesArray = parsedResponse.data;
+    } else {
+      console.error("Unexpected response format:", parsedResponse);
+      throw new Error("Invalid response format from OpenAI");
+    }
+    
+    // Map icon names to actual icon components
+    const iconMap: { [key: string]: any } = {
+      Award: Award,
+      Globe2: Globe2,
+      DollarSign: DollarSign,
+      TrendingUp: TrendingUp,
+      Rocket: Rocket,
+      Users: Users,
+      ShieldCheck: ShieldCheck,
+      Zap: Zap,
+    };
+
+    return categoriesArray.map((category: any, index: number) => {
+      // Validate required fields
+      if (!category.title || !category.description || !category.details || !Array.isArray(category.details)) {
+        console.error(`Invalid category at index ${index}:`, category);
+        throw new Error(`Invalid category structure at index ${index}`);
+      }
+      
+      return {
+        title: category.title,
+        description: category.description,
+        score: typeof category.score === 'number' ? category.score : 4,
+        details: category.details,
+        icon: iconMap[category.icon] || Award, // Default to Award if icon not found
+      };
+    });
+  } catch (error) {
+    console.error("OpenAI API Error:", error);
+    throw new Error("Failed to generate uniqueness categories");
+  }
+}
+
+// Add the UniquenessCategory interface
+export interface UniquenessCategory {
+  title: string;
+  icon: React.ComponentType<any>;
+  description: string;
+  score: number;
+  details: string[];
 }
