@@ -1,5 +1,15 @@
 import OpenAI from "openai";
 import Cookies from "js-cookie"; // 👈 Import Cookies
+import {
+  Award,
+  Globe2,
+  DollarSign,
+  TrendingUp,
+  Rocket,
+  Users,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 
 const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
@@ -293,18 +303,41 @@ export async function generateCompanyIntro(profile: CompanyProfile): Promise<str
   }
 }
 
-export interface UniquenessCategory {
-  title: string;
-  icon: string; // Icon name as string
-  description: string;
-  score: number;
-  details: string[];
-}
-
 export async function generateUniquenessCategories(profile: CompanyProfile): Promise<UniquenessCategory[]> {
   if (!apiKey) {
     throw new Error("OpenAI API key is not configured");
   }
+
+  const prompt = `Generate 4-6 uniqueness categories for a company profile page. Based on this company information:
+
+Company: ${profile.name}
+Industry: ${profile.industry ?? 'N/A'}
+Mission: ${profile.mission ?? 'N/A'}
+Overview: ${profile.overview ?? 'N/A'}
+Values: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}
+Benefits: ${(profile.culture?.benefits ?? []).join(', ') || 'N/A'}
+Opportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}
+
+Generate categories that highlight why someone should partner with this company. Each category should include:
+- title: A compelling category name
+- description: Brief description of the category
+- score: A number from 1-5 representing the strength
+- details: An array of 3-5 specific benefits or features
+
+Available icons: Award, Globe2, DollarSign, TrendingUp, Rocket, Users, ShieldCheck, Zap
+
+Return the response as a valid JSON array with this exact structure:
+[
+  {
+    "title": "string",
+    "icon": "iconName",
+    "description": "string", 
+    "score": number,
+    "details": ["string", "string", "string"]
+  }
+]
+
+Make the categories relevant to the company's industry and strengths. Focus on what makes this company unique and attractive to potential partners.`;
 
   try {
     const openai = new OpenAI({
@@ -315,38 +348,9 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
       response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: `You are a business analyst specializing in company differentiation and unique value propositions. 
-          Generate 4-6 uniqueness categories for a company profile that highlight why partners should work with this company.
-          
-          Return a JSON array of categories with the following structure:
-          [
-            {
-              "title": "string (category name)",
-              "icon": "string (icon name from: Award, Globe2, DollarSign, TrendingUp, Rocket, Users, ShieldCheck, Zap)",
-              "description": "string (brief description)",
-              "score": "number (1-5 rating)",
-              "details": ["array of 4-5 specific benefits/features"]
-            }
-          ]
-          
-          Consider the company's industry, mission, values, and opportunities when generating relevant categories.
-          Make categories specific and compelling for potential partners.`,
-        },
-        {
-          role: "user",
-          content: `Generate uniqueness categories for company: ${profile.name}
-          Industry: ${profile.industry ?? 'N/A'}
-          Mission: ${profile.mission ?? 'N/A'}
-          Values: ${(profile.culture?.values ?? []).join(', ') || 'N/A'}
-          Opportunities: ${(profile.opportunities?.roles ?? []).join(', ') || 'N/A'}
-          Technology: ${(profile.technology?.stack ?? []).join(', ') || 'N/A'}`,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 800,
       temperature: 0.7,
-      max_tokens: 1000,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -354,10 +358,35 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
       throw new Error("No content received from OpenAI");
     }
 
-    const categories = JSON.parse(content) as UniquenessCategory[];
-    return categories;
+    const parsedCategories = JSON.parse(content);
+    
+    // Map icon names to actual icon components
+    const iconMap: { [key: string]: any } = {
+      Award: Award,
+      Globe2: Globe2,
+      DollarSign: DollarSign,
+      TrendingUp: TrendingUp,
+      Rocket: Rocket,
+      Users: Users,
+      ShieldCheck: ShieldCheck,
+      Zap: Zap,
+    };
+
+    return parsedCategories.map((category: any) => ({
+      ...category,
+      icon: iconMap[category.icon] || Award, // Default to Award if icon not found
+    }));
   } catch (error) {
     console.error("OpenAI API Error:", error);
     throw new Error("Failed to generate uniqueness categories");
   }
+}
+
+// Add the UniquenessCategory interface
+export interface UniquenessCategory {
+  title: string;
+  icon: React.ComponentType<any>;
+  description: string;
+  score: number;
+  details: string[];
 }

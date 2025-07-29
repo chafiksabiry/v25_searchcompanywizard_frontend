@@ -12,8 +12,9 @@ import {
   Edit2,
   Check,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
-import type { CompanyProfile } from "../api/openai";
+import type { CompanyProfile, UniquenessCategory } from "../api/openai";
 import { generateUniquenessCategories } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
@@ -22,71 +23,39 @@ import { LucideProps } from "lucide-react";
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
-  
 }
-
-interface LocalUniquenessCategory {
-  title: string;
-  icon: React.ComponentType<LucideProps>;
-  description: string;
-  score: number;
-  details: string[];
-}
-
-// Icon mapping
-const iconMap: Record<string, React.ComponentType<LucideProps>> = {
-  Award,
-  Globe2,
-  DollarSign,
-  TrendingUp,
-  Rocket,
-  Users,
-  ShieldCheck,
-  Zap,
-};
 
 export function UniquenessPanel({ profile, onBack }: Props) {
   const [editMode, setEditMode] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [categories, setCategories] = useState<LocalUniquenessCategory[]>([]);
+  const [categories, setCategories] = useState<UniquenessCategory[]>([]);
   const [showDifferentiators, setShowDifferentiators] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
+  // Generate categories when component mounts
   useEffect(() => {
     generateCategories();
   }, [profile]);
 
   const generateCategories = async () => {
+    setIsGenerating(true);
     try {
-      setLoading(true);
-      setError(null);
-      
-      const aiCategories = await generateUniquenessCategories(profile);
-      
-      // Convert AI categories to local format with proper icons
-      const localCategories: LocalUniquenessCategory[] = aiCategories.map(category => ({
-        title: category.title,
-        icon: iconMap[category.icon] || Award, // Default to Award if icon not found
-        description: category.description,
-        score: category.score,
-        details: category.details,
-      }));
-      
-      setCategories(localCategories);
-    } catch (err) {
-      console.error("Error generating categories:", err);
-      setError("Failed to generate categories. Please try again.");
-      // Fallback to default categories
-      setCategories(getDefaultCategories());
+      const generatedCategories = await generateUniquenessCategories(profile);
+      setCategories(generatedCategories);
+    } catch (error) {
+      console.error("Failed to generate categories:", error);
+      // Fallback to default categories if AI generation fails
+      setCategories(getIndustrySpecificFeatures(profile.industry));
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  function getDefaultCategories(): LocalUniquenessCategory[] {
-    return [
+  function getIndustrySpecificFeatures(
+    industry?: string
+  ): UniquenessCategory[] {
+    const baseCategories: UniquenessCategory[] = [
       {
         title: "Brand Recognition",
         icon: Award,
@@ -137,6 +106,54 @@ export function UniquenessPanel({ profile, onBack }: Props) {
         ],
       },
     ];
+
+    // Add industry-specific categories
+    if (industry?.toLowerCase().includes("tech")) {
+      baseCategories.push({
+        title: "Innovation Leadership",
+        icon: Rocket,
+        description: "Cutting-edge technology and solutions",
+        score: 5,
+        details: [
+          "Latest technology products",
+          "Innovation-driven culture",
+          "High-demand solutions",
+          "Competitive advantage through tech",
+        ],
+      });
+    }
+
+    if (industry?.toLowerCase().includes("healthcare")) {
+      baseCategories.push({
+        title: "Social Impact",
+        icon: Users,
+        description: "Making a difference in healthcare",
+        score: 5,
+        details: [
+          "Improving patient care",
+          "Healthcare innovation",
+          "Growing healthcare market",
+          "Essential services",
+        ],
+      });
+    }
+
+    if (industry?.toLowerCase().includes("finance")) {
+      baseCategories.push({
+        title: "Market Stability",
+        icon: ShieldCheck,
+        description: "Secure and stable market position",
+        score: 5,
+        details: [
+          "Financial sector stability",
+          "Regulatory compliance",
+          "Established client base",
+          "Recurring revenue model",
+        ],
+      });
+    }
+
+    return baseCategories;
   }
 
   const handleEdit = (field: string, value: string) => {
@@ -232,7 +249,6 @@ export function UniquenessPanel({ profile, onBack }: Props) {
       <DifferentiatorsPanel
         profile={profile}
         onBack={() => setShowDifferentiators(false)}
-        //onComplete={onBack}
       />
     );
   }
@@ -263,15 +279,15 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               </button>
               <button
                 onClick={generateCategories}
-                disabled={loading}
+                disabled={isGenerating}
                 className={`p-2 rounded-full transition-all duration-300 ${
-                  loading
+                  isGenerating
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-200"
+                    : "bg-blue-500 text-white hover:bg-blue-600"
                 }`}
                 title="Regenerate categories with AI"
               >
-                <Zap size={20} />
+                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Zap size={20} />}
               </button>
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
@@ -308,101 +324,73 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             </div>
           </section>
 
-                  {/* Categories Grid */}
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-              <p className="text-gray-600">Generating unique value propositions...</p>
+          {/* Categories Grid */}
+          {isGenerating ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="animate-spin mx-auto mb-4 text-indigo-600" size={32} />
+                <p className="text-gray-600">Generating unique features for {profile.name}...</p>
+              </div>
             </div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
-              <p className="text-red-600 mb-4">{error}</p>
-              <button
-                onClick={generateCategories}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-8">
-            {categories.map((category, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <category.icon className="text-indigo-600" size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <EditableField
-                        value={category.title}
-                        field={`${index}.title`}
-                        className="text-xl font-bold text-gray-900"
-                      />
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={`w-2 h-2 rounded-full ${
-                              i < category.score
-                                ? "bg-indigo-500"
-                                : "bg-gray-200"
-                            }`}
-                          />
-                        ))}
-                      </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              {categories.map((category, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                      <category.icon className="text-indigo-600" size={24} />
                     </div>
-                    <EditableField
-                      value={category.description}
-                      field={`${index}.description`}
-                      className="text-gray-600 mb-4"
-                    />
-                    <ul className="space-y-2">
-                      {category.details.map((detail, i) => (
-                        <li
-                          key={i}
-                          className="flex items-center gap-2 text-gray-700"
-                        >
-                          <Zap
-                            size={14}
-                            className="text-indigo-500 flex-shrink-0"
-                          />
-                          <EditableField
-                            value={detail}
-                            field={`${index}.details.${i}`}
-                          />
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <EditableField
+                          value={category.title}
+                          field={`${index}.title`}
+                          className="text-xl font-bold text-gray-900"
+                        />
+                        <div className="flex gap-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`w-2 h-2 rounded-full ${
+                                i < category.score
+                                  ? "bg-indigo-500"
+                                  : "bg-gray-200"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <EditableField
+                        value={category.description}
+                        field={`${index}.description`}
+                        className="text-gray-600 mb-4"
+                      />
+                      <ul className="space-y-2">
+                        {category.details.map((detail, i) => (
+                          <li
+                            key={i}
+                            className="flex items-center gap-2 text-gray-700"
+                          >
+                            <Zap
+                              size={14}
+                              className="text-indigo-500 flex-shrink-0"
+                            />
+                            <EditableField
+                              value={detail}
+                              field={`${index}.details.${i}`}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-          {/* Call to Action */}
-          {/**
-          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-12 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Ready to Explore Opportunities?
-            </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Discover exciting gigs and partnership opportunities with {profile.name}. Browse our available opportunities and find the perfect match for your skills and interests.
-            </p>
-            <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
-              <Search size={18} />
-              Browse Available Gigs
-            </button>
-          </div>
-          */}
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
