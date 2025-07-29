@@ -142,8 +142,9 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-auto">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+    <div className="fixed inset-0 bg-white z-50">
+      <div className="h-full overflow-y-auto">
+        <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="flex flex-col items-center justify-center mb-12">
           <div className="w-full flex items-center justify-between mb-6">
@@ -291,6 +292,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               ))}
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>
