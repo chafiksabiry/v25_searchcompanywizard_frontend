@@ -13,7 +13,7 @@ import {
   Check,
   ArrowRight,
 } from "lucide-react";
-import type { CompanyProfile, UniquenessCategory } from "../api/openai";
+import type { CompanyProfile } from "../api/openai";
 import { generateUniquenessCategories } from "../api/openai";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
