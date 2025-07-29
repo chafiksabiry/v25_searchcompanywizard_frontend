@@ -6,6 +6,7 @@ import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
+import harxLogo from './assets/harx-blanc.jpg';
 
 
 function App() {
@@ -84,6 +85,11 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
       <div className="max-w-4xl mx-auto pt-12">
         <div className="text-center mb-8">
+          <img 
+            src={harxLogo} 
+            alt="Harx Logo" 
+            className="mx-auto mb-6 h-16 w-auto"
+          />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Company Profile Search</h1>
           <p className="text-lg text-gray-600">
             Search for companies and generate detailed profiles with unique insights
