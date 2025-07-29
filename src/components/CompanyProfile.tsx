@@ -732,7 +732,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     </div>
                   </div>
 
-                  {profile.mission && (
+                  {/* {profile.mission && (
                     <div className="ml-18 p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-white rounded-2xl border border-indigo-100/50 shadow-sm">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center">
@@ -750,13 +750,12 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </section>
 
               {/* Culture & Benefits Grid */}
-              <div className="grid md:grid-cols-2 gap-10">
-                {/* Culture Section */}
+              {/* <div className="grid md:grid-cols-2 gap-10">
                 <section className="space-y-8">
                   <div className="flex items-start gap-6">
                     <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
@@ -781,7 +780,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                   </div>
                 </section>
 
-                {/* Benefits Section */}
                 <section className="space-y-8">
                   <div className="flex items-start gap-6">
                     <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -805,10 +803,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     </div>
                   </div>
                 </section>
-              </div>
+              </div> */}
 
               {/* Work Environment */}
-              <section className="bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-2xl p-8 border border-gray-100/50 shadow-sm">
+              {/* <section className="bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-2xl p-8 border border-gray-100/50 shadow-sm">
                 <div className="flex items-start gap-6">
                   <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center flex-shrink-0">
                     <Users className="text-purple-600" size={24} />
@@ -824,10 +822,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     />
                   </div>
                 </div>
-              </section>
+              </section> */}
 
               {/* Career Growth */}
-              <section className="space-y-8">
+              {/* <section className="space-y-8">
                 <div className="flex items-start gap-6">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
                     <Rocket className="text-blue-600" size={24} />
@@ -881,10 +879,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
 
               {/* Technology Stack */}
-              <section className="space-y-8">
+              {/* <section className="space-y-8">
                 <div className="flex items-start gap-6">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
                     <Code className="text-emerald-600" size={24} />
@@ -922,7 +920,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     </div>
                   </div>
                 </div>
-              </section>
+              </section> */}
             </div>
           </div>
         </div>
