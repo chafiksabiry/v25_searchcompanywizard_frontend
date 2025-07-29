@@ -417,13 +417,7 @@ Make the categories relevant to the company's industry and strengths. Focus on w
   }
 }
 
-/**
- * Génère tout le contenu d'unicité en une seule requête OpenAI
- * Cette fonction optimise les appels API en générant companyIntro et categories simultanément
- * 
- * @param profile - Le profil de l'entreprise contenant toutes les informations
- * @returns Promise contenant companyIntro et categories générés
- */
+// Nouvelle fonction qui génère tout en une fois
 export async function generateAllUniquenessContent(profile: CompanyProfile): Promise<{
   companyIntro: string;
   categories: UniquenessCategory[];
@@ -432,7 +426,6 @@ export async function generateAllUniquenessContent(profile: CompanyProfile): Pro
     throw new Error("OpenAI API key is not configured");
   }
 
-  // Prompt optimisé pour générer les deux éléments en une fois
   const prompt = `Generate complete uniqueness content for a company profile page. Based on this company information:
 
 Company: ${profile.name}
@@ -477,12 +470,11 @@ Make everything relevant to the company's industry and strengths. Focus on what 
       dangerouslyAllowBrowser: true,
     });
 
-    // Appel API avec format JSON pour faciliter le parsing
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-1106",
       response_format: { type: "json_object" },
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1200, // Augmenté pour accommoder les deux éléments
+      max_tokens: 1200,
       temperature: 0.7,
     });
 
@@ -493,7 +485,6 @@ Make everything relevant to the company's industry and strengths. Focus on what 
 
     console.log('[OpenAI All Content Response]', content);
     
-    // Parsing et validation de la réponse JSON
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(content);
@@ -503,13 +494,13 @@ Make everything relevant to the company's industry and strengths. Focus on what 
       throw new Error("Invalid JSON response from OpenAI");
     }
     
-    // Validation de la structure de la réponse
+    // Validate response structure
     if (!parsedResponse.companyIntro || !parsedResponse.categories || !Array.isArray(parsedResponse.categories)) {
       console.error("Invalid response structure:", parsedResponse);
       throw new Error("Invalid response structure from OpenAI");
     }
     
-    // Mapping des noms d'icônes vers les composants Lucide
+    // Map icon names to actual icon components
     const iconMap: { [key: string]: any } = {
       Award: Award,
       Globe2: Globe2,
@@ -521,9 +512,8 @@ Make everything relevant to the company's industry and strengths. Focus on what 
       Zap: Zap,
     };
 
-    // Traitement et validation des catégories
     const categories = parsedResponse.categories.map((category: any, index: number) => {
-      // Validation des champs requis pour chaque catégorie
+      // Validate required fields
       if (!category.title || !category.description || !category.details || !Array.isArray(category.details)) {
         console.error(`Invalid category at index ${index}:`, category);
         throw new Error(`Invalid category structure at index ${index}`);
@@ -532,9 +522,9 @@ Make everything relevant to the company's industry and strengths. Focus on what 
       return {
         title: category.title,
         description: category.description,
-        score: typeof category.score === 'number' ? category.score : 4, // Score par défaut si manquant
+        score: typeof category.score === 'number' ? category.score : 4,
         details: category.details,
-        icon: iconMap[category.icon] || Award, // Icône par défaut si non trouvée
+        icon: iconMap[category.icon] || Award, // Default to Award if icon not found
       };
     });
 
