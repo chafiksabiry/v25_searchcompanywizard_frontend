@@ -335,21 +335,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               <ArrowLeft size={20} />
               <span className="font-medium">Back to Search</span>
             </button>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <div className="text-right">
                 <h1 className="text-xl font-bold text-gray-900">{profile.name}</h1>
                 <p className="text-sm text-gray-500">{profile.industry}</p>
               </div>
-              
-              {/* Discover Button - Top Right */}
-              <button
-                onClick={() => setShowUniquenessPanel(true)}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                <Trophy size={18} />
-                <span>Discover What Makes Us Unique</span>
-                <ArrowRight size={16} />
-              </button>
             </div>
           </div>
         </div>
@@ -368,75 +358,88 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
          </div>
         
         <div className="relative w-full px-6 py-8">
-          <div className="flex items-start gap-8">
-            {/* Logo Column */}
-            <div className="flex-shrink-0">
-              <div 
-                className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
-                onClick={() => setShowLogoEditor(true)}
-              >
-                {getLogoUrl() ? (
-                  <img
-                    src={getLogoUrl()!}
-                    alt={profile.name}
-                    className="w-full h-full object-contain rounded-lg"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <Building2 className="w-12 h-12 text-white" />
-                )}
-                
-                {/* Edit overlay */}
-                <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">Edit Logo</span>
+          <div className="flex items-start justify-between gap-8">
+            {/* Left Content */}
+            <div className="flex items-start gap-8">
+              {/* Logo Column */}
+              <div className="flex-shrink-0">
+                <div 
+                  className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
+                  onClick={() => setShowLogoEditor(true)}
+                >
+                  {getLogoUrl() ? (
+                    <img
+                      src={getLogoUrl()!}
+                      alt={profile.name}
+                      className="w-full h-full object-contain rounded-lg"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <Building2 className="w-12 h-12 text-white" />
+                  )}
+                  
+                  {/* Edit overlay */}
+                  <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white text-xs font-medium">Edit Logo</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Info Column */}
+              <div className="flex-1 text-white">
+                <EditableText
+                  value={profile.name}
+                  field="name"
+                  className="text-4xl font-bold mb-4 text-white block w-full"
+                  placeholder="Company Name"
+                  multiline={false}
+                />
+                <div className="flex flex-wrap gap-2 text-white/90">
+                  <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                    <Factory size={14} />
+                    <EditableText
+                      value={profile.industry || ''}
+                      field="industry"
+                      className="text-white/90 text-sm"
+                      placeholder="Industry"
+                      multiline={false}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                    <Calendar size={14} />
+                    <span>Founded </span>
+                    <EditableText
+                      value={profile.founded || ''}
+                      field="founded"
+                      className="text-white/90 text-sm"
+                      placeholder="Year"
+                      multiline={false}
+                    />
+                  </div>
+                  <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                    <MapPin size={14} />
+                    <EditableText
+                      value={profile.headquarters || ''}
+                      field="headquarters"
+                      className="text-white/90 text-sm"
+                      placeholder="Headquarters"
+                      multiline={false}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Company Info Column */}
-            <div className="flex-1 text-white">
-              <EditableText
-                value={profile.name}
-                field="name"
-                className="text-4xl font-bold mb-4 text-white block w-full"
-                placeholder="Company Name"
-                multiline={false}
-              />
-              <div className="flex flex-wrap gap-2 text-white/90">
-                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                  <Factory size={14} />
-                  <EditableText
-                    value={profile.industry || ''}
-                    field="industry"
-                    className="text-white/90 text-sm"
-                    placeholder="Industry"
-                    multiline={false}
-                  />
-                </div>
-                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                  <Calendar size={14} />
-                  <span>Founded </span>
-                  <EditableText
-                    value={profile.founded || ''}
-                    field="founded"
-                    className="text-white/90 text-sm"
-                    placeholder="Year"
-                    multiline={false}
-                  />
-                </div>
-                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                  <MapPin size={14} />
-                  <EditableText
-                    value={profile.headquarters || ''}
-                    field="headquarters"
-                    className="text-white/90 text-sm"
-                    placeholder="Headquarters"
-                    multiline={false}
-                  />
-                </div>
-              </div>
+            {/* Right Button */}
+            <div className="flex-shrink-0">
+              <button
+                onClick={() => setShowUniquenessPanel(true)}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <Trophy size={20} />
+              </button>
             </div>
 
           </div>
