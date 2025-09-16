@@ -165,13 +165,16 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     const isEditing = editingField === field;
 
     if (isEditing) {
+      // Create base classes while preserving original styling
+      const baseEditingClasses = "border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900";
+      
       return multiline ? (
         <textarea
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className="min-h-[100px] w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900 resize-y text-base font-normal"
+          className={`${className} ${baseEditingClasses} min-h-[100px] w-full px-3 py-2 resize-y`}
           placeholder={placeholder}
           autoFocus
         />
@@ -182,17 +185,44 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className="w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900 text-base font-normal"
+          className={`${className} ${baseEditingClasses} w-full px-3 py-2`}
           placeholder={placeholder}
           autoFocus
         />
       );
     }
 
+    // Check if this field contains a URL (website or email)
+    const isClickableField = field.includes('website') || field.includes('email');
+    const isUrl = value && (value.startsWith('http') || value.startsWith('mailto:') || value.includes('@'));
+    
+    if (isClickableField && isUrl && !editingField) {
+      // Render as clickable link for website/email fields
+      const href = field.includes('email') && !value.startsWith('mailto:') ? `mailto:${value}` : value;
+      
+      return (
+        <a
+          href={href}
+          target={field.includes('website') ? '_blank' : undefined}
+          rel={field.includes('website') ? 'noopener noreferrer' : undefined}
+          onDoubleClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFieldClick(field, value);
+          }}
+          className={`${className} hover:text-indigo-600 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 min-h-[2rem] flex items-center underline cursor-pointer`}
+          title="Single click to visit, double click to edit"
+        >
+          {value}
+        </a>
+      );
+    }
+
     return (
       <div
-        onClick={() => handleFieldClick(field, value)}
+        onDoubleClick={() => handleFieldClick(field, value)}
         className={`${className} cursor-pointer hover:bg-indigo-50 hover:text-indigo-900 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 ${!value ? 'text-gray-400 italic' : ''} min-h-[2rem] flex items-center`}
+        title="Double click to edit"
       >
         {value || placeholder}
       </div>
