@@ -267,13 +267,18 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       );
     }
 
-    // Check if this field contains a URL (website or email)
-    const isClickableField = field.includes('website') || field.includes('email');
-    const isUrl = value && (value.startsWith('http') || value.startsWith('mailto:') || value.includes('@'));
+    // Check if this field contains a URL (website, email, or phone)
+    const isClickableField = field.includes('website') || field.includes('email') || field.includes('phone');
+    const isUrl = value && (value.startsWith('http') || value.startsWith('mailto:') || value.includes('@') || value.startsWith('tel:'));
     
     if (isClickableField && isUrl && !editingField) {
-      // Render as clickable link for website/email fields
-      const href = field.includes('email') && !value.startsWith('mailto:') ? `mailto:${value}` : value;
+      // Render as clickable link for website/email/phone fields
+      let href = value;
+      if (field.includes('email') && !value.startsWith('mailto:')) {
+        href = `mailto:${value}`;
+      } else if (field.includes('phone') && !value.startsWith('tel:')) {
+        href = `tel:${value}`;
+      }
       
       return (
         <a
@@ -285,7 +290,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             e.stopPropagation();
             handleFieldClick(field, value);
           }}
-          className={`${className} hover:text-indigo-600 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 min-h-[2rem] flex items-center underline cursor-pointer`}
+          className={`${className} rounded-lg px-3 py-2 border border-transparent min-h-[2rem] flex items-center underline cursor-pointer`}
           title="Single click to visit, double click to edit"
         >
           {value}
@@ -295,9 +300,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
     return (
       <div
-        onDoubleClick={() => handleFieldClick(field, value)}
-        className={`${className} cursor-pointer hover:bg-indigo-50 hover:text-indigo-900 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 ${!value ? 'text-gray-400 italic' : ''} min-h-[2rem] flex items-center`}
-        title="Double click to edit"
+        onClick={() => handleFieldClick(field, value)}
+        className={`${className} cursor-pointer rounded-lg px-3 py-2 border border-transparent ${!value ? 'text-gray-400 italic' : ''} min-h-[2rem] flex items-center`}
+        title="Click to edit"
       >
         {value || placeholder}
       </div>
