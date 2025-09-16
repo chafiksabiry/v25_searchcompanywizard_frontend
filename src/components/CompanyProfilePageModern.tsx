@@ -327,7 +327,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       {/* Modern Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
         <div className="w-full px-6 py-2">
-          <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
                <button
                  onClick={onBackToSearch}
                  className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
@@ -335,12 +335,21 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               <ArrowLeft size={20} />
               <span className="font-medium">Back to Search</span>
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <div className="text-right">
                 <h1 className="text-xl font-bold text-gray-900">{profile.name}</h1>
                 <p className="text-sm text-gray-500">{profile.industry}</p>
               </div>
               
+              {/* Discover Button - Top Right */}
+              <button
+                onClick={() => setShowUniquenessPanel(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <Trophy size={18} />
+                <span>Discover What Makes Us Unique</span>
+                <ArrowRight size={16} />
+              </button>
             </div>
           </div>
         </div>
