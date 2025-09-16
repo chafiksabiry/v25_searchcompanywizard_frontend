@@ -19,7 +19,7 @@ import {
   Star,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openaiBackend";
-import { updateCompanyProfile } from "../api/openaiBackend";
+import { createCompanyProfile, updateCompanyProfile } from "../api/openaiBackend";
 import { UniquenessPanel } from "./UniquenessPanel";
 
 interface Props {
@@ -35,6 +35,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Log initial profile load
   React.useEffect(() => {
@@ -46,8 +47,16 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       hasCulture: !!initialProfile.culture,
       valuesCount: initialProfile.culture?.values?.length || 0,
       benefitsCount: initialProfile.culture?.benefits?.length || 0,
-      profileKeys: Object.keys(initialProfile)
+      profileKeys: Object.keys(initialProfile),
+      hasId: !!initialProfile._id,
+      isNewProfile: !initialProfile._id
     });
+
+    // Si le profil n'a pas d'ID, c'est un nouveau profil généré
+    if (!initialProfile._id) {
+      setHasUnsavedChanges(true);
+      console.log('ℹ️ [Profile] New generated profile - needs to be saved');
+    }
   }, [initialProfile]);
 
   const hasContactInfo =
@@ -141,39 +150,17 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     // Mise à jour locale immédiate pour une meilleure UX
     setProfile(updatedProfile);
     setEditingField(null);
+    setHasUnsavedChanges(true);
 
     console.log('✅ [Profile] Field saved locally:', { 
       field, 
       newValue: tempValue,
-      profileUpdated: true 
+      profileUpdated: true,
+      hasUnsavedChanges: true
     });
 
-    // Sauvegarde dans la base de données si on a un ID
-    if (profile._id) {
-      try {
-        setIsSyncing(true);
-        console.log('🌐 [Profile] Syncing field to database:', { field, companyId: profile._id });
-        
-        // Créer l'objet de mise à jour avec la structure correcte
-        const updateData: any = {};
-        let current = updateData;
-        for (let i = 0; i < fieldPath.length - 1; i++) {
-          current[fieldPath[i]] = {};
-          current = current[fieldPath[i]];
-        }
-        current[fieldPath[fieldPath.length - 1]] = tempValue;
-
-        await updateCompanyProfile(profile._id, updateData);
-        console.log('✅ [Profile] Field synced to database successfully');
-      } catch (error) {
-        console.error('⚠️ [Profile] Failed to sync to database:', error);
-        // En cas d'erreur, on garde la modification locale mais on informe l'utilisateur
-      } finally {
-        setIsSyncing(false);
-      }
-    } else {
-      console.log('ℹ️ [Profile] No company ID, skipping database sync');
-    }
+    // Ne plus synchroniser automatiquement - attendre action utilisateur
+    console.log('ℹ️ [Profile] Field modified locally, waiting for user to save profile');
   };
 
   const getFieldValue = (field: string) => {
@@ -199,6 +186,44 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       }
   };
 
+  const handleSaveProfile = async () => {
+    if (!profile._id) {
+      // Première sauvegarde - créer le profil
+      try {
+        setIsSyncing(true);
+        console.log('💾 [Profile] Creating profile for first time');
+        
+        const savedProfile = await createCompanyProfile(profile);
+        setProfile(savedProfile);
+        setHasUnsavedChanges(false);
+        
+        console.log('✅ [Profile] Profile created successfully:', {
+          companyId: savedProfile._id,
+          companyName: savedProfile.name
+        });
+      } catch (error) {
+        console.error('⚠️ [Profile] Failed to create profile:', error);
+      } finally {
+        setIsSyncing(false);
+      }
+    } else {
+      // Mise à jour du profil existant
+      try {
+        setIsSyncing(true);
+        console.log('💾 [Profile] Updating existing profile');
+        
+        await updateCompanyProfile(profile._id, profile);
+        setHasUnsavedChanges(false);
+        
+        console.log('✅ [Profile] Profile updated successfully');
+      } catch (error) {
+        console.error('⚠️ [Profile] Failed to update profile:', error);
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  };
+
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -209,34 +234,25 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       });
 
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = (e) => {
         const result = e.target?.result as string;
         const updatedProfile = { ...profile, logo: result };
         setProfile(updatedProfile);
         setShowLogoEditor(false);
+        setHasUnsavedChanges(true);
         
         console.log('✅ [Profile] Logo uploaded successfully:', {
           fileName: file.name,
           dataSize: result.length,
-          logoSet: true
+          logoSet: true,
+          hasUnsavedChanges: true
         });
-
-        // Sync to database
-        if (profile._id) {
-          try {
-            console.log('🌐 [Profile] Syncing logo to database');
-            await updateCompanyProfile(profile._id, { logo: result });
-            console.log('✅ [Profile] Logo synced to database successfully');
-          } catch (error) {
-            console.error('⚠️ [Profile] Failed to sync logo to database:', error);
-          }
-        }
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleLogoUrlSave = async () => {
+  const handleLogoUrlSave = () => {
     console.log('🌐 [Profile] Logo URL save:', {
       logoUrl: logoUrl.trim(),
       hasUrl: !!logoUrl.trim()
@@ -245,21 +261,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (logoUrl.trim()) {
       const updatedProfile = { ...profile, logo: logoUrl.trim() };
       setProfile(updatedProfile);
+      setHasUnsavedChanges(true);
       
       console.log('✅ [Profile] Logo URL saved successfully:', {
-        logoUrl: logoUrl.trim()
+        logoUrl: logoUrl.trim(),
+        hasUnsavedChanges: true
       });
-
-      // Sync to database
-      if (profile._id) {
-        try {
-          console.log('🌐 [Profile] Syncing logo URL to database');
-          await updateCompanyProfile(profile._id, { logo: logoUrl.trim() });
-          console.log('✅ [Profile] Logo URL synced to database successfully');
-        } catch (error) {
-          console.error('⚠️ [Profile] Failed to sync logo URL to database:', error);
-        }
-      }
     }
     setShowLogoEditor(false);
     setLogoUrl("");
@@ -384,6 +391,17 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <p className="text-sm text-gray-500">{profile.industry}</p>
               </div>
               
+              {/* Save Profile Button */}
+              {(hasUnsavedChanges || !profile._id) && !isSyncing && (
+                <button
+                  onClick={handleSaveProfile}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                >
+                  <Star size={16} />
+                  <span>{profile._id ? 'Save Changes' : 'Save Profile'}</span>
+                </button>
+              )}
+
               {/* Sync Status Indicator */}
               {isSyncing && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
@@ -392,8 +410,16 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 </div>
               )}
               
+              {/* Unsaved changes indicator */}
+              {hasUnsavedChanges && !isSyncing && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span>Unsaved Changes</span>
+                </div>
+              )}
+              
               {/* Saved indicator */}
-              {profile._id && !isSyncing && (
+              {profile._id && !hasUnsavedChanges && !isSyncing && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>Saved</span>

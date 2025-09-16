@@ -243,6 +243,46 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
   }
 }
 
+export const createCompanyProfile = async (
+  profileData: CompanyProfile
+): Promise<CompanyProfile> => {
+  console.log('💾 [Frontend] Creating company profile:', {
+    companyName: profileData.name,
+    industry: profileData.industry
+  });
+
+  try {
+    const response = await fetch(`${apiUrl}/companies`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+
+    if (!response.ok) {
+      console.error('❌ [Frontend] Profile creation failed:', response.status, response.statusText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ [Frontend] Profile creation response:', {
+      success: data.success,
+      companyName: data.data?.name,
+      companyId: data.data?._id
+    });
+
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to create company profile');
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("💥 [Frontend] Profile creation error:", error);
+    throw new Error("Failed to create company profile");
+  }
+};
+
 export const updateCompanyProfile = async (
   companyId: string,
   profileData: Partial<CompanyProfile>
