@@ -165,8 +165,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     const isEditing = editingField === field;
 
     if (isEditing) {
-      // Create base classes while preserving original styling
-      const baseEditingClasses = "border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900";
+      // Create base classes while preserving original styling but override text color
+      const baseEditingClasses = "border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white !text-gray-900";
+      
+      // Remove any text color classes from className to avoid conflicts
+      const classNameWithoutTextColor = className.replace(/text-\w+-\w+/g, '').replace(/text-white/g, '').trim();
       
       return multiline ? (
         <textarea
@@ -174,7 +177,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className={`${className} ${baseEditingClasses} min-h-[100px] w-full px-3 py-2 resize-y`}
+          className={`${classNameWithoutTextColor} ${baseEditingClasses} min-h-[100px] w-full px-3 py-2 resize-y`}
           placeholder={placeholder}
           autoFocus
         />
@@ -185,7 +188,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className={`${className} ${baseEditingClasses} w-full px-3 py-2`}
+          className={`${classNameWithoutTextColor} ${baseEditingClasses} w-full px-3 py-2`}
           placeholder={placeholder}
           autoFocus
         />
