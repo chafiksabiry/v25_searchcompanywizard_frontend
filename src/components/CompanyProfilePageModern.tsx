@@ -15,10 +15,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Award,
-  Star,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openaiBackend";
-import { createCompanyProfile, updateCompanyProfile } from "../api/openaiBackend";
 import { UniquenessPanel } from "./UniquenessPanel";
 
 interface Props {
@@ -33,8 +31,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [tempValue, setTempValue] = useState("");
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Log initial profile load
   React.useEffect(() => {
@@ -51,11 +47,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       isNewProfile: !initialProfile._id
     });
 
-    // Si le profil n'a pas d'ID, c'est un nouveau profil généré
-    if (!initialProfile._id) {
-      setHasUnsavedChanges(true);
-      console.log('ℹ️ [Profile] New generated profile - needs to be saved');
-    }
   }, [initialProfile]);
 
   const hasContactInfo =
@@ -149,17 +140,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     // Mise à jour locale immédiate pour une meilleure UX
     setProfile(updatedProfile);
     setEditingField(null);
-    setHasUnsavedChanges(true);
 
     console.log('✅ [Profile] Field saved locally:', { 
       field, 
       newValue: tempValue,
-      profileUpdated: true,
-      hasUnsavedChanges: true
+      profileUpdated: true
     });
-
-    // Ne plus synchroniser automatiquement - attendre action utilisateur
-    console.log('ℹ️ [Profile] Field modified locally, waiting for user to save profile');
   };
 
   const getFieldValue = (field: string) => {
@@ -185,43 +171,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       }
   };
 
-  const handleSaveProfile = async () => {
-    if (!profile._id) {
-      // Première sauvegarde - créer le profil
-      try {
-        setIsSyncing(true);
-        console.log('💾 [Profile] Creating profile for first time');
-        
-        const savedProfile = await createCompanyProfile(profile);
-        setProfile(savedProfile);
-        setHasUnsavedChanges(false);
-        
-        console.log('✅ [Profile] Profile created successfully:', {
-          companyId: savedProfile._id,
-          companyName: savedProfile.name
-        });
-      } catch (error) {
-        console.error('⚠️ [Profile] Failed to create profile:', error);
-      } finally {
-        setIsSyncing(false);
-      }
-    } else {
-      // Mise à jour du profil existant
-      try {
-        setIsSyncing(true);
-        console.log('💾 [Profile] Updating existing profile');
-        
-        await updateCompanyProfile(profile._id, profile);
-        setHasUnsavedChanges(false);
-        
-        console.log('✅ [Profile] Profile updated successfully');
-      } catch (error) {
-        console.error('⚠️ [Profile] Failed to update profile:', error);
-      } finally {
-        setIsSyncing(false);
-      }
-    }
-  };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -238,13 +187,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         const updatedProfile = { ...profile, logo: result };
         setProfile(updatedProfile);
         setShowLogoEditor(false);
-        setHasUnsavedChanges(true);
         
         console.log('✅ [Profile] Logo uploaded successfully:', {
           fileName: file.name,
           dataSize: result.length,
-          logoSet: true,
-          hasUnsavedChanges: true
+          logoSet: true
         });
       };
       reader.readAsDataURL(file);
@@ -260,11 +207,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (logoUrl.trim()) {
       const updatedProfile = { ...profile, logo: logoUrl.trim() };
       setProfile(updatedProfile);
-      setHasUnsavedChanges(true);
       
       console.log('✅ [Profile] Logo URL saved successfully:', {
-        logoUrl: logoUrl.trim(),
-        hasUnsavedChanges: true
+        logoUrl: logoUrl.trim()
       });
     }
     setShowLogoEditor(false);
@@ -390,40 +335,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <p className="text-sm text-gray-500">{profile.industry}</p>
               </div>
               
-              {/* Save Profile Button */}
-              {(hasUnsavedChanges || !profile._id) && !isSyncing && (
-                <button
-                  onClick={handleSaveProfile}
-                  className="flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-                >
-                  <Star size={16} />
-                  <span>{profile._id ? 'Save Changes' : 'Save Profile'}</span>
-                </button>
-              )}
-
-              {/* Sync Status Indicator */}
-              {isSyncing && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                  <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Saving...</span>
-                </div>
-              )}
-              
-              {/* Unsaved changes indicator */}
-              {hasUnsavedChanges && !isSyncing && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span>Unsaved Changes</span>
-                </div>
-              )}
-              
-              {/* Saved indicator */}
-              {profile._id && !hasUnsavedChanges && !isSyncing && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded-full text-sm">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Saved</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
