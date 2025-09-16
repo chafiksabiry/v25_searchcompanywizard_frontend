@@ -171,7 +171,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className={`${className} min-h-[100px] w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white resize-y`}
+          className="min-h-[100px] w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900 resize-y text-base font-normal"
           placeholder={placeholder}
           autoFocus
         />
@@ -182,7 +182,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className={`${className} w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white`}
+          className="w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white text-gray-900 text-base font-normal"
           placeholder={placeholder}
           autoFocus
         />
