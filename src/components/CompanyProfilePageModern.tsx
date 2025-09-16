@@ -19,6 +19,7 @@ import {
   Star,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openaiBackend";
+import { updateCompanyProfile } from "../api/openaiBackend";
 import { UniquenessPanel } from "./UniquenessPanel";
 
 interface Props {
@@ -33,6 +34,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [tempValue, setTempValue] = useState("");
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncingField, setSyncingField] = useState<string | null>(null);
 
   // Log initial profile load
   React.useEffect(() => {
@@ -115,7 +118,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     setTempValue(value);
   };
 
-  const handleFieldSave = (field: string) => {
+  const handleFieldSave = async (field: string) => {
     console.log('💾 [Profile] Saving field:', { 
       field, 
       oldValue: getFieldValue(field),
@@ -135,14 +138,45 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
     const fieldPath = field.split(".");
     const updatedProfile = updateProfile(fieldPath, tempValue);
+    
+    // Mise à jour locale immédiate pour une meilleure UX
     setProfile(updatedProfile);
     setEditingField(null);
 
-    console.log('✅ [Profile] Field saved successfully:', { 
+    console.log('✅ [Profile] Field saved locally:', { 
       field, 
       newValue: tempValue,
       profileUpdated: true 
     });
+
+    // Sauvegarde dans la base de données si on a un ID
+    if (profile._id) {
+      try {
+        setIsSyncing(true);
+        setSyncingField(field);
+        console.log('🌐 [Profile] Syncing field to database:', { field, companyId: profile._id });
+        
+        // Créer l'objet de mise à jour avec la structure correcte
+        const updateData: any = {};
+        let current = updateData;
+        for (let i = 0; i < fieldPath.length - 1; i++) {
+          current[fieldPath[i]] = {};
+          current = current[fieldPath[i]];
+        }
+        current[fieldPath[fieldPath.length - 1]] = tempValue;
+
+        await updateCompanyProfile(profile._id, updateData);
+        console.log('✅ [Profile] Field synced to database successfully');
+      } catch (error) {
+        console.error('⚠️ [Profile] Failed to sync to database:', error);
+        // En cas d'erreur, on garde la modification locale mais on informe l'utilisateur
+      } finally {
+        setIsSyncing(false);
+        setSyncingField(null);
+      }
+    } else {
+      console.log('ℹ️ [Profile] No company ID, skipping database sync');
+    }
   };
 
   const getFieldValue = (field: string) => {
@@ -159,13 +193,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleFieldSave(field);
-    }
-    if (e.key === 'Escape') {
-      setEditingField(null);
-    }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        await handleFieldSave(field);
+      }
+      if (e.key === 'Escape') {
+        setEditingField(null);
+      }
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,9 +212,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       });
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const result = e.target?.result as string;
-        setProfile({ ...profile, logo: result });
+        const updatedProfile = { ...profile, logo: result };
+        setProfile(updatedProfile);
         setShowLogoEditor(false);
         
         console.log('✅ [Profile] Logo uploaded successfully:', {
@@ -188,22 +223,46 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           dataSize: result.length,
           logoSet: true
         });
+
+        // Sync to database
+        if (profile._id) {
+          try {
+            console.log('🌐 [Profile] Syncing logo to database');
+            await updateCompanyProfile(profile._id, { logo: result });
+            console.log('✅ [Profile] Logo synced to database successfully');
+          } catch (error) {
+            console.error('⚠️ [Profile] Failed to sync logo to database:', error);
+          }
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleLogoUrlSave = () => {
+  const handleLogoUrlSave = async () => {
     console.log('🌐 [Profile] Logo URL save:', {
       logoUrl: logoUrl.trim(),
       hasUrl: !!logoUrl.trim()
     });
 
     if (logoUrl.trim()) {
-      setProfile({ ...profile, logo: logoUrl.trim() });
+      const updatedProfile = { ...profile, logo: logoUrl.trim() };
+      setProfile(updatedProfile);
+      
       console.log('✅ [Profile] Logo URL saved successfully:', {
         logoUrl: logoUrl.trim()
       });
+
+      // Sync to database
+      if (profile._id) {
+        try {
+          console.log('🌐 [Profile] Syncing logo URL to database');
+          await updateCompanyProfile(profile._id, { logo: logoUrl.trim() });
+          console.log('✅ [Profile] Logo URL synced to database successfully');
+        } catch (error) {
+          console.error('⚠️ [Profile] Failed to sync logo URL to database:', error);
+        }
+      }
     }
     setShowLogoEditor(false);
     setLogoUrl("");
@@ -327,6 +386,22 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <h1 className="text-xl font-bold text-gray-900">{profile.name}</h1>
                 <p className="text-sm text-gray-500">{profile.industry}</p>
               </div>
+              
+              {/* Sync Status Indicator */}
+              {isSyncing && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                  <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Saving...</span>
+                </div>
+              )}
+              
+              {/* Saved indicator */}
+              {profile._id && !isSyncing && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Saved</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

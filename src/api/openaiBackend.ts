@@ -4,6 +4,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 const deploymentMode = import.meta.env.VITE_DEPLOYMENT_MODE || 'standalone';
 
 export interface CompanyProfile {
+  _id?: string;
   userId: string;
   name: string;
   logo?: string;
@@ -241,3 +242,44 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
     throw new Error("Failed to generate uniqueness categories");
   }
 }
+
+export const updateCompanyProfile = async (
+  companyId: string,
+  profileData: Partial<CompanyProfile>
+): Promise<CompanyProfile> => {
+  console.log('💾 [Frontend] Updating company profile:', {
+    companyId,
+    fieldsToUpdate: Object.keys(profileData)
+  });
+
+  try {
+    const response = await fetch(`${apiUrl}/companies/${companyId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    });
+
+    if (!response.ok) {
+      console.error('❌ [Frontend] Profile update failed:', response.status, response.statusText);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ [Frontend] Profile update response:', {
+      success: data.success,
+      companyName: data.data?.name,
+      updatedFields: Object.keys(profileData)
+    });
+
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to update company profile');
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("💥 [Frontend] Profile update error:", error);
+    throw new Error("Failed to update company profile");
+  }
+};
