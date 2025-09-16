@@ -385,6 +385,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                      field="name"
                      className="text-3xl font-bold mb-1 text-white block w-full"
                      placeholder="Company Name"
+                     multiline={false}
                    />
                   <div className="flex flex-wrap gap-2 text-white/90">
                      <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
@@ -394,6 +395,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          field="industry"
                          className="text-white/90 text-sm inline-block min-w-[100px]"
                          placeholder="Industry"
+                         multiline={false}
                        />
                      </div>
                      <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
@@ -404,6 +406,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          field="founded"
                          className="text-white/90 text-sm inline-block min-w-[60px]"
                          placeholder="Year"
+                         multiline={false}
                        />
                      </div>
                      <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
@@ -413,6 +416,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          field="headquarters"
                          className="text-white/90 text-sm inline-block min-w-[120px]"
                          placeholder="Headquarters"
+                         multiline={false}
                        />
                      </div>
                   </div>
@@ -610,6 +614,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       field="contact.email"
                       className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
                       placeholder="email@company.com"
+                      multiline={false}
                     />
                   </div>
                   
@@ -620,6 +625,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       field="contact.phone"
                       className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[150px]"
                       placeholder="+1 (555) 123-4567"
+                      multiline={false}
                     />
                   </div>
                   
@@ -630,6 +636,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       field="contact.website"
                       className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
                       placeholder="https://company.com"
+                      multiline={false}
                     />
                   </div>
                   
