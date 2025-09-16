@@ -31,6 +31,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [profile, setProfile] = useState(initialProfile);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
+  const [showLogoEditor, setShowLogoEditor] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("");
 
   const hasContactInfo =
     profile.contact?.email ||
@@ -124,6 +126,27 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (e.key === 'Escape') {
       setEditingField(null);
     }
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfile({ ...profile, logo: result });
+        setShowLogoEditor(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoUrlSave = () => {
+    if (logoUrl.trim()) {
+      setProfile({ ...profile, logo: logoUrl.trim() });
+    }
+    setShowLogoEditor(false);
+    setLogoUrl("");
   };
 
   const EditableText = ({ 
@@ -225,7 +248,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             {/* Company Info */}
             <div className="text-white">
               <div className="flex items-center gap-6 mb-8">
-                <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20">
+                <div 
+                  className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
+                  onClick={() => setShowLogoEditor(true)}
+                >
                   {getLogoUrl() ? (
                     <img
                       src={getLogoUrl()!}
@@ -238,6 +264,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                   ) : (
                     <Building2 className="w-12 h-12 text-white" />
                   )}
+                  
+                  {/* Edit overlay */}
+                  <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white text-xs font-medium">Edit Logo</span>
+                  </div>
                 </div>
                  <div>
                    <EditableText
@@ -627,6 +658,117 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           </div>
         </div>
       </div>
+
+      {/* Logo Editor Modal */}
+      {showLogoEditor && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Edit Company Logo</h3>
+              <button
+                onClick={() => {
+                  setShowLogoEditor(false);
+                  setLogoUrl("");
+                }}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Current Logo Preview */}
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto bg-gray-100 rounded-xl flex items-center justify-center mb-2">
+                  {getLogoUrl() ? (
+                    <img
+                      src={getLogoUrl()!}
+                      alt="Logo preview"
+                      className="w-16 h-16 object-contain rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                  ) : (
+                    <Building2 className="w-10 h-10 text-gray-400" />
+                  )}
+                </div>
+                <p className="text-sm text-gray-500">Current Logo</p>
+              </div>
+
+              {/* Upload Image */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Upload Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+                <p className="text-xs text-gray-500">
+                  Supported formats: JPG, PNG, GIF, SVG
+                </p>
+              </div>
+
+              {/* Or divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">OR</span>
+                </div>
+              </div>
+
+              {/* URL Input */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Logo URL
+                </label>
+                <input
+                  type="url"
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  placeholder="https://example.com/logo.png"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleLogoUrlSave();
+                    }
+                  }}
+                />
+                <p className="text-xs text-gray-500">
+                  Enter a direct URL to an image file
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowLogoEditor(false);
+                    setLogoUrl("");
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogoUrlSave}
+                  disabled={!logoUrl.trim()}
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Save URL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
