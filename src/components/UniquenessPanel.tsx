@@ -6,8 +6,8 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import type { CompanyProfile, UniquenessCategory } from "../api/openai";
-import { generateUniquenessCategories } from "../api/openai";
+import type { CompanyProfile, UniquenessCategory } from "../api/openaiBackend";
+import { generateUniquenessCategories } from "../api/openaiBackend";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
 import { LucideProps } from "lucide-react";

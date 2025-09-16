@@ -20,7 +20,7 @@ import {
   Upload,
   Image,
 } from "lucide-react";
-import type { CompanyProfile as CompanyProfileType } from "../api/openai";
+import type { CompanyProfile as CompanyProfileType } from "../api/openaiBackend";
 import { UniquenessPanel } from "./UniquenessPanel";
 import { uploadImageToCloudinary, validateImageFile } from "../api/cloudinary";
 import { LucideProps } from "lucide-react";

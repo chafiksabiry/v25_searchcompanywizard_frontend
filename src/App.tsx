@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
-import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openai';
+import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openaiBackend';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
 import harxLogo from './assets/harx-blanc.jpg';
