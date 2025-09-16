@@ -13,7 +13,6 @@ import {
   Instagram,
   Factory,
   ArrowRight,
-  Image,
   ArrowLeft,
   Users,
   Award,
