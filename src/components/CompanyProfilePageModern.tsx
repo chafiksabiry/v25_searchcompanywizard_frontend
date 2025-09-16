@@ -192,7 +192,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     return (
       <div
         onClick={() => handleFieldClick(field, value)}
-        className={`${className} cursor-pointer hover:bg-indigo-50 hover:text-indigo-900 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 ${!value ? 'text-gray-400 italic' : ''}`}
+        className={`${className} cursor-pointer hover:bg-indigo-50 hover:text-indigo-900 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 ${!value ? 'text-gray-400 italic' : ''} min-h-[2rem] flex items-center`}
       >
         {value || placeholder}
       </div>
@@ -274,7 +274,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                    <EditableText
                      value={profile.name}
                      field="name"
-                     className="text-4xl font-bold mb-2 text-white"
+                     className="text-4xl font-bold mb-2 text-white block w-full"
                      placeholder="Company Name"
                    />
                   <div className="flex flex-wrap gap-4 text-white/90">
@@ -283,7 +283,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.industry || ''}
                          field="industry"
-                         className="text-white/90 text-sm"
+                         className="text-white/90 text-sm inline-block min-w-[100px]"
                          placeholder="Industry"
                        />
                      </div>
@@ -293,7 +293,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.founded || ''}
                          field="founded"
-                         className="text-white/90 text-sm"
+                         className="text-white/90 text-sm inline-block min-w-[60px]"
                          placeholder="Year"
                        />
                      </div>
@@ -302,7 +302,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.headquarters || ''}
                          field="headquarters"
-                         className="text-white/90 text-sm"
+                         className="text-white/90 text-sm inline-block min-w-[120px]"
                          placeholder="Headquarters"
                        />
                      </div>
@@ -417,7 +417,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <EditableText
                   value={profile.overview}
                   field="overview"
-                  className="text-gray-700 leading-relaxed text-lg"
+                  className="text-gray-700 leading-relaxed text-lg block w-full min-h-[120px]"
                   multiline={true}
                   placeholder="Click to add company overview..."
                 />
@@ -436,7 +436,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <EditableText
                   value={profile.mission || ''}
                   field="mission"
-                  className="text-gray-700 leading-relaxed text-lg font-medium"
+                  className="text-gray-700 leading-relaxed text-lg font-medium block w-full min-h-[80px]"
                   multiline={true}
                   placeholder="Click to add mission statement..."
                 />
@@ -460,7 +460,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          <EditableText
                            value={value}
                            field={`culture.values.${index}`}
-                           className="text-gray-700 font-medium flex-1"
+                           className="text-gray-700 font-medium flex-1 min-w-[200px]"
                            placeholder="Core value..."
                          />
                        </div>
@@ -491,7 +491,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          <EditableText
                            value={benefit}
                            field={`culture.benefits.${index}`}
-                           className="text-gray-700 font-medium flex-1"
+                           className="text-gray-700 font-medium flex-1 min-w-[200px]"
                            placeholder="Benefit or perk..."
                          />
                        </div>
@@ -524,7 +524,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.email || ''}
                       field="contact.email"
-                      className="hover:text-indigo-600 transition-colors flex-1"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
                       placeholder="email@company.com"
                     />
                   </div>
@@ -534,7 +534,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.phone || ''}
                       field="contact.phone"
-                      className="hover:text-indigo-600 transition-colors flex-1"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[150px]"
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
@@ -544,7 +544,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.website || ''}
                       field="contact.website"
-                      className="hover:text-indigo-600 transition-colors flex-1"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
                       placeholder="https://company.com"
                     />
                   </div>
@@ -554,7 +554,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.address || ''}
                       field="contact.address"
-                      className="text-sm flex-1"
+                      className="text-sm flex-1 text-gray-600 min-h-[60px] block w-full"
                       multiline={true}
                       placeholder="Company address..."
                     />
