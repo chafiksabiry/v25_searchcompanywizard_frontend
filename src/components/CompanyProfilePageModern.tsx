@@ -17,7 +17,6 @@ import {
   Users,
   Award,
   Star,
-  ExternalLink,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openaiBackend";
 import { UniquenessPanel } from "./UniquenessPanel";
