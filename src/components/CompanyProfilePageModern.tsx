@@ -109,7 +109,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
           <div className="flex items-center justify-between">
                <button
                  onClick={onBackToSearch}
-                 className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                 className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
                >
               <ArrowLeft size={20} />
               <span className="font-medium">Back to Search</span>
@@ -125,10 +125,10 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
       </div>
 
        {/* Hero Section */}
-       <div className="relative bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 overflow-hidden">
+       <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 overflow-hidden">
          <div className="absolute inset-0">
            <div className="absolute inset-0 bg-black/20"></div>
-           <div className="absolute inset-0 bg-gradient-to-r from-orange-500/90 to-red-500/90"></div>
+           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/90 to-purple-600/90"></div>
            {/* Pattern overlay */}
            <div className="absolute inset-0 opacity-10" style={{
              backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
@@ -183,7 +183,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                {/* CTA Button */}
                <button
                  onClick={() => setShowUniquenessPanel(true)}
-                 className="inline-flex items-center gap-3 bg-white text-orange-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                 className="inline-flex items-center gap-3 bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                >
                  <Trophy size={20} />
                  <span>Discover What Makes Us Unique</span>
@@ -226,21 +226,47 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
         </div>
       </div>
 
-       {/* Floating CTA Button */}
-       <div className="fixed bottom-8 right-8 z-40">
+       {/* Floating CTA Button - Responsive & Brilliant */}
+       <div className="fixed bottom-6 right-6 z-50">
+         {/* Mobile Version - Smaller */}
          <button
            onClick={() => setShowUniquenessPanel(true)}
-           className="group bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-4 rounded-2xl font-semibold hover:from-orange-600 hover:to-red-600 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 flex items-center gap-3"
+           className="lg:hidden group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white p-4 rounded-full font-semibold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-110 hover:-translate-y-2"
          >
+           {/* Brilliant glow effect */}
+           <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-full blur-lg opacity-60 animate-pulse"></div>
            <div className="relative">
-             <Trophy size={24} />
-             <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+             <Trophy size={28} className="drop-shadow-lg" />
+             <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-bounce shadow-lg"></div>
            </div>
-           <div className="hidden lg:block">
-             <div className="text-sm font-medium">What Makes Us</div>
-             <div className="text-xs opacity-90">Unique & Attractive</div>
+         </button>
+
+         {/* Desktop Version - Larger */}
+         <button
+           onClick={() => setShowUniquenessPanel(true)}
+           className="hidden lg:flex group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-105 hover:-translate-y-3 items-center gap-4"
+         >
+           {/* Brilliant glow effect */}
+           <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
+           
+           <div className="relative flex items-center gap-4">
+             <div className="relative">
+               <Trophy size={32} className="drop-shadow-lg" />
+               <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-bounce shadow-lg"></div>
+             </div>
+             
+             <div className="text-left">
+               <div className="text-lg font-bold leading-tight">What Makes Us</div>
+               <div className="text-sm opacity-90 font-medium">Unique & Attractive</div>
+             </div>
+             
+             <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform duration-300 drop-shadow-lg" />
            </div>
-           <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+
+           {/* Sparkle animations */}
+           <div className="absolute top-2 left-4 w-1 h-1 bg-white rounded-full animate-ping"></div>
+           <div className="absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+           <div className="absolute top-4 right-4 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
          </button>
        </div>
 
@@ -252,8 +278,8 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
             {/* Company Overview */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300">
                <div className="flex items-center gap-4 mb-6">
-                 <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center">
-                   <Building2 className="text-orange-600" size={24} />
+                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
+                   <Building2 className="text-indigo-600" size={24} />
                  </div>
                 <h2 className="text-2xl font-bold text-gray-900">Company Overview</h2>
               </div>
@@ -266,9 +292,9 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
 
             {/* Mission */}
             {profile.mission && (
-               <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl border border-orange-100 p-8">
+               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-8">
                  <div className="flex items-center gap-4 mb-6">
-                   <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                   <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
                      <Trophy className="text-white" size={24} />
                    </div>
                   <h2 className="text-2xl font-bold text-gray-900">Our Mission</h2>
@@ -284,8 +310,8 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                {profile.culture?.values && profile.culture.values.length > 0 && (
                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                    <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-red-100 rounded-lg flex items-center justify-center">
-                       <Trophy className="text-orange-600" size={18} />
+                     <div className="w-8 h-8 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center">
+                       <Trophy className="text-indigo-600" size={18} />
                      </div>
                      <h3 className="text-xl font-bold text-gray-900">Core Values</h3>
                    </div>
@@ -327,14 +353,14 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
             {hasContactInfo && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                   <Mail className="text-orange-600" size={20} />
+                   <Mail className="text-indigo-600" size={20} />
                    Contact Information
                  </h3>
                 <div className="space-y-4">
                   {profile.contact?.email && (
                     <div className="flex items-center gap-3 text-gray-600">
                       <Mail size={18} className="text-gray-400" />
-                       <a href={`mailto:${profile.contact.email}`} className="hover:text-orange-600 transition-colors">
+                       <a href={`mailto:${profile.contact.email}`} className="hover:text-indigo-600 transition-colors">
                         {profile.contact.email}
                       </a>
                     </div>
@@ -342,7 +368,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                   {profile.contact?.phone && (
                     <div className="flex items-center gap-3 text-gray-600">
                       <Phone size={18} className="text-gray-400" />
-                       <a href={`tel:${profile.contact.phone}`} className="hover:text-orange-600 transition-colors">
+                       <a href={`tel:${profile.contact.phone}`} className="hover:text-indigo-600 transition-colors">
                         {profile.contact.phone}
                       </a>
                     </div>
@@ -354,7 +380,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                         href={profile.contact.website} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                         className="hover:text-orange-600 transition-colors flex items-center gap-1"
+                         className="hover:text-indigo-600 transition-colors flex items-center gap-1"
                       >
                         Visit Website
                         <ExternalLink size={14} />
@@ -375,7 +401,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
             {hasSocialMedia && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                   <Globe className="text-orange-600" size={20} />
+                   <Globe className="text-indigo-600" size={20} />
                    Follow Us
                  </h3>
                 <div className="flex gap-3">
@@ -427,7 +453,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
             {(profile.contact?.address || hasLocation) && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
-                   <MapPin className="text-orange-600" size={20} />
+                   <MapPin className="text-indigo-600" size={20} />
                    Location
                  </h3>
                 <div className="relative h-48 rounded-xl overflow-hidden bg-gray-100">
@@ -448,7 +474,7 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                           href={getGoogleMapsDirectionsUrl()!}
                           target="_blank"
                           rel="noopener noreferrer"
-                           className="absolute bottom-3 right-3 px-3 py-2 bg-white hover:bg-gray-50 text-sm text-orange-600 rounded-lg shadow-lg flex items-center gap-2 transition-all hover:scale-105"
+                           className="absolute bottom-3 right-3 px-3 py-2 bg-white hover:bg-gray-50 text-sm text-indigo-600 rounded-lg shadow-lg flex items-center gap-2 transition-all hover:scale-105"
                         >
                           <MapPin size={14} />
                           Get Directions
