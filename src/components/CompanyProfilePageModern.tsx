@@ -520,37 +520,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                </button>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="flex items-center gap-3 mb-2">
-                  <Users className="text-white/80" size={24} />
-                  <span className="text-white/80 text-sm">Team Size</span>
-                </div>
-                <div className="text-2xl font-bold text-white">500+</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="flex items-center gap-3 mb-2">
-                  <Award className="text-white/80" size={24} />
-                  <span className="text-white/80 text-sm">Experience</span>
-                </div>
-                <div className="text-2xl font-bold text-white">{new Date().getFullYear() - parseInt(profile.founded || '2000')}+ Years</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="flex items-center gap-3 mb-2">
-                  <Star className="text-white/80" size={24} />
-                  <span className="text-white/80 text-sm">Rating</span>
-                </div>
-                <div className="text-2xl font-bold text-white">4.8/5</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="flex items-center gap-3 mb-2">
-                  <Globe className="text-white/80" size={24} />
-                  <span className="text-white/80 text-sm">Global Reach</span>
-                </div>
-                <div className="text-2xl font-bold text-white">25+ Countries</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
