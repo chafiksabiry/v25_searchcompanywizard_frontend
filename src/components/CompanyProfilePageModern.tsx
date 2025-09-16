@@ -12,7 +12,6 @@ import {
   Facebook,
   Instagram,
   Factory,
-  ArrowRight,
   ArrowLeft,
   Award,
 } from "lucide-react";
