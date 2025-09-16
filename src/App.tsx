@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 import { Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openaiBackend';
-import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
+import { CompanyProfilePage } from './components/CompanyProfilePage';
 import Cookies from 'js-cookie';
 import harxLogo from './assets/harx-blanc.jpg';
 
@@ -18,6 +18,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [logoCache, setLogoCache] = useState<Record<string, string>>({});
+  const [showProfilePage, setShowProfilePage] = useState(false);
 
   useEffect(() => {
     const checkUserCompany = async () => {
@@ -73,6 +74,7 @@ function App() {
       
       const profile = await generateCompanyProfile(companyInfo);
       setCompanyProfile(profile);
+      setShowProfilePage(true);
     } catch (err) {
       console.error('Profile generation error:', err);
       setError('Failed to generate company profile. Please try again.');
@@ -80,6 +82,21 @@ function App() {
       setIsLoading(false);
     }
   };
+
+  // Si on affiche la page de profil, on affiche seulement celle-ci
+  if (showProfilePage && companyProfile) {
+    return (
+      <CompanyProfilePage
+        profile={companyProfile}
+        onBackToSearch={() => {
+          setShowProfilePage(false);
+          setCompanyProfile(null);
+          setSearchResults([]);
+          setSearchQuery('');
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
@@ -231,13 +248,6 @@ function App() {
           </div>
         </div>
       </div>
-
-      {companyProfile && (
-        <CompanyProfileComponent
-          profile={companyProfile}
-          onClose={() => setCompanyProfile(null)}
-        />
-      )}
     </div>
   );
 }
