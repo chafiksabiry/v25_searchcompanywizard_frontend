@@ -27,8 +27,11 @@ interface Props {
   onBackToSearch: () => void;
 }
 
-export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
+export function CompanyProfilePageModern({ profile: initialProfile, onBackToSearch }: Props) {
   const [showUniquenessPanel, setShowUniquenessPanel] = useState(false);
+  const [profile, setProfile] = useState(initialProfile);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [tempValue, setTempValue] = useState("");
 
   const hasContactInfo =
     profile.contact?.email ||
@@ -90,6 +93,88 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
     }
     
     return null;
+  };
+
+  const handleFieldClick = (field: string, value: string) => {
+    setEditingField(field);
+    setTempValue(value);
+  };
+
+  const handleFieldSave = (field: string) => {
+    const updateProfile = (path: string[], value: any) => {
+      const newProfile = { ...profile };
+      let current = newProfile as any;
+      for (let i = 0; i < path.length - 1; i++) {
+        if (!current[path[i]]) current[path[i]] = {};
+        current = current[path[i]];
+      }
+      current[path[path.length - 1]] = value;
+      return newProfile;
+    };
+
+    const fieldPath = field.split(".");
+    setProfile(updateProfile(fieldPath, tempValue));
+    setEditingField(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleFieldSave(field);
+    }
+    if (e.key === 'Escape') {
+      setEditingField(null);
+    }
+  };
+
+  const EditableText = ({ 
+    value, 
+    field, 
+    className = "", 
+    multiline = false,
+    placeholder = "Click to edit..."
+  }: {
+    value: string;
+    field: string;
+    className?: string;
+    multiline?: boolean;
+    placeholder?: string;
+  }) => {
+    const isEditing = editingField === field;
+
+    if (isEditing) {
+      return multiline ? (
+        <textarea
+          value={tempValue}
+          onChange={(e) => setTempValue(e.target.value)}
+          onBlur={() => handleFieldSave(field)}
+          onKeyDown={(e) => handleKeyDown(e, field)}
+          className={`${className} min-h-[100px] w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white resize-y`}
+          placeholder={placeholder}
+          autoFocus
+        />
+      ) : (
+        <input
+          type="text"
+          value={tempValue}
+          onChange={(e) => setTempValue(e.target.value)}
+          onBlur={() => handleFieldSave(field)}
+          onKeyDown={(e) => handleKeyDown(e, field)}
+          className={`${className} w-full px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white`}
+          placeholder={placeholder}
+          autoFocus
+        />
+      );
+    }
+
+    return (
+      <div
+        onClick={() => handleFieldClick(field, value)}
+        className={`${className} cursor-pointer hover:bg-indigo-50 hover:text-indigo-900 transition-colors duration-200 rounded-lg px-3 py-2 border border-transparent hover:border-indigo-200 ${!value ? 'text-gray-400 italic' : ''}`}
+      >
+        {value || placeholder}
+      </div>
+    );
   };
 
   if (showUniquenessPanel) {
@@ -155,27 +240,42 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                     <Building2 className="w-12 h-12 text-white" />
                   )}
                 </div>
-                <div>
-                  <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
+                 <div>
+                   <EditableText
+                     value={profile.name}
+                     field="name"
+                     className="text-4xl font-bold mb-2 text-white"
+                     placeholder="Company Name"
+                   />
                   <div className="flex flex-wrap gap-4 text-white/90">
-                    {profile.industry && (
-                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                        <Factory size={16} />
-                        <span>{profile.industry}</span>
-                      </div>
-                    )}
-                    {profile.founded && (
-                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                        <Calendar size={16} />
-                        <span>Founded {profile.founded}</span>
-                      </div>
-                    )}
-                    {profile.headquarters && (
-                      <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                        <MapPin size={16} />
-                        <span>{profile.headquarters}</span>
-                      </div>
-                    )}
+                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
+                       <Factory size={16} />
+                       <EditableText
+                         value={profile.industry || ''}
+                         field="industry"
+                         className="text-white/90 text-sm"
+                         placeholder="Industry"
+                       />
+                     </div>
+                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
+                       <Calendar size={16} />
+                       <span>Founded </span>
+                       <EditableText
+                         value={profile.founded || ''}
+                         field="founded"
+                         className="text-white/90 text-sm"
+                         placeholder="Year"
+                       />
+                     </div>
+                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
+                       <MapPin size={16} />
+                       <EditableText
+                         value={profile.headquarters || ''}
+                         field="headquarters"
+                         className="text-white/90 text-sm"
+                         placeholder="Headquarters"
+                       />
+                     </div>
                   </div>
                 </div>
               </div>
@@ -284,9 +384,13 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                 <h2 className="text-2xl font-bold text-gray-900">Company Overview</h2>
               </div>
               <div className="prose prose-lg max-w-none">
-                <p className="text-gray-700 leading-relaxed text-lg">
-                  {profile.overview}
-                </p>
+                <EditableText
+                  value={profile.overview}
+                  field="overview"
+                  className="text-gray-700 leading-relaxed text-lg"
+                  multiline={true}
+                  placeholder="Click to add company overview..."
+                />
               </div>
             </div>
 
@@ -299,9 +403,13 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                    </div>
                   <h2 className="text-2xl font-bold text-gray-900">Our Mission</h2>
                 </div>
-                <p className="text-gray-700 leading-relaxed text-lg font-medium">
-                  {profile.mission}
-                </p>
+                <EditableText
+                  value={profile.mission || ''}
+                  field="mission"
+                  className="text-gray-700 leading-relaxed text-lg font-medium"
+                  multiline={true}
+                  placeholder="Click to add mission statement..."
+                />
               </div>
             )}
 
@@ -316,12 +424,24 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                      <h3 className="text-xl font-bold text-gray-900">Core Values</h3>
                    </div>
                    <div className="space-y-3">
-                     {profile.culture.values.map((value, index) => (
-                       <div key={index} className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-50 transition-colors">
-                         <div className="w-2 h-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
-                         <span className="text-gray-700 font-medium">{value}</span>
+                     {profile.culture?.values?.map((value, index) => (
+                       <div key={index} className="flex items-center gap-3">
+                         <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
+                         <EditableText
+                           value={value}
+                           field={`culture.values.${index}`}
+                           className="text-gray-700 font-medium flex-1"
+                           placeholder="Core value..."
+                         />
                        </div>
-                     ))}
+                     )) || (
+                       <EditableText
+                         value=""
+                         field="culture.values.0"
+                         className="text-gray-700 font-medium"
+                         placeholder="Click to add core values..."
+                       />
+                     )}
                    </div>
                  </div>
                )}
@@ -335,12 +455,24 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                      <h3 className="text-xl font-bold text-gray-900">Benefits & Perks</h3>
                    </div>
                    <div className="space-y-3">
-                     {profile.culture.benefits.map((benefit, index) => (
-                       <div key={index} className="flex items-center gap-3 p-2 rounded-lg hover:bg-green-50 transition-colors">
+                     {profile.culture?.benefits?.map((benefit, index) => (
+                       <div key={index} className="flex items-center gap-3">
                          <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                         <span className="text-gray-700 font-medium">{benefit}</span>
+                         <EditableText
+                           value={benefit}
+                           field={`culture.benefits.${index}`}
+                           className="text-gray-700 font-medium flex-1"
+                           placeholder="Benefit or perk..."
+                         />
                        </div>
-                     ))}
+                     )) || (
+                       <EditableText
+                         value=""
+                         field="culture.benefits.0"
+                         className="text-gray-700 font-medium"
+                         placeholder="Click to add benefits..."
+                       />
+                     )}
                    </div>
                  </div>
                )}
@@ -357,42 +489,46 @@ export function CompanyProfilePageModern({ profile, onBackToSearch }: Props) {
                    Contact Information
                  </h3>
                 <div className="space-y-4">
-                  {profile.contact?.email && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <Mail size={18} className="text-gray-400" />
-                       <a href={`mailto:${profile.contact.email}`} className="hover:text-indigo-600 transition-colors">
-                        {profile.contact.email}
-                      </a>
-                    </div>
-                  )}
-                  {profile.contact?.phone && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <Phone size={18} className="text-gray-400" />
-                       <a href={`tel:${profile.contact.phone}`} className="hover:text-indigo-600 transition-colors">
-                        {profile.contact.phone}
-                      </a>
-                    </div>
-                  )}
-                  {profile.contact?.website && (
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <Globe size={18} className="text-gray-400" />
-                      <a 
-                        href={profile.contact.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                         className="hover:text-indigo-600 transition-colors flex items-center gap-1"
-                      >
-                        Visit Website
-                        <ExternalLink size={14} />
-                      </a>
-                    </div>
-                  )}
-                  {profile.contact?.address && (
-                    <div className="flex items-start gap-3 text-gray-600">
-                      <MapPin size={18} className="text-gray-400 mt-0.5" />
-                      <span className="text-sm">{profile.contact.address}</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <Mail size={18} className="text-gray-400" />
+                    <EditableText
+                      value={profile.contact?.email || ''}
+                      field="contact.email"
+                      className="hover:text-indigo-600 transition-colors flex-1"
+                      placeholder="email@company.com"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <Phone size={18} className="text-gray-400" />
+                    <EditableText
+                      value={profile.contact?.phone || ''}
+                      field="contact.phone"
+                      className="hover:text-indigo-600 transition-colors flex-1"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <Globe size={18} className="text-gray-400" />
+                    <EditableText
+                      value={profile.contact?.website || ''}
+                      field="contact.website"
+                      className="hover:text-indigo-600 transition-colors flex-1"
+                      placeholder="https://company.com"
+                    />
+                  </div>
+                  
+                  <div className="flex items-start gap-3 text-gray-600">
+                    <MapPin size={18} className="text-gray-400 mt-0.5" />
+                    <EditableText
+                      value={profile.contact?.address || ''}
+                      field="contact.address"
+                      className="text-sm flex-1"
+                      multiline={true}
+                      placeholder="Company address..."
+                    />
+                  </div>
                 </div>
               </div>
             )}
