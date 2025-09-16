@@ -359,85 +359,87 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
          </div>
         
         <div className="relative w-full px-6 py-8">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Company Info */}
-            <div className="text-white">
-              <div className="flex items-center gap-4 mb-6">
-                <div 
-                  className="relative w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-3 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
-                  onClick={() => setShowLogoEditor(true)}
-                >
-                  {getLogoUrl() ? (
-                    <img
-                      src={getLogoUrl()!}
-                      alt={profile.name}
-                      className="w-full h-full object-contain rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <Building2 className="w-10 h-10 text-white" />
-                  )}
-                  
-                  {/* Edit overlay */}
-                  <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="text-white text-xs font-medium">Edit Logo</span>
-                  </div>
-                </div>
-                 <div>
-                   <EditableText
-                     value={profile.name}
-                     field="name"
-                     className="text-3xl font-bold mb-1 text-white block w-full"
-                     placeholder="Company Name"
-                     multiline={false}
-                   />
-                  <div className="flex flex-wrap gap-2 text-white/90">
-                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                       <Factory size={14} />
-                       <EditableText
-                         value={profile.industry || ''}
-                         field="industry"
-                         className="text-white/90 text-sm"
-                         placeholder="Industry"
-                         multiline={false}
-                       />
-                     </div>
-                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                       <Calendar size={14} />
-                       <span>Founded </span>
-                       <EditableText
-                         value={profile.founded || ''}
-                         field="founded"
-                         className="text-white/90 text-sm"
-                         placeholder="Year"
-                         multiline={false}
-                       />
-                     </div>
-                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
-                       <MapPin size={14} />
-                       <EditableText
-                         value={profile.headquarters || ''}
-                         field="headquarters"
-                         className="text-white/90 text-sm"
-                         placeholder="Headquarters"
-                         multiline={false}
-                       />
-                     </div>
-                  </div>
+          <div className="flex items-start gap-8">
+            {/* Logo Column */}
+            <div className="flex-shrink-0">
+              <div 
+                className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
+                onClick={() => setShowLogoEditor(true)}
+              >
+                {getLogoUrl() ? (
+                  <img
+                    src={getLogoUrl()!}
+                    alt={profile.name}
+                    className="w-full h-full object-contain rounded-lg"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <Building2 className="w-12 h-12 text-white" />
+                )}
+                
+                {/* Edit overlay */}
+                <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <span className="text-white text-xs font-medium">Edit Logo</span>
                 </div>
               </div>
+            </div>
 
-               {/* CTA Button */}
-               <button
-                 onClick={() => setShowUniquenessPanel(true)}
-                 className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-               >
-                 <Trophy size={20} />
-                 <span>Discover What Makes Us Unique</span>
-                 <ArrowRight size={18} />
-               </button>
+            {/* Company Info Column */}
+            <div className="flex-1 text-white">
+              <EditableText
+                value={profile.name}
+                field="name"
+                className="text-4xl font-bold mb-4 text-white block w-full"
+                placeholder="Company Name"
+                multiline={false}
+              />
+              <div className="flex flex-wrap gap-2 text-white/90">
+                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                  <Factory size={14} />
+                  <EditableText
+                    value={profile.industry || ''}
+                    field="industry"
+                    className="text-white/90 text-sm"
+                    placeholder="Industry"
+                    multiline={false}
+                  />
+                </div>
+                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                  <Calendar size={14} />
+                  <span>Founded </span>
+                  <EditableText
+                    value={profile.founded || ''}
+                    field="founded"
+                    className="text-white/90 text-sm"
+                    placeholder="Year"
+                    multiline={false}
+                  />
+                </div>
+                <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                  <MapPin size={14} />
+                  <EditableText
+                    value={profile.headquarters || ''}
+                    field="headquarters"
+                    className="text-white/90 text-sm"
+                    placeholder="Headquarters"
+                    multiline={false}
+                  />
+                </div>
+              </div>
+              
+              {/* CTA Button */}
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowUniquenessPanel(true)}
+                  className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  <Trophy size={20} />
+                  <span>Discover What Makes Us Unique</span>
+                  <ArrowRight size={18} />
+                </button>
+              </div>
             </div>
 
           </div>
@@ -495,12 +497,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
        </div>
 
        {/* Main Content */}
-       <div className="w-full px-6 py-6">
-         <div className="grid lg:grid-cols-5 gap-8">
+       <div className="w-full px-6 py-6 overflow-hidden">
+         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:col-span-3 space-y-8 min-w-0">
             {/* Company Overview */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300 min-w-0">
                <div className="flex items-center gap-3 mb-4">
                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
                    <Building2 className="text-indigo-600" size={20} />
@@ -604,10 +606,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 min-w-0">
             {/* Contact Information */}
             {hasContactInfo && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-w-0">
                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                    <Mail className="text-indigo-600" size={20} />
                    Contact Information
@@ -662,7 +664,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Social Media */}
             {hasSocialMedia && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-w-0">
                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                    <Globe className="text-indigo-600" size={20} />
                    Follow Us
