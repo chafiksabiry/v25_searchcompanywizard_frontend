@@ -358,7 +358,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
          </div>
         
         <div className="relative w-full px-6 py-8">
-          <div className="flex items-start justify-between gap-8">
+          <div className="flex items-center justify-between gap-8">
             {/* Left Content */}
             <div className="flex items-start gap-8">
               {/* Logo Column */}
@@ -436,9 +436,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             <div className="flex-shrink-0">
               <button
                 onClick={() => setShowUniquenessPanel(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 <Trophy size={20} />
+                <span>Discover What Makes Us Unique</span>
               </button>
             </div>
 
@@ -446,55 +447,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         </div>
       </div>
 
-       {/* Floating CTA Button - Responsive & Brilliant */}
-       <div className="fixed bottom-6 right-6 z-50">
-         {/* Mobile Version - Smaller */}
-              <button
-                onClick={() => {
-                  console.log('📱 [Profile] Mobile uniqueness button clicked');
-                  setShowUniquenessPanel(true);
-                }}
-                className="lg:hidden group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white p-4 rounded-full font-semibold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-110 hover:-translate-y-2"
-              >
-           {/* Brilliant glow effect */}
-           <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-full blur-lg opacity-60 animate-pulse"></div>
-           <div className="relative">
-             <Trophy size={28} className="drop-shadow-lg" />
-             <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-bounce shadow-lg"></div>
-           </div>
-         </button>
-
-         {/* Desktop Version - Larger */}
-              <button
-                onClick={() => {
-                  console.log('💻 [Profile] Desktop uniqueness button clicked');
-                  setShowUniquenessPanel(true);
-                }}
-                className="hidden lg:flex group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-105 hover:-translate-y-3 items-center gap-4"
-              >
-           {/* Brilliant glow effect */}
-           <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
-           
-           <div className="relative flex items-center gap-4">
-             <div className="relative">
-               <Trophy size={32} className="drop-shadow-lg" />
-               <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-bounce shadow-lg"></div>
-             </div>
-             
-             <div className="text-left">
-               <div className="text-lg font-bold leading-tight">What Makes Us</div>
-               <div className="text-sm opacity-90 font-medium">Unique & Attractive</div>
-             </div>
-             
-             <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform duration-300 drop-shadow-lg" />
-           </div>
-
-           {/* Sparkle animations */}
-           <div className="absolute top-2 left-4 w-1 h-1 bg-white rounded-full animate-ping"></div>
-           <div className="absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
-           <div className="absolute top-4 right-4 w-1 h-1 bg-white rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
-         </button>
-       </div>
 
        {/* Main Content */}
        <div className="w-full px-6 py-6 overflow-hidden">
