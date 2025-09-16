@@ -433,7 +433,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Right Button - Fixed Position */}
             <div className="flex-shrink-0">
-              <div className="fixed top-8 right-8 z-50">
+              <div className="fixed top-6 right-6 z-50">
                 <button
                   onClick={() => setShowUniquenessPanel(true)}
                   className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
