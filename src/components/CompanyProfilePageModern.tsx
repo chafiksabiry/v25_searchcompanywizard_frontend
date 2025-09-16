@@ -14,7 +14,6 @@ import {
   Factory,
   ArrowRight,
   ArrowLeft,
-  Users,
   Award,
   Star,
 } from "lucide-react";
