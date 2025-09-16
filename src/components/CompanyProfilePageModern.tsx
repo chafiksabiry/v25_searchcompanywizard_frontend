@@ -375,7 +375,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     <div className="min-h-screen bg-gray-50">
       {/* Modern Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="w-full px-6 py-2">
           <div className="flex items-center justify-between">
                <button
                  onClick={onBackToSearch}
@@ -441,8 +441,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
            }}></div>
          </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 py-8">
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
+        <div className="relative w-full px-6 py-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Company Info */}
             <div className="text-white">
               <div className="flex items-center gap-4 mb-6">
@@ -574,10 +574,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
        </div>
 
        {/* Main Content */}
-       <div className="max-w-7xl mx-auto px-4 py-6">
-         <div className="grid lg:grid-cols-3 gap-6">
+       <div className="w-full px-6 py-6">
+         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             {/* Company Overview */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
                <div className="flex items-center gap-3 mb-4">
@@ -617,7 +617,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             )}
 
              {/* Values & Benefits */}
-             <div className="grid md:grid-cols-2 gap-4">
+             <div className="grid md:grid-cols-2 gap-6">
                {profile.culture?.values && profile.culture.values.length > 0 && (
                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                    <div className="flex items-center gap-2 mb-3">
