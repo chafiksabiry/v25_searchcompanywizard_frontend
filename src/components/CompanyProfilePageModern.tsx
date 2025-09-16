@@ -428,18 +428,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                   />
                 </div>
               </div>
-              
-              {/* CTA Button */}
-              <div className="mt-6">
-                <button
-                  onClick={() => setShowUniquenessPanel(true)}
-                  className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-                >
-                  <Trophy size={20} />
-                  <span>Discover What Makes Us Unique</span>
-                  <ArrowRight size={18} />
-                </button>
-              </div>
             </div>
 
           </div>
