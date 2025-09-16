@@ -4,7 +4,7 @@ import { Search } from 'lucide-react';
 import { Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openaiBackend';
-import { CompanyProfilePageModern as CompanyProfilePage } from './components/CompanyProfilePageModern';
+import { CompanyProfilePageClean as CompanyProfilePage } from './components/CompanyProfilePageClean';
 import Cookies from 'js-cookie';
 import harxLogo from './assets/harx-blanc.jpg';
 
