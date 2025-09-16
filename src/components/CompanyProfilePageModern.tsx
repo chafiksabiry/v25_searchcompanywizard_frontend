@@ -238,6 +238,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       // Remove any text color classes from className to avoid conflicts
       const classNameWithoutTextColor = className.replace(/text-\w+-\w+/g, '').replace(/text-white/g, '').trim();
       
+      // Check if this is a tag field (small inline fields in hero section)
+      const isTagField = field === 'industry' || field === 'founded' || field === 'headquarters';
+      const inputSizing = isTagField ? 'px-2 py-1' : 'px-3 py-2';
+      const inputWidth = isTagField ? '' : 'w-full';
+      
       return multiline ? (
         <textarea
           value={tempValue}
@@ -255,9 +260,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           onChange={(e) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
           onKeyDown={(e) => handleKeyDown(e, field)}
-          className={`${classNameWithoutTextColor} ${baseEditingClasses} w-full px-3 py-2`}
+          className={`${classNameWithoutTextColor} ${baseEditingClasses} ${inputWidth} ${inputSizing}`}
           placeholder={placeholder}
           autoFocus
+          style={isTagField ? { minWidth: '60px', maxWidth: '200px' } : {}}
         />
       );
     }
@@ -393,7 +399,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.industry || ''}
                          field="industry"
-                         className="text-white/90 text-sm flex-1"
+                         className="text-white/90 text-sm"
                          placeholder="Industry"
                          multiline={false}
                        />
@@ -404,7 +410,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.founded || ''}
                          field="founded"
-                         className="text-white/90 text-sm flex-1"
+                         className="text-white/90 text-sm"
                          placeholder="Year"
                          multiline={false}
                        />
@@ -414,7 +420,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.headquarters || ''}
                          field="headquarters"
-                         className="text-white/90 text-sm flex-1"
+                         className="text-white/90 text-sm"
                          placeholder="Headquarters"
                          multiline={false}
                        />
