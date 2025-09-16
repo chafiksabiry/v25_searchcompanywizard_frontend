@@ -433,13 +433,14 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Right Button - Fixed Position */}
             <div className="flex-shrink-0">
-              <div className="fixed top-6 right-6 z-50">
+              <div className="fixed top-4 right-4 z-50">
                 <button
                   onClick={() => setShowUniquenessPanel(true)}
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105"
                 >
-                  <Trophy size={20} />
-                  <span>Discover What Makes Us Unique</span>
+                  <Trophy size={18} />
+                  <span className="hidden sm:inline">Discover What Makes Us Unique</span>
+                  <span className="sm:hidden">Unique</span>
                 </button>
               </div>
             </div>
