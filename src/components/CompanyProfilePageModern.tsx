@@ -375,16 +375,16 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     <div className="min-h-screen bg-gray-50">
       {/* Modern Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
                <button
                  onClick={onBackToSearch}
-                 className="flex items-center gap-3 px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                 className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
                >
               <ArrowLeft size={20} />
               <span className="font-medium">Back to Search</span>
             </button>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <div className="text-right">
                 <h1 className="text-xl font-bold text-gray-900">{profile.name}</h1>
                 <p className="text-sm text-gray-500">{profile.industry}</p>
@@ -394,7 +394,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               {(hasUnsavedChanges || !profile._id) && !isSyncing && (
                 <button
                   onClick={handleSaveProfile}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                  className="flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                 >
                   <Star size={16} />
                   <span>{profile._id ? 'Save Changes' : 'Save Profile'}</span>
@@ -403,7 +403,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
               {/* Sync Status Indicator */}
               {isSyncing && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
                   <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   <span>Saving...</span>
                 </div>
@@ -411,7 +411,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               
               {/* Unsaved changes indicator */}
               {hasUnsavedChanges && !isSyncing && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
+                <div className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 rounded-full text-sm">
                   <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                   <span>Unsaved Changes</span>
                 </div>
@@ -419,7 +419,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               
               {/* Saved indicator */}
               {profile._id && !hasUnsavedChanges && !isSyncing && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm">
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-700 rounded-full text-sm">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>Saved</span>
                 </div>
@@ -441,13 +441,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
            }}></div>
          </div>
         
-        <div className="relative max-w-7xl mx-auto px-6 py-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 py-8">
+          <div className="grid lg:grid-cols-2 gap-6 items-center">
             {/* Company Info */}
             <div className="text-white">
-              <div className="flex items-center gap-6 mb-8">
+              <div className="flex items-center gap-4 mb-6">
                 <div 
-                  className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
+                  className="relative w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-3 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
                   onClick={() => setShowLogoEditor(true)}
                 >
                   {getLogoUrl() ? (
@@ -460,7 +460,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       }}
                     />
                   ) : (
-                    <Building2 className="w-12 h-12 text-white" />
+                    <Building2 className="w-10 h-10 text-white" />
                   )}
                   
                   {/* Edit overlay */}
@@ -472,12 +472,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                    <EditableText
                      value={profile.name}
                      field="name"
-                     className="text-4xl font-bold mb-2 text-white block w-full"
+                     className="text-3xl font-bold mb-1 text-white block w-full"
                      placeholder="Company Name"
                    />
-                  <div className="flex flex-wrap gap-4 text-white/90">
-                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                       <Factory size={16} />
+                  <div className="flex flex-wrap gap-2 text-white/90">
+                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                       <Factory size={14} />
                        <EditableText
                          value={profile.industry || ''}
                          field="industry"
@@ -485,8 +485,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          placeholder="Industry"
                        />
                      </div>
-                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                       <Calendar size={16} />
+                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                       <Calendar size={14} />
                        <span>Founded </span>
                        <EditableText
                          value={profile.founded || ''}
@@ -495,8 +495,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          placeholder="Year"
                        />
                      </div>
-                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-sm">
-                       <MapPin size={16} />
+                     <div className="flex items-center gap-1 bg-white/10 px-2 py-1 rounded-full text-sm">
+                       <MapPin size={14} />
                        <EditableText
                          value={profile.headquarters || ''}
                          field="headquarters"
@@ -511,7 +511,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                {/* CTA Button */}
                <button
                  onClick={() => setShowUniquenessPanel(true)}
-                 className="inline-flex items-center gap-3 bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                 className="inline-flex items-center gap-2 bg-white text-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                >
                  <Trophy size={20} />
                  <span>Discover What Makes Us Unique</span>
@@ -574,23 +574,23 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
        </div>
 
        {/* Main Content */}
-       <div className="max-w-7xl mx-auto px-6 py-12">
-         <div className="grid lg:grid-cols-3 gap-8">
+       <div className="max-w-7xl mx-auto px-4 py-6">
+         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             {/* Company Overview */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow duration-300">
-               <div className="flex items-center gap-4 mb-6">
-                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
-                   <Building2 className="text-indigo-600" size={24} />
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+               <div className="flex items-center gap-3 mb-4">
+                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
+                   <Building2 className="text-indigo-600" size={20} />
                  </div>
-                <h2 className="text-2xl font-bold text-gray-900">Company Overview</h2>
+                <h2 className="text-xl font-bold text-gray-900">Company Overview</h2>
               </div>
               <div className="prose prose-lg max-w-none">
                 <EditableText
                   value={profile.overview}
                   field="overview"
-                  className="text-gray-700 leading-relaxed text-lg block w-full min-h-[120px]"
+                  className="text-gray-700 leading-relaxed text-base block w-full min-h-[100px]"
                   multiline={true}
                   placeholder="Click to add company overview..."
                 />
@@ -599,17 +599,17 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Mission */}
             {profile.mission && (
-               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-8">
-                 <div className="flex items-center gap-4 mb-6">
-                   <div className="w-12 h-12 bg-indigo-500 rounded-xl flex items-center justify-center">
-                     <Trophy className="text-white" size={24} />
+               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-6">
+                 <div className="flex items-center gap-3 mb-4">
+                   <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
+                     <Trophy className="text-white" size={20} />
                    </div>
-                  <h2 className="text-2xl font-bold text-gray-900">Our Mission</h2>
+                  <h2 className="text-xl font-bold text-gray-900">Our Mission</h2>
                 </div>
                 <EditableText
                   value={profile.mission || ''}
                   field="mission"
-                  className="text-gray-700 leading-relaxed text-lg font-medium block w-full min-h-[80px]"
+                  className="text-gray-700 leading-relaxed text-base font-medium block w-full min-h-[60px]"
                   multiline={true}
                   placeholder="Click to add mission statement..."
                 />
@@ -617,18 +617,18 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             )}
 
              {/* Values & Benefits */}
-             <div className="grid md:grid-cols-2 gap-6">
+             <div className="grid md:grid-cols-2 gap-4">
                {profile.culture?.values && profile.culture.values.length > 0 && (
-                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                   <div className="flex items-center gap-3 mb-4">
-                     <div className="w-8 h-8 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center">
-                       <Trophy className="text-indigo-600" size={18} />
+                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                   <div className="flex items-center gap-2 mb-3">
+                     <div className="w-7 h-7 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center">
+                       <Trophy className="text-indigo-600" size={16} />
                      </div>
-                     <h3 className="text-xl font-bold text-gray-900">Core Values</h3>
+                     <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
                    </div>
-                   <div className="space-y-3">
+                   <div className="space-y-2">
                      {profile.culture?.values?.map((value, index) => (
-                       <div key={index} className="flex items-center gap-3">
+                       <div key={index} className="flex items-center gap-2">
                          <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
                          <EditableText
                            value={value}
@@ -650,16 +650,16 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                )}
 
                {profile.culture?.benefits && profile.culture.benefits.length > 0 && (
-                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                   <div className="flex items-center gap-3 mb-4">
+                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                   <div className="flex items-center gap-2 mb-3">
                      <div className="w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center">
-                       <Award className="text-green-600" size={18} />
+                       <Award className="text-green-600" size={16} />
                      </div>
-                     <h3 className="text-xl font-bold text-gray-900">Benefits & Perks</h3>
+                     <h3 className="text-lg font-bold text-gray-900">Benefits & Perks</h3>
                    </div>
-                   <div className="space-y-3">
+                   <div className="space-y-2">
                      {profile.culture?.benefits?.map((benefit, index) => (
-                       <div key={index} className="flex items-center gap-3">
+                       <div key={index} className="flex items-center gap-2">
                          <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
                          <EditableText
                            value={benefit}
@@ -749,9 +749,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       href={profile.socialMedia.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                     >
-                      <Linkedin size={20} />
+                      <Linkedin size={18} />
                     </a>
                   )}
                   {profile.socialMedia?.twitter && (
@@ -759,9 +759,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       href={profile.socialMedia.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 flex items-center justify-center rounded-xl bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors"
                     >
-                      <Twitter size={20} />
+                      <Twitter size={18} />
                     </a>
                   )}
                   {profile.socialMedia?.facebook && (
@@ -769,9 +769,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       href={profile.socialMedia.facebook}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
                     >
-                      <Facebook size={20} />
+                      <Facebook size={18} />
                     </a>
                   )}
                   {profile.socialMedia?.instagram && (
@@ -779,9 +779,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       href={profile.socialMedia.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-12 h-12 flex items-center justify-center rounded-xl bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-xl bg-pink-50 text-pink-600 hover:bg-pink-100 transition-colors"
                     >
-                      <Instagram size={20} />
+                      <Instagram size={18} />
                     </a>
                   )}
                 </div>
@@ -790,12 +790,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Map */}
             {(profile.contact?.address || hasLocation) && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                    <MapPin className="text-indigo-600" size={20} />
                    Location
                  </h3>
-                <div className="relative h-48 rounded-xl overflow-hidden bg-gray-100">
+                <div className="relative h-40 rounded-xl overflow-hidden bg-gray-100">
                   {getGoogleMapsUrl() ? (
                     <>
                       <iframe
@@ -835,9 +835,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       {/* Logo Editor Modal */}
       {showLogoEditor && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Edit Company Logo</h3>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 transform transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Edit Company Logo</h3>
               <button
                 onClick={() => {
                   setShowLogoEditor(false);
@@ -849,15 +849,15 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               </button>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Current Logo Preview */}
               <div className="text-center">
-                <div className="w-20 h-20 mx-auto bg-gray-100 rounded-xl flex items-center justify-center mb-2">
+                <div className="w-16 h-16 mx-auto bg-gray-100 rounded-xl flex items-center justify-center mb-2">
                   {getLogoUrl() ? (
                     <img
                       src={getLogoUrl()!}
                       alt="Logo preview"
-                      className="w-16 h-16 object-contain rounded-lg"
+                      className="w-14 h-14 object-contain rounded-lg"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -865,7 +865,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       }}
                     />
                   ) : (
-                    <Building2 className="w-10 h-10 text-gray-400" />
+                    <Building2 className="w-8 h-8 text-gray-400" />
                   )}
                 </div>
                 <p className="text-sm text-gray-500">Current Logo</p>
