@@ -496,9 +496,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
        {/* Main Content */}
        <div className="w-full px-6 py-6">
-         <div className="grid lg:grid-cols-3 gap-8">
+         <div className="grid lg:grid-cols-2 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-8">
             {/* Company Overview */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
                <div className="flex items-center gap-3 mb-4">
