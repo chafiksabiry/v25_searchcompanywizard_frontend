@@ -35,7 +35,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [isSyncing, setIsSyncing] = useState(false);
-  const [syncingField, setSyncingField] = useState<string | null>(null);
 
   // Log initial profile load
   React.useEffect(() => {
@@ -153,7 +152,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (profile._id) {
       try {
         setIsSyncing(true);
-        setSyncingField(field);
         console.log('🌐 [Profile] Syncing field to database:', { field, companyId: profile._id });
         
         // Créer l'objet de mise à jour avec la structure correcte
@@ -172,7 +170,6 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         // En cas d'erreur, on garde la modification locale mais on informe l'utilisateur
       } finally {
         setIsSyncing(false);
-        setSyncingField(null);
       }
     } else {
       console.log('ℹ️ [Profile] No company ID, skipping database sync');
@@ -192,7 +189,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     return current;
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
+  const handleKeyDown = async (e: React.KeyboardEvent, field: string) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         await handleFieldSave(field);
