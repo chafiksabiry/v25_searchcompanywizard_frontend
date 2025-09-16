@@ -393,7 +393,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.industry || ''}
                          field="industry"
-                         className="text-white/90 text-sm inline-block min-w-[100px]"
+                         className="text-white/90 text-sm flex-1"
                          placeholder="Industry"
                          multiline={false}
                        />
@@ -404,7 +404,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.founded || ''}
                          field="founded"
-                         className="text-white/90 text-sm inline-block min-w-[60px]"
+                         className="text-white/90 text-sm flex-1"
                          placeholder="Year"
                          multiline={false}
                        />
@@ -414,7 +414,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                        <EditableText
                          value={profile.headquarters || ''}
                          field="headquarters"
-                         className="text-white/90 text-sm inline-block min-w-[120px]"
+                         className="text-white/90 text-sm flex-1"
                          placeholder="Headquarters"
                          multiline={false}
                        />
@@ -548,7 +548,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          <EditableText
                            value={value}
                            field={`culture.values.${index}`}
-                           className="text-gray-700 font-medium flex-1 min-w-[200px]"
+                           className="text-gray-700 font-medium flex-1"
                            placeholder="Core value..."
                          />
                        </div>
@@ -579,7 +579,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                          <EditableText
                            value={benefit}
                            field={`culture.benefits.${index}`}
-                           className="text-gray-700 font-medium flex-1 min-w-[200px]"
+                           className="text-gray-700 font-medium flex-1"
                            placeholder="Benefit or perk..."
                          />
                        </div>
@@ -612,7 +612,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.email || ''}
                       field="contact.email"
-                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600"
                       placeholder="email@company.com"
                       multiline={false}
                     />
@@ -623,7 +623,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.phone || ''}
                       field="contact.phone"
-                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[150px]"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600"
                       placeholder="+1 (555) 123-4567"
                       multiline={false}
                     />
@@ -634,7 +634,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <EditableText
                       value={profile.contact?.website || ''}
                       field="contact.website"
-                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600 min-w-[200px]"
+                      className="hover:text-indigo-600 transition-colors flex-1 text-gray-600"
                       placeholder="https://company.com"
                       multiline={false}
                     />
