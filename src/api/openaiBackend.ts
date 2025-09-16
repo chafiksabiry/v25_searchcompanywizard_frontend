@@ -57,6 +57,8 @@ export const searchCompanyLogo = async (
   companyName: string,
   companyWebsite?: string
 ): Promise<string | null> => {
+  console.log('🔍 [Frontend] Searching company logo:', { companyName, companyWebsite });
+  
   try {
     const response = await fetch(`${apiUrl}/openai/search-logo`, {
       method: 'POST',
@@ -70,13 +72,16 @@ export const searchCompanyLogo = async (
     });
 
     if (!response.ok) {
+      console.error('❌ [Frontend] Logo search failed:', response.status, response.statusText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ [Frontend] Logo search response:', data);
+    
     return data.success ? data.data.logoUrl : null;
   } catch (error) {
-    console.error("Backend Logo Search Error:", error);
+    console.error("💥 [Frontend] Backend Logo Search Error:", error);
     return null;
   }
 };
@@ -84,6 +89,10 @@ export const searchCompanyLogo = async (
 export const generateCompanyProfile = async (
   companyInfo: string
 ): Promise<CompanyProfile> => {
+  console.log('🏢 [Frontend] Generating company profile:', { 
+    companyInfo: companyInfo.substring(0, 100) + '...' 
+  });
+
   let userId: string;
   
   if (deploymentMode === 'standalone') {
@@ -95,6 +104,8 @@ export const generateCompanyProfile = async (
     }
     userId = cookieUserId;
   }
+
+  console.log('👤 [Frontend] Using userId:', userId);
 
   try {
     const response = await fetch(`${apiUrl}/openai/generate-profile`, {
@@ -109,17 +120,26 @@ export const generateCompanyProfile = async (
     });
 
     if (!response.ok) {
+      console.error('❌ [Frontend] Profile generation failed:', response.status, response.statusText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ [Frontend] Profile generation response:', {
+      success: data.success,
+      hasData: !!data.data,
+      companyName: data.data?.name,
+      industry: data.data?.industry,
+      dataKeys: data.data ? Object.keys(data.data) : []
+    });
+
     if (!data.success) {
       throw new Error(data.message || 'Failed to generate company profile');
     }
 
     return data.data;
   } catch (error) {
-    console.error("Backend API Error:", error);
+    console.error("💥 [Frontend] Backend API Error:", error);
     throw new Error("Failed to generate company profile");
   }
 };
@@ -136,6 +156,11 @@ export async function generateCompanyIntro(profile: CompanyProfile): Promise<str
 }
 
 export async function generateUniquenessCategories(profile: CompanyProfile): Promise<UniquenessCategory[]> {
+  console.log('⭐ [Frontend] Generating uniqueness categories for:', {
+    companyName: profile.name,
+    industry: profile.industry
+  });
+
   try {
     const response = await fetch(`${apiUrl}/openai/generate-uniqueness`, {
       method: 'POST',
@@ -148,10 +173,21 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
     });
 
     if (!response.ok) {
+      console.error('❌ [Frontend] Uniqueness generation failed:', response.status, response.statusText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('✅ [Frontend] Uniqueness generation response:', {
+      success: data.success,
+      categoriesCount: data.data?.length || 0,
+      rawCategories: data.data?.map((cat: any) => ({
+        title: cat.title,
+        icon: cat.icon,
+        score: cat.score
+      })) || []
+    });
+
     if (!data.success) {
       throw new Error(data.message || 'Failed to generate uniqueness categories');
     }
@@ -181,15 +217,27 @@ export async function generateUniquenessCategories(profile: CompanyProfile): Pro
     };
 
     // Transformer les données pour inclure les vraies icônes
-    return data.data.map((category: any) => ({
+    const transformedCategories = data.data.map((category: any) => ({
       title: category.title,
       description: category.description,
       score: category.score,
       details: category.details,
       icon: iconMap[category.icon] || Award, // Default to Award if icon not found
     }));
+
+    console.log('🎯 [Frontend] Transformed categories with icons:', {
+      categoriesCount: transformedCategories.length,
+      categories: transformedCategories.map((cat: any) => ({
+        title: cat.title,
+        iconName: Object.keys(iconMap).find(key => iconMap[key] === cat.icon) || 'Award',
+        score: cat.score,
+        detailsCount: cat.details?.length || 0
+      }))
+    });
+
+    return transformedCategories;
   } catch (error) {
-    console.error("Backend API Error:", error);
+    console.error("💥 [Frontend] Backend API Error:", error);
     throw new Error("Failed to generate uniqueness categories");
   }
 }

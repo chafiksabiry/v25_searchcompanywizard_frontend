@@ -45,6 +45,8 @@ function App() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     
+    console.log('🔍 [App] Starting company search:', { query: searchQuery });
+    
     setIsLoading(true);
     setError(null);
     setSearchResults([]);
@@ -52,8 +54,24 @@ function App() {
 
     try {
       const results = await googleApi.search(searchQuery);
+      
+      console.log('✅ [App] Search results received:', {
+        resultsCount: results.length,
+        companies: results.map(r => ({
+          title: r.title,
+          domain: (() => {
+            try {
+              return new URL(r.link).hostname;
+            } catch {
+              return 'unknown';
+            }
+          })()
+        }))
+      });
+      
       setSearchResults(results);
     } catch (err) {
+      console.error('💥 [App] Search error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while searching');
     } finally {
       setIsLoading(false);
@@ -61,6 +79,12 @@ function App() {
   };
 
   const handleSelectResult = async (result: GoogleSearchResult) => {
+    console.log('🎯 [App] Company selected for profile generation:', {
+      title: result.title,
+      link: result.link,
+      snippet: result.snippet?.substring(0, 100) + '...'
+    });
+
     setIsLoading(true);
     setError(null);
     
@@ -72,11 +96,30 @@ function App() {
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
       
+      console.log('📝 [App] Company info prepared for OpenAI:', {
+        companyInfoLength: companyInfo.length,
+        companyInfo: companyInfo.substring(0, 200) + '...'
+      });
+      
       const profile = await generateCompanyProfile(companyInfo);
+      
+      console.log('✅ [App] Company profile generated successfully:', {
+        companyName: profile.name,
+        industry: profile.industry,
+        hasLogo: !!profile.logo,
+        hasContact: !!profile.contact,
+        hasCulture: !!profile.culture,
+        valuesCount: profile.culture?.values?.length || 0,
+        benefitsCount: profile.culture?.benefits?.length || 0,
+        hasCompanyIntro: !!profile.companyIntro
+      });
+      
       setCompanyProfile(profile);
       setShowProfilePage(true);
+      
+      console.log('🔄 [App] Switched to profile page view');
     } catch (err) {
-      console.error('Profile generation error:', err);
+      console.error('💥 [App] Profile generation error:', err);
       setError('Failed to generate company profile. Please try again.');
     } finally {
       setIsLoading(false);

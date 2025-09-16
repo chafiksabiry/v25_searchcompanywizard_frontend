@@ -34,6 +34,20 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
 
+  // Log initial profile load
+  React.useEffect(() => {
+    console.log('🏢 [Profile] Company profile page loaded:', {
+      companyName: initialProfile.name,
+      industry: initialProfile.industry,
+      hasLogo: !!initialProfile.logo,
+      hasContact: !!initialProfile.contact,
+      hasCulture: !!initialProfile.culture,
+      valuesCount: initialProfile.culture?.values?.length || 0,
+      benefitsCount: initialProfile.culture?.benefits?.length || 0,
+      profileKeys: Object.keys(initialProfile)
+    });
+  }, [initialProfile]);
+
   const hasContactInfo =
     profile.contact?.email ||
     profile.contact?.phone ||
@@ -102,6 +116,12 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   };
 
   const handleFieldSave = (field: string) => {
+    console.log('💾 [Profile] Saving field:', { 
+      field, 
+      oldValue: getFieldValue(field),
+      newValue: tempValue 
+    });
+
     const updateProfile = (path: string[], value: any) => {
       const newProfile = { ...profile };
       let current = newProfile as any;
@@ -114,8 +134,28 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     };
 
     const fieldPath = field.split(".");
-    setProfile(updateProfile(fieldPath, tempValue));
+    const updatedProfile = updateProfile(fieldPath, tempValue);
+    setProfile(updatedProfile);
     setEditingField(null);
+
+    console.log('✅ [Profile] Field saved successfully:', { 
+      field, 
+      newValue: tempValue,
+      profileUpdated: true 
+    });
+  };
+
+  const getFieldValue = (field: string) => {
+    const fieldPath = field.split(".");
+    let current = profile as any;
+    for (const key of fieldPath) {
+      if (current && typeof current === 'object') {
+        current = current[key];
+      } else {
+        return undefined;
+      }
+    }
+    return current;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, field: string) => {
@@ -131,19 +171,39 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      console.log('📷 [Profile] Logo upload started:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type
+      });
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setProfile({ ...profile, logo: result });
         setShowLogoEditor(false);
+        
+        console.log('✅ [Profile] Logo uploaded successfully:', {
+          fileName: file.name,
+          dataSize: result.length,
+          logoSet: true
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleLogoUrlSave = () => {
+    console.log('🌐 [Profile] Logo URL save:', {
+      logoUrl: logoUrl.trim(),
+      hasUrl: !!logoUrl.trim()
+    });
+
     if (logoUrl.trim()) {
       setProfile({ ...profile, logo: logoUrl.trim() });
+      console.log('✅ [Profile] Logo URL saved successfully:', {
+        logoUrl: logoUrl.trim()
+      });
     }
     setShowLogoEditor(false);
     setLogoUrl("");
@@ -233,10 +293,18 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   };
 
   if (showUniquenessPanel) {
+    console.log('⭐ [Profile] Showing uniqueness panel for:', {
+      companyName: profile.name,
+      industry: profile.industry
+    });
+
     return (
       <UniquenessPanel
         profile={profile}
-        onBack={() => setShowUniquenessPanel(false)}
+        onBack={() => {
+          console.log('🔙 [Profile] Returning from uniqueness panel');
+          setShowUniquenessPanel(false);
+        }}
       />
     );
   }
@@ -392,10 +460,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
        {/* Floating CTA Button - Responsive & Brilliant */}
        <div className="fixed bottom-6 right-6 z-50">
          {/* Mobile Version - Smaller */}
-         <button
-           onClick={() => setShowUniquenessPanel(true)}
-           className="lg:hidden group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white p-4 rounded-full font-semibold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-110 hover:-translate-y-2"
-         >
+              <button
+                onClick={() => {
+                  console.log('📱 [Profile] Mobile uniqueness button clicked');
+                  setShowUniquenessPanel(true);
+                }}
+                className="lg:hidden group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white p-4 rounded-full font-semibold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-110 hover:-translate-y-2"
+              >
            {/* Brilliant glow effect */}
            <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-full blur-lg opacity-60 animate-pulse"></div>
            <div className="relative">
@@ -405,10 +476,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
          </button>
 
          {/* Desktop Version - Larger */}
-         <button
-           onClick={() => setShowUniquenessPanel(true)}
-           className="hidden lg:flex group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-105 hover:-translate-y-3 items-center gap-4"
-         >
+              <button
+                onClick={() => {
+                  console.log('💻 [Profile] Desktop uniqueness button clicked');
+                  setShowUniquenessPanel(true);
+                }}
+                className="hidden lg:flex group relative bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 transition-all duration-500 shadow-2xl hover:shadow-indigo-500/50 transform hover:scale-105 hover:-translate-y-3 items-center gap-4"
+              >
            {/* Brilliant glow effect */}
            <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-blue-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
            
