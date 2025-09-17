@@ -608,11 +608,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                   </div>
                   
                   <div className="flex items-start gap-3 text-gray-600">
-                    <MapPin size={18} className="text-gray-400 flex-shrink-0 mt-1" />
+                    <MapPin size={18} className="text-gray-400 flex-shrink-0 mt-0.5" />
                     <EditableText
                       value={profile.contact?.address || ''}
                       field="contact.address"
-                      className="text-sm flex-1 text-gray-600 min-h-[60px] block w-full"
+                      className="text-sm flex-1 text-gray-600 min-h-[60px] block w-full leading-relaxed"
                       multiline={true}
                       placeholder="Company address..."
                     />
