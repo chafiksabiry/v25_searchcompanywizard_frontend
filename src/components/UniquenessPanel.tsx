@@ -3,7 +3,6 @@ import {
   ChevronLeft,
   ArrowRight,
   Loader2,
-  RefreshCw,
 } from "lucide-react";
 import type { CompanyProfile, UniquenessCategory } from "../api/openaiBackend";
 import { generateUniquenessCategories } from "../api/openaiBackend";
@@ -147,25 +146,11 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               <ChevronLeft size={20} />
               <span>Back to Profile</span>
             </button>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={generateCategories}
-                disabled={isGenerating}
-                className={`p-2 rounded-full transition-all duration-300 ${
-                  isGenerating
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-                title="Regenerate categories with AI"
-              >
-                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}
-              </button>
-              <div className="text-right">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {profile.name}
-                </h1>
-                <p className="text-gray-500 mt-1">{profile.industry}</p>
-              </div>
+            <div className="text-right">
+              <h1 className="text-3xl font-bold text-gray-900">
+                {profile.name}
+              </h1>
+              <p className="text-gray-500 mt-1">{profile.industry}</p>
             </div>
           </div>
           <button
@@ -209,7 +194,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                 <p className="text-gray-600 mb-4">No categories generated. Please try again.</p>
                 <button
                   onClick={generateCategories}
-                  className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Generate Categories
                 </button>
