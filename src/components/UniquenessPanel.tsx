@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   ChevronLeft,
-  Edit2,
-  Check,
   ArrowRight,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 import type { CompanyProfile, UniquenessCategory } from "../api/openaiBackend";
 import { generateUniquenessCategories } from "../api/openaiBackend";
@@ -159,7 +158,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                 }`}
                 title="Regenerate categories with AI"
               >
-                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Edit2 size={20} />}
+                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <RefreshCw size={20} />}
               </button>
               <div className="text-right">
                 <h1 className="text-3xl font-bold text-gray-900">
