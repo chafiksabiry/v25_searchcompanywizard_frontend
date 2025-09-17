@@ -608,7 +608,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                   </div>
                   
                   <div className="flex items-start gap-3 text-gray-600">
-                    <MapPin size={18} className="text-gray-400 mt-0.5" />
+                    <MapPin size={18} className="text-gray-400 flex-shrink-0 mt-1" />
                     <EditableText
                       value={profile.contact?.address || ''}
                       field="contact.address"
