@@ -588,10 +588,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                   <div className="flex items-center gap-3 text-gray-600">
                     <Phone size={18} className="text-gray-400" />
                     <EditableText
-                      value={profile.contact?.phone || ''}
+                      value={profile.contact?.phone || 'Téléphone non trouvé - Cliquez pour ajouter manuellement'}
                       field="contact.phone"
                       className="hover:text-indigo-600 transition-colors flex-1 text-gray-600"
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="Téléphone non trouvé - Cliquez pour ajouter manuellement"
                       multiline={false}
                     />
                   </div>
