@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
-import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openai';
-import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
+import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openaiBackend';
+import { CompanyProfilePageModern as CompanyProfilePage } from './components/CompanyProfilePageModern';
 import Cookies from 'js-cookie';
 import harxLogo from './assets/harx-blanc.jpg';
 
@@ -18,6 +18,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [logoCache, setLogoCache] = useState<Record<string, string>>({});
+  const [showProfilePage, setShowProfilePage] = useState(false);
 
   useEffect(() => {
     const checkUserCompany = async () => {
@@ -44,6 +45,8 @@ function App() {
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     
+    console.log('🔍 [App] Starting company search:', { query: searchQuery });
+    
     setIsLoading(true);
     setError(null);
     setSearchResults([]);
@@ -51,8 +54,24 @@ function App() {
 
     try {
       const results = await googleApi.search(searchQuery);
+      
+      console.log('✅ [App] Search results received:', {
+        resultsCount: results.length,
+        companies: results.map(r => ({
+          title: r.title,
+          domain: (() => {
+            try {
+              return new URL(r.link).hostname;
+            } catch {
+              return 'unknown';
+            }
+          })()
+        }))
+      });
+      
       setSearchResults(results);
     } catch (err) {
+      console.error('💥 [App] Search error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while searching');
     } finally {
       setIsLoading(false);
@@ -60,6 +79,12 @@ function App() {
   };
 
   const handleSelectResult = async (result: GoogleSearchResult) => {
+    console.log('🎯 [App] Company selected for profile generation:', {
+      title: result.title,
+      link: result.link,
+      snippet: result.snippet?.substring(0, 100) + '...'
+    });
+
     setIsLoading(true);
     setError(null);
     
@@ -71,15 +96,50 @@ function App() {
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
       
+      console.log('📝 [App] Company info prepared for OpenAI:', {
+        companyInfoLength: companyInfo.length,
+        companyInfo: companyInfo.substring(0, 200) + '...'
+      });
+      
       const profile = await generateCompanyProfile(companyInfo);
+      
+      console.log('✅ [App] Company profile generated successfully:', {
+        companyName: profile.name,
+        industry: profile.industry,
+        hasLogo: !!profile.logo,
+        hasContact: !!profile.contact,
+        hasCulture: !!profile.culture,
+        valuesCount: profile.culture?.values?.length || 0,
+        benefitsCount: profile.culture?.benefits?.length || 0,
+        hasCompanyIntro: !!profile.companyIntro
+      });
+      
       setCompanyProfile(profile);
+      setShowProfilePage(true);
+      
+      console.log('🔄 [App] Switched to profile page view');
     } catch (err) {
-      console.error('Profile generation error:', err);
+      console.error('💥 [App] Profile generation error:', err);
       setError('Failed to generate company profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Si on affiche la page de profil, on affiche seulement celle-ci
+  if (showProfilePage && companyProfile) {
+    return (
+      <CompanyProfilePage
+        profile={companyProfile}
+        onBackToSearch={() => {
+          setShowProfilePage(false);
+          setCompanyProfile(null);
+          setSearchResults([]);
+          setSearchQuery('');
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
@@ -231,13 +291,6 @@ function App() {
           </div>
         </div>
       </div>
-
-      {companyProfile && (
-        <CompanyProfileComponent
-          profile={companyProfile}
-          onClose={() => setCompanyProfile(null)}
-        />
-      )}
     </div>
   );
 }

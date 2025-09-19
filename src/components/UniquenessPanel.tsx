@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   ChevronLeft,
-  Edit2,
-  Check,
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import type { CompanyProfile, UniquenessCategory } from "../api/openai";
-import { generateUniquenessCategories } from "../api/openai";
+import type { CompanyProfile, UniquenessCategory } from "../api/openaiBackend";
+import { generateUniquenessCategories } from "../api/openaiBackend";
 import { DifferentiatorsPanel } from "./DifferentiatorsPanel";
 
 import { LucideProps } from "lucide-react";
@@ -18,7 +16,6 @@ interface Props {
 }
 
 export function UniquenessPanel({ profile, onBack }: Props) {
-  const [editMode, setEditMode] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [categories, setCategories] = useState<UniquenessCategory[]>([]);
@@ -89,9 +86,10 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               <textarea
                 value={tempValue}
                 onChange={(e) => setTempValue(e.target.value)}
-                className="w-full min-h-16 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
+                className="w-full min-h-16 px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900 resize-y"
                 onKeyDown={(e) => {
                   if ((e.ctrlKey || e.metaKey) && e.key === "Enter") handleSave(field);
+                  if (e.key === "Escape") setEditingField(null);
                 }}
                 autoFocus
                 onBlur={() => handleSave(field)}
@@ -101,31 +99,24 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                 type={type}
                 value={tempValue}
                 onChange={(e) => setTempValue(e.target.value)}
-                className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
-                onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
+                className="flex-1 px-3 py-2 border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-gray-900"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSave(field);
+                  if (e.key === "Escape") setEditingField(null);
+                }}
                 autoFocus
                 onBlur={() => handleSave(field)}
               />
             )}
-            <button
-              onClick={() => handleSave(field)}
-              className="p-1 text-green-600 hover:text-green-700"
-            >
-              <Check size={16} />
-            </button>
           </div>
         ) : (
-          <div className="flex items-center gap-2">
+          <div 
+            className="flex items-center gap-2 cursor-pointer rounded-lg px-3 py-2 border border-transparent hover:bg-gray-50 transition-colors"
+            onClick={() => handleEdit(field, value)}
+            title="Click to edit"
+          >
             {Icon && <Icon size={18} className="text-gray-600" />}
-            <span>{value}</span>
-            {editMode && (
-              <button
-                onClick={() => handleEdit(field, value)}
-                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
-              >
-                <Edit2 size={14} />
-              </button>
-            )}
+            <span className={!value ? 'text-gray-400 italic' : ''}>{value || 'Click to edit...'}</span>
           </div>
         )}
       </div>
@@ -155,35 +146,11 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               <ChevronLeft size={20} />
               <span>Back to Profile</span>
             </button>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setEditMode(!editMode)}
-                className={`p-2 rounded-full transition-all duration-300 ${
-                  editMode
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-                }`}
-              >
-                <Edit2 size={20} />
-              </button>
-              <button
-                onClick={generateCategories}
-                disabled={isGenerating}
-                className={`p-2 rounded-full transition-all duration-300 ${
-                  isGenerating
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-                title="Regenerate categories with AI"
-              >
-                {isGenerating ? <Loader2 size={20} className="animate-spin" /> : <Edit2 size={20} />}
-              </button>
-              <div className="text-right">
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {profile.name}
-                </h1>
-                <p className="text-gray-500 mt-1">{profile.industry}</p>
-              </div>
+            <div className="text-right">
+              <h1 className="text-3xl font-bold text-gray-900">
+                {profile.name}
+              </h1>
+              <p className="text-gray-500 mt-1">{profile.industry}</p>
             </div>
           </div>
           <button
@@ -227,7 +194,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                 <p className="text-gray-600 mb-4">No categories generated. Please try again.</p>
                 <button
                   onClick={generateCategories}
-                  className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Generate Categories
                 </button>
