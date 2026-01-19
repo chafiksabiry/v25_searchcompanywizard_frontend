@@ -18,7 +18,7 @@ const removeReactRefreshScript = () => {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const baseUrl = 'https://companysearchwizard.harx.ai/';
+  const baseUrl = 'https://harxv25searchcompanywizardfrontend.netlify.app/';
 
   return {
     base: baseUrl,
