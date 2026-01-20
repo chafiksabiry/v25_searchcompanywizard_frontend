@@ -1,24 +1,20 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
-import { Building2 } from 'lucide-react';
+import { Search, Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
-import { generateCompanyProfile, searchCompanyLogo, type CompanyProfile } from './api/openaiBackend';
-import { CompanyProfilePageModern as CompanyProfilePage } from './components/CompanyProfilePageModern';
+import { generateCompanyProfile, type CompanyProfile } from './api/openai';
+import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
 import Cookies from 'js-cookie';
-import harxLogo from './assets/harx-blanc.jpg';
 
 
 function App() {
-
+  
   const [searchQuery, setSearchQuery] = React.useState('');
   const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<GoogleSearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
-  const [logoCache, setLogoCache] = useState<Record<string, string>>({});
-  const [showProfilePage, setShowProfilePage] = useState(false);
 
   useEffect(() => {
     const checkUserCompany = async () => {
@@ -37,16 +33,14 @@ function App() {
         }
       }
     };
-
+  
     checkUserCompany();
   }, []);
-
+  
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-
-    console.log('🔍 [App] Starting company search:', { query: searchQuery });
-
+    
     setIsLoading(true);
     setError(null);
     setSearchResults([]);
@@ -54,24 +48,8 @@ function App() {
 
     try {
       const results = await googleApi.search(searchQuery);
-
-      console.log('✅ [App] Search results received:', {
-        resultsCount: results.length,
-        companies: results.map(r => ({
-          title: r.title,
-          domain: (() => {
-            try {
-              return new URL(r.link).hostname;
-            } catch {
-              return 'unknown';
-            }
-          })()
-        }))
-      });
-
       setSearchResults(results);
     } catch (err) {
-      console.error('💥 [App] Search error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while searching');
     } finally {
       setIsLoading(false);
@@ -79,15 +57,9 @@ function App() {
   };
 
   const handleSelectResult = async (result: GoogleSearchResult) => {
-    console.log('🎯 [App] Company selected for profile generation:', {
-      title: result.title,
-      link: result.link,
-      snippet: result.snippet?.substring(0, 100) + '...'
-    });
-
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const companyInfo = `
         Company Name: ${result.title}
@@ -95,72 +67,32 @@ function App() {
         Description: ${result.snippet}
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
-
-      console.log('📝 [App] Company info prepared for OpenAI:', {
-        companyInfoLength: companyInfo.length,
-        companyInfo: companyInfo.substring(0, 200) + '...'
-      });
-
+      
       const profile = await generateCompanyProfile(companyInfo);
-
-      console.log('✅ [App] Company profile generated successfully:', {
-        companyName: profile.name,
-        industry: profile.industry,
-        hasLogo: !!profile.logo,
-        hasContact: !!profile.contact,
-        hasCulture: !!profile.culture,
-        valuesCount: profile.culture?.values?.length || 0,
-        benefitsCount: profile.culture?.benefits?.length || 0,
-        hasCompanyIntro: !!profile.companyIntro
-      });
-
       setCompanyProfile(profile);
-      setShowProfilePage(true);
-
-      console.log('🔄 [App] Switched to profile page view');
     } catch (err) {
-      console.error('💥 [App] Profile generation error:', err);
+      console.error('Profile generation error:', err);
       setError('Failed to generate company profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Si on affiche la page de profil, on affiche seulement celle-ci
-  if (showProfilePage && companyProfile) {
-    return (
-      <CompanyProfilePage
-        profile={companyProfile}
-        onBackToSearch={() => {
-          setShowProfilePage(false);
-          setCompanyProfile(null);
-          setSearchResults([]);
-          setSearchQuery('');
-        }}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
       <div className="max-w-4xl mx-auto pt-12">
         <div className="text-center mb-8">
-          <img
-            src={harxLogo}
-            alt="Harx Logo"
-            className="mx-auto mb-6 h-16 w-auto"
-          />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Company Profile Search</h1>
           <p className="text-lg text-gray-600">
             Search for companies and generate detailed profiles with unique insights
           </p>
         </div>
-        {/* 🔔 Add your message here */}
-        {redirectMessage && (
-          <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
-            {redirectMessage}
-          </div>
-        )}
+         {/* 🔔 Add your message here */}
+  {redirectMessage && (
+    <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
+      {redirectMessage}
+    </div>
+  )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
           <div className="relative">
@@ -193,113 +125,41 @@ function App() {
                 <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : (
-              searchResults.map((result, index) => {
-                // Ordre de fallback : og:image > cache > OpenAI > Clearbit > Google Favicon > logo par défaut
-                let logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
-                const cacheKey = `${result.title}-${result.link}`;
-                if (!logoUrl) {
-                  logoUrl = logoCache[cacheKey];
-                  if (!logoUrl) {
-                    const fetchLogo = async () => {
-                      try {
-                        const domain = (() => {
-                          try {
-                            return new URL(result.link).hostname;
-                          } catch {
-                            return null;
-                          }
-                        })();
-                        let aiLogoUrl = null;
-                        if (domain) {
-                          aiLogoUrl = await searchCompanyLogo(result.title, result.link);
-                        }
-                        if (aiLogoUrl) {
-                          setLogoCache(prev => ({ ...prev, [cacheKey]: aiLogoUrl }));
-                          return aiLogoUrl;
-                        }
-                        // Fallback Clearbit
-                        if (domain) {
-                          const clearbitUrl = `https://logo.clearbit.com/${domain}`;
-                          // Test if Clearbit returns a real image
-                          const testImg = new window.Image();
-                          testImg.onload = () => {
-                            setLogoCache(prev => ({ ...prev, [cacheKey]: clearbitUrl }));
-                          };
-                          testImg.onerror = () => {
-                            // Fallback Google Favicon
-                            const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                            setLogoCache(prev => ({ ...prev, [cacheKey]: faviconUrl }));
-                          };
-                          testImg.src = clearbitUrl;
-                          return clearbitUrl;
-                        }
-                        // Fallback Google Favicon (si pas de domaine)
-                        if (domain) {
-                          const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                          setLogoCache(prev => ({ ...prev, [cacheKey]: faviconUrl }));
-                          return faviconUrl;
-                        }
-                        // Fallback logo par défaut
-                        setLogoCache(prev => ({ ...prev, [cacheKey]: 'default' }));
-                        return 'default';
-                      } catch (e) {
-                        setLogoCache(prev => ({ ...prev, [cacheKey]: 'default' }));
-                        return 'default';
-                      }
-                    };
-                    fetchLogo();
-                  }
-                }
-
-                return (
-                  <div
-                    key={index}
-                    className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                        {logoUrl && logoUrl !== 'default' ? (
-                          <img
-                            src={logoUrl}
-                            alt={result.title}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              const target = e.currentTarget;
-                              target.style.display = 'none';
-                              // Force show the fallback icon by adding a class or manipulating the parent
-                              const parent = target.parentElement;
-                              if (parent) {
-                                // We can't easily change the React state here for just one item,
-                                // but we can show a hidden icon or just use a generic fallback.
-                                // A better way is to use a dedicated Logo component.
-                              }
-                            }}
-                          />
-                        ) : null}
-                        {(logoUrl === 'default' || !logoUrl) && (
-                          <Building2 className="text-indigo-600" size={28} />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          {result.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
-                        <button
-                          onClick={() => handleSelectResult(result)}
-                          className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-                        >
-                          Generate Profile
-                        </button>
-                      </div>
+              searchResults.map((result, index) => (
+                <div
+                  key={index}
+                  className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="text-indigo-600" size={20} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {result.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
+                      <button
+                        onClick={() => handleSelectResult(result)}
+                        className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+                      >
+                        Generate Profile
+                      </button>
                     </div>
                   </div>
-                );
-              })
+                </div>
+              ))
             )}
           </div>
         </div>
       </div>
+
+      {companyProfile && (
+        <CompanyProfileComponent
+          profile={companyProfile}
+          onClose={() => setCompanyProfile(null)}
+        />
+      )}
     </div>
   );
 }

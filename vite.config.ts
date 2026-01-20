@@ -18,10 +18,9 @@ const removeReactRefreshScript = () => {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const baseUrl = 'https://harxv25searchcompanywizardfrontend.netlify.app/';
 
   return {
-    base: baseUrl,
+    base: 'https://harxv25searchcompanywizardfrontend.netlify.app',
     plugins: [
       react({
         jsxRuntime: 'classic',
@@ -29,7 +28,7 @@ export default defineConfig(({ mode }) => {
       qiankun('app4', {
         useDevMode: true,
       }),
-      removeReactRefreshScript(),
+      removeReactRefreshScript(), // Add the script removal plugin
     ],
 
     define: {
