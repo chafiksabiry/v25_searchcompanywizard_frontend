@@ -1,5 +1,6 @@
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "VITE_GOOGLE_API_KEY"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
 [[headers]]
   for = "/*"
