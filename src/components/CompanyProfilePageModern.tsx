@@ -30,6 +30,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   const [tempValue, setTempValue] = useState("");
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
+  const [logoError, setLogoError] = useState(false);
 
   // Log initial profile load
   React.useEffect(() => {
@@ -47,6 +48,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     });
 
   }, [initialProfile]);
+
+  // Reset error when logo changes
+  React.useEffect(() => {
+    setLogoError(false);
+  }, [profile.logo, profile.contact?.website]);
 
   const hasContactInfo =
     profile.contact?.email ||
@@ -97,7 +103,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
   const getLogoUrl = () => {
     if (profile.logo) return profile.logo;
-    
+
     if (profile.contact?.website) {
       try {
         const domain = new URL(profile.contact.website).hostname;
@@ -106,7 +112,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         return null;
       }
     }
-    
+
     return null;
   };
 
@@ -116,10 +122,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   };
 
   const handleFieldSave = async (field: string) => {
-    console.log('💾 [Profile] Saving field:', { 
-      field, 
+    console.log('💾 [Profile] Saving field:', {
+      field,
       oldValue: getFieldValue(field),
-      newValue: tempValue 
+      newValue: tempValue
     });
 
     const updateProfile = (path: string[], value: any) => {
@@ -135,13 +141,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
     const fieldPath = field.split(".");
     const updatedProfile = updateProfile(fieldPath, tempValue);
-    
+
     // Mise à jour locale immédiate pour une meilleure UX
     setProfile(updatedProfile);
     setEditingField(null);
 
-    console.log('✅ [Profile] Field saved locally:', { 
-      field, 
+    console.log('✅ [Profile] Field saved locally:', {
+      field,
       newValue: tempValue,
       profileUpdated: true
     });
@@ -161,13 +167,13 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent, field: string) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        await handleFieldSave(field);
-      }
-      if (e.key === 'Escape') {
-        setEditingField(null);
-      }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      await handleFieldSave(field);
+    }
+    if (e.key === 'Escape') {
+      setEditingField(null);
+    }
   };
 
 
@@ -186,7 +192,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         const updatedProfile = { ...profile, logo: result };
         setProfile(updatedProfile);
         setShowLogoEditor(false);
-        
+
         console.log('✅ [Profile] Logo uploaded successfully:', {
           fileName: file.name,
           dataSize: result.length,
@@ -206,7 +212,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (logoUrl.trim()) {
       const updatedProfile = { ...profile, logo: logoUrl.trim() };
       setProfile(updatedProfile);
-      
+
       console.log('✅ [Profile] Logo URL saved successfully:', {
         logoUrl: logoUrl.trim()
       });
@@ -215,10 +221,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     setLogoUrl("");
   };
 
-  const EditableText = ({ 
-    value, 
-    field, 
-    className = "", 
+  const EditableText = ({
+    value,
+    field,
+    className = "",
     multiline = false,
     placeholder = "Click to edit..."
   }: {
@@ -233,15 +239,15 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     if (isEditing) {
       // Create base classes while preserving original styling but override text color
       const baseEditingClasses = "border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white !text-gray-900";
-      
+
       // Remove any text color classes from className to avoid conflicts
       const classNameWithoutTextColor = className.replace(/text-\w+-\w+/g, '').replace(/text-white/g, '').trim();
-      
+
       // Check if this is a tag field (small inline fields in hero section)
       const isTagField = field === 'industry' || field === 'founded' || field === 'headquarters';
       const inputSizing = isTagField ? 'px-2 py-1' : 'px-3 py-2';
       const inputWidth = isTagField ? '' : 'w-full';
-      
+
       return multiline ? (
         <textarea
           value={tempValue}
@@ -270,7 +276,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
     // Check if this field contains a URL (website, email, or phone)
     const isClickableField = field.includes('website') || field.includes('email') || field.includes('phone');
     const isUrl = value && (value.startsWith('http') || value.startsWith('mailto:') || value.includes('@') || value.startsWith('tel:'));
-    
+
     if (isClickableField && isUrl && !editingField) {
       // Render as clickable link for website/email/phone fields
       let href = value;
@@ -279,7 +285,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       } else if (field.includes('phone') && !value.startsWith('tel:')) {
         href = `tel:${value}`;
       }
-      
+
       return (
         <a
           href={href}
@@ -331,11 +337,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       {/* Modern Header */}
       <div className="bg-white shadow-sm sticky top-0 z-50">
         <div className="w-full px-6 py-2">
-            <div className="flex items-center justify-between">
-               <button
-                 onClick={onBackToSearch}
-                 className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
-               >
+          <div className="flex items-center justify-between">
+            <button
+              onClick={onBackToSearch}
+              className="flex items-center gap-2 px-3 py-1 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+            >
               <ArrowLeft size={20} />
               <span className="font-medium">Back to Search</span>
             </button>
@@ -349,41 +355,42 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         </div>
       </div>
 
-       {/* Hero Section */}
-       <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 overflow-hidden">
-         <div className="absolute inset-0">
-           <div className="absolute inset-0 bg-black/20"></div>
-           <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/90 to-purple-600/90"></div>
-           {/* Pattern overlay */}
-           <div className="absolute inset-0 opacity-10" style={{
-             backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-             backgroundSize: '20px 20px'
-           }}></div>
-         </div>
-        
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/90 to-purple-600/90"></div>
+          {/* Pattern overlay */}
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
+            backgroundSize: '20px 20px'
+          }}></div>
+        </div>
+
         <div className="relative w-full px-6 py-8">
           <div className="flex items-center justify-between gap-8">
             {/* Left Content */}
             <div className="flex items-start gap-8">
               {/* Logo Column */}
               <div className="flex-shrink-0">
-                <div 
+                <div
                   className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center p-4 border border-white/20 cursor-pointer hover:bg-white/20 transition-all duration-300 group"
                   onClick={() => setShowLogoEditor(true)}
                 >
-                  {getLogoUrl() ? (
+                  {getLogoUrl() && !logoError ? (
                     <img
                       src={getLogoUrl()!}
                       alt={profile.name}
                       className="w-full h-full object-contain rounded-lg"
                       onError={(e) => {
-                        e.currentTarget.style.display = 'none';
+                        console.warn('Logo load failed, switching to fallback');
+                        setLogoError(true);
                       }}
                     />
                   ) : (
                     <Building2 className="w-12 h-12 text-white" />
                   )}
-                  
+
                   {/* Edit overlay */}
                   <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <span className="text-white text-xs font-medium">Edit Logo</span>
@@ -455,17 +462,17 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       </div>
 
 
-       {/* Main Content */}
-       <div className="w-full px-6 py-6 overflow-hidden">
-         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      {/* Main Content */}
+      <div className="w-full px-6 py-6 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8 min-w-0">
             {/* Company Overview */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300 min-w-0">
-               <div className="flex items-center gap-3 mb-4">
-                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
-                   <Building2 className="text-indigo-600" size={20} />
-                 </div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center">
+                  <Building2 className="text-indigo-600" size={20} />
+                </div>
                 <h2 className="text-xl font-bold text-gray-900">Company Overview</h2>
               </div>
               <div className="prose prose-lg max-w-none">
@@ -481,11 +488,11 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
 
             {/* Mission */}
             {profile.mission && (
-               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-6">
-                 <div className="flex items-center gap-3 mb-4">
-                   <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
-                     <Trophy className="text-white" size={20} />
-                   </div>
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
+                    <Trophy className="text-white" size={20} />
+                  </div>
                   <h2 className="text-xl font-bold text-gray-900">Our Mission</h2>
                 </div>
                 <EditableText
@@ -498,70 +505,70 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
               </div>
             )}
 
-             {/* Values & Benefits */}
-             <div className="grid md:grid-cols-2 gap-6">
-               {profile.culture?.values && profile.culture.values.length > 0 && (
-                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                   <div className="flex items-center gap-2 mb-3">
-                     <div className="w-7 h-7 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center">
-                       <Trophy className="text-indigo-600" size={16} />
-                     </div>
-                     <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
-                   </div>
-                   <div className="space-y-2">
-                     {profile.culture?.values?.map((value, index) => (
-                       <div key={index} className="flex items-center gap-2">
-                         <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
-                         <EditableText
-                           value={value}
-                           field={`culture.values.${index}`}
-                           className="text-gray-700 font-medium flex-1"
-                           placeholder="Core value..."
-                         />
-                       </div>
-                     )) || (
-                       <EditableText
-                         value=""
-                         field="culture.values.0"
-                         className="text-gray-700 font-medium"
-                         placeholder="Click to add core values..."
-                       />
-                     )}
-                   </div>
-                 </div>
-               )}
+            {/* Values & Benefits */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {profile.culture?.values && profile.culture.values.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-7 h-7 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg flex items-center justify-center">
+                      <Trophy className="text-indigo-600" size={16} />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {profile.culture?.values?.map((value, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
+                        <EditableText
+                          value={value}
+                          field={`culture.values.${index}`}
+                          className="text-gray-700 font-medium flex-1"
+                          placeholder="Core value..."
+                        />
+                      </div>
+                    )) || (
+                        <EditableText
+                          value=""
+                          field="culture.values.0"
+                          className="text-gray-700 font-medium"
+                          placeholder="Click to add core values..."
+                        />
+                      )}
+                  </div>
+                </div>
+              )}
 
-               {profile.culture?.benefits && profile.culture.benefits.length > 0 && (
-                 <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                   <div className="flex items-center gap-2 mb-3">
-                     <div className="w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center">
-                       <Award className="text-green-600" size={16} />
-                     </div>
-                     <h3 className="text-lg font-bold text-gray-900">Benefits & Perks</h3>
-                   </div>
-                   <div className="space-y-2">
-                     {profile.culture?.benefits?.map((benefit, index) => (
-                       <div key={index} className="flex items-center gap-2">
-                         <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
-                         <EditableText
-                           value={benefit}
-                           field={`culture.benefits.${index}`}
-                           className="text-gray-700 font-medium flex-1"
-                           placeholder="Benefit or perk..."
-                         />
-                       </div>
-                     )) || (
-                       <EditableText
-                         value=""
-                         field="culture.benefits.0"
-                         className="text-gray-700 font-medium"
-                         placeholder="Click to add benefits..."
-                       />
-                     )}
-                   </div>
-                 </div>
-               )}
-             </div>
+              {profile.culture?.benefits && profile.culture.benefits.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg flex items-center justify-center">
+                      <Award className="text-green-600" size={16} />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900">Benefits & Perks</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {profile.culture?.benefits?.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
+                        <EditableText
+                          value={benefit}
+                          field={`culture.benefits.${index}`}
+                          className="text-gray-700 font-medium flex-1"
+                          placeholder="Benefit or perk..."
+                        />
+                      </div>
+                    )) || (
+                        <EditableText
+                          value=""
+                          field="culture.benefits.0"
+                          className="text-gray-700 font-medium"
+                          placeholder="Click to add benefits..."
+                        />
+                      )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -569,10 +576,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             {/* Contact Information */}
             {hasContactInfo && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-w-0">
-                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                   <Mail className="text-indigo-600" size={20} />
-                   Contact Information
-                 </h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <Mail className="text-indigo-600" size={20} />
+                  Contact Information
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-gray-600">
                     <Mail size={18} className="text-gray-400" />
@@ -584,7 +591,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       multiline={false}
                     />
                   </div>
-                  
+
                   <div className="flex items-center gap-3 text-gray-600">
                     <Phone size={18} className="text-gray-400" />
                     <EditableText
@@ -595,7 +602,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       multiline={false}
                     />
                   </div>
-                  
+
                   <div className="flex items-center gap-3 text-gray-600">
                     <Globe size={18} className="text-gray-400" />
                     <EditableText
@@ -606,7 +613,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       multiline={false}
                     />
                   </div>
-                  
+
                   <div className="flex items-start gap-3 text-gray-600">
                     <MapPin size={18} className="text-gray-400 flex-shrink-0 mt-0.5" />
                     <EditableText
@@ -624,10 +631,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             {/* Social Media */}
             {hasSocialMedia && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 min-w-0">
-                 <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-                   <Globe className="text-indigo-600" size={20} />
-                   Follow Us
-                 </h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                  <Globe className="text-indigo-600" size={20} />
+                  Follow Us
+                </h3>
                 <div className="flex gap-3">
                   {profile.socialMedia?.linkedin && (
                     <a
@@ -676,10 +683,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
             {/* Map */}
             {(profile.contact?.address || hasLocation) && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                   <MapPin className="text-indigo-600" size={20} />
-                   Location
-                 </h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                  <MapPin className="text-indigo-600" size={20} />
+                  Location
+                </h3>
                 <div className="relative h-40 rounded-xl overflow-hidden bg-gray-100">
                   {getGoogleMapsUrl() ? (
                     <>
@@ -698,7 +705,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                           href={getGoogleMapsDirectionsUrl()!}
                           target="_blank"
                           rel="noopener noreferrer"
-                           className="absolute bottom-3 right-3 px-3 py-2 bg-white hover:bg-gray-50 text-sm text-indigo-600 rounded-lg shadow-lg flex items-center gap-2 transition-all hover:scale-105"
+                          className="absolute bottom-3 right-3 px-3 py-2 bg-white hover:bg-gray-50 text-sm text-indigo-600 rounded-lg shadow-lg flex items-center gap-2 transition-all hover:scale-105"
                         >
                           <MapPin size={14} />
                           Get Directions
