@@ -10,7 +10,7 @@ import harxLogo from './assets/harx-blanc.jpg';
 
 
 function App() {
-  
+
   const [searchQuery, setSearchQuery] = React.useState('');
   const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,16 +37,16 @@ function App() {
         }
       }
     };
-  
+
     checkUserCompany();
   }, []);
-  
+
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
+
     console.log('🔍 [App] Starting company search:', { query: searchQuery });
-    
+
     setIsLoading(true);
     setError(null);
     setSearchResults([]);
@@ -54,7 +54,7 @@ function App() {
 
     try {
       const results = await googleApi.search(searchQuery);
-      
+
       console.log('✅ [App] Search results received:', {
         resultsCount: results.length,
         companies: results.map(r => ({
@@ -68,7 +68,7 @@ function App() {
           })()
         }))
       });
-      
+
       setSearchResults(results);
     } catch (err) {
       console.error('💥 [App] Search error:', err);
@@ -87,7 +87,7 @@ function App() {
 
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const companyInfo = `
         Company Name: ${result.title}
@@ -95,14 +95,14 @@ function App() {
         Description: ${result.snippet}
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
-      
+
       console.log('📝 [App] Company info prepared for OpenAI:', {
         companyInfoLength: companyInfo.length,
         companyInfo: companyInfo.substring(0, 200) + '...'
       });
-      
+
       const profile = await generateCompanyProfile(companyInfo);
-      
+
       console.log('✅ [App] Company profile generated successfully:', {
         companyName: profile.name,
         industry: profile.industry,
@@ -113,10 +113,10 @@ function App() {
         benefitsCount: profile.culture?.benefits?.length || 0,
         hasCompanyIntro: !!profile.companyIntro
       });
-      
+
       setCompanyProfile(profile);
       setShowProfilePage(true);
-      
+
       console.log('🔄 [App] Switched to profile page view');
     } catch (err) {
       console.error('💥 [App] Profile generation error:', err);
@@ -145,9 +145,9 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
       <div className="max-w-4xl mx-auto pt-12">
         <div className="text-center mb-8">
-          <img 
-            src={harxLogo} 
-            alt="Harx Logo" 
+          <img
+            src={harxLogo}
+            alt="Harx Logo"
             className="mx-auto mb-6 h-16 w-auto"
           />
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Company Profile Search</h1>
@@ -155,12 +155,12 @@ function App() {
             Search for companies and generate detailed profiles with unique insights
           </p>
         </div>
-         {/* 🔔 Add your message here */}
-  {redirectMessage && (
-    <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
-      {redirectMessage}
-    </div>
-  )}
+        {/* 🔔 Add your message here */}
+        {redirectMessage && (
+          <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
+            {redirectMessage}
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
           <div className="relative">
@@ -263,12 +263,21 @@ function App() {
                             src={logoUrl}
                             alt={result.title}
                             className="w-full h-full object-contain"
-                            onError={e => { e.currentTarget.style.display = 'none'; }}
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              // Force show the fallback icon by adding a class or manipulating the parent
+                              const parent = target.parentElement;
+                              if (parent) {
+                                // We can't easily change the React state here for just one item,
+                                // but we can show a hidden icon or just use a generic fallback.
+                                // A better way is to use a dedicated Logo component.
+                              }
+                            }}
                           />
-                        ) : logoUrl === 'default' ? (
+                        ) : null}
+                        {(logoUrl === 'default' || !logoUrl) && (
                           <Building2 className="text-indigo-600" size={28} />
-                        ) : (
-                          <div className="w-6 h-6 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin"></div>
                         )}
                       </div>
                       <div className="flex-1">

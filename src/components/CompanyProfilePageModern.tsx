@@ -382,7 +382,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       src={getLogoUrl()!}
                       alt={profile.name}
                       className="w-full h-full object-contain rounded-lg"
-                      onError={(e: any) => {
+                      onError={() => {
                         console.warn('Logo load failed, switching to fallback');
                         setLogoError(true);
                       }}
@@ -750,8 +750,8 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       src={getLogoUrl()!}
                       alt="Logo preview"
                       className="w-14 h-14 object-contain rounded-lg"
-                      onError={(e: { target: HTMLImageElement; }) => {
-                        const target = e.target as HTMLImageElement;
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                        const target = e.currentTarget;
                         target.style.display = 'none';
                         target.nextElementSibling?.classList.remove('hidden');
                       }}
