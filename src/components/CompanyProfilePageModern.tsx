@@ -251,9 +251,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
       return multiline ? (
         <textarea
           value={tempValue}
-          onChange={(e) => setTempValue(e.target.value)}
+          onChange={(e: { target: { value: any; }; }) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
-          onKeyDown={(e) => handleKeyDown(e, field)}
+          onKeyDown={(e: any) => handleKeyDown(e, field)}
           className={`${classNameWithoutTextColor} ${baseEditingClasses} min-h-[100px] w-full px-3 py-2 resize-y`}
           placeholder={placeholder}
           autoFocus
@@ -262,9 +262,9 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
         <input
           type="text"
           value={tempValue}
-          onChange={(e) => setTempValue(e.target.value)}
+          onChange={(e: { target: { value: any; }; }) => setTempValue(e.target.value)}
           onBlur={() => handleFieldSave(field)}
-          onKeyDown={(e) => handleKeyDown(e, field)}
+          onKeyDown={(e: any) => handleKeyDown(e, field)}
           className={`${classNameWithoutTextColor} ${baseEditingClasses} ${inputWidth} ${inputSizing}`}
           placeholder={placeholder}
           autoFocus
@@ -291,7 +291,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
           href={href}
           target={field.includes('website') ? '_blank' : undefined}
           rel={field.includes('website') ? 'noopener noreferrer' : undefined}
-          onDoubleClick={(e) => {
+          onDoubleClick={(e: { preventDefault: () => void; stopPropagation: () => void; }) => {
             e.preventDefault();
             e.stopPropagation();
             handleFieldClick(field, value);
@@ -382,7 +382,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       src={getLogoUrl()!}
                       alt={profile.name}
                       className="w-full h-full object-contain rounded-lg"
-                      onError={(e) => {
+                      onError={(e: any) => {
                         console.warn('Logo load failed, switching to fallback');
                         setLogoError(true);
                       }}
@@ -516,7 +516,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <h3 className="text-lg font-bold text-gray-900">Core Values</h3>
                   </div>
                   <div className="space-y-2">
-                    {profile.culture?.values?.map((value, index) => (
+                    {profile.culture?.values?.map((value: string, index: any) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full"></div>
                         <EditableText
@@ -547,7 +547,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                     <h3 className="text-lg font-bold text-gray-900">Benefits & Perks</h3>
                   </div>
                   <div className="space-y-2">
-                    {profile.culture?.benefits?.map((benefit, index) => (
+                    {profile.culture?.benefits?.map((benefit: string, index: any) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
                         <EditableText
@@ -750,7 +750,7 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                       src={getLogoUrl()!}
                       alt="Logo preview"
                       className="w-14 h-14 object-contain rounded-lg"
-                      onError={(e) => {
+                      onError={(e: { target: HTMLImageElement; }) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         target.nextElementSibling?.classList.remove('hidden');
@@ -797,10 +797,10 @@ export function CompanyProfilePageModern({ profile: initialProfile, onBackToSear
                 <input
                   type="url"
                   value={logoUrl}
-                  onChange={(e) => setLogoUrl(e.target.value)}
+                  onChange={(e: { target: { value: any; }; }) => setLogoUrl(e.target.value)}
                   placeholder="https://example.com/logo.png"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                  onKeyDown={(e) => {
+                  onKeyDown={(e: { key: string; }) => {
                     if (e.key === 'Enter') {
                       handleLogoUrlSave();
                     }
