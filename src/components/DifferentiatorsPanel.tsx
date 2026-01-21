@@ -58,7 +58,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     try {
       const response = await saveCompanyData(companyData);
       console.log('Complete API Response:', JSON.stringify(response, null, 2));
-      
+
       if (response && response.data && response.data._id) {
         // Store company ID in a cookie that expires in 30 days
         Cookies.set('companyId', response.data._id, { expires: 30 });
@@ -68,18 +68,18 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       } else {
         console.error("No company ID found in response. Response structure:", response);
       }
-      
+
       window.location.href = "/company";
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving company data:', error);
-      setTimeout(() => setError('Company already exist. Please try again.'), 0);
+      const serverMessage = error.response?.data?.message || 'Failed to save company data. Please try again.';
+      setError(serverMessage);
       console.log("Error State:", error);
-      
     }
   };
   const handleClose = () => {
     setError(null);
-    window.location.href ="/app3"
+    window.location.href = "/app3"
   };
 
   return (
@@ -102,17 +102,15 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
               <button
                 key={diff.id}
                 onClick={() => toggleDifferentiator(diff.id)}
-                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${
-                  selectedDifferentiators.includes(diff.id) ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-indigo-300 bg-white'
-                }`}
+                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${selectedDifferentiators.includes(diff.id) ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-indigo-300 bg-white'
+                  }`}
               >
                 {selectedDifferentiators.includes(diff.id) && (
                   <div className="absolute top-4 right-4">
                     <Check className="text-indigo-500" size={20} />
                   </div>
                 )}
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${
-                    selectedDifferentiators.includes(diff.id) ? 'bg-indigo-100' : 'bg-gray-100 group-hover:bg-indigo-50'
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'bg-indigo-100' : 'bg-gray-100 group-hover:bg-indigo-50'
                   }`}>
                   <diff.icon
                     size={24}
@@ -121,13 +119,11 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
                     }
                   />
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 transition-colors ${
-                    selectedDifferentiators.includes(diff.id) ? 'text-indigo-900' : 'text-gray-900'
+                <h3 className={`text-lg font-semibold mb-2 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-indigo-900' : 'text-gray-900'
                   }`}>
                   {diff.title}
                 </h3>
-                <p className={`text-sm transition-colors ${
-                    selectedDifferentiators.includes(diff.id) ? 'text-indigo-700' : 'text-gray-600'
+                <p className={`text-sm transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-indigo-700' : 'text-gray-600'
                   }`}>
                   {diff.description}
                 </p>
@@ -152,7 +148,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
       </div>
 
       {error && (
-        
+
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
             <XCircle className="text-red-500 mx-auto" size={40} />
