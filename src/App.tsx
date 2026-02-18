@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Search, Building2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
@@ -69,7 +69,18 @@ function App() {
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
 
-      const profile = await generateCompanyProfile(companyInfo);
+      // Extract logo URL logic
+      let logoUrl = result.pagemap?.metatags?.[0]?.['og:image'];
+      if (!logoUrl && result.link) {
+        try {
+          const domain = new URL(result.link).hostname;
+          logoUrl = `https://logo.clearbit.com/${domain}`;
+        } catch (e) {
+          // Ignore URL parsing errors
+        }
+      }
+
+      const profile = await generateCompanyProfile(companyInfo, logoUrl);
       setCompanyProfile(profile);
     } catch (err) {
       console.error('Profile generation error:', err);

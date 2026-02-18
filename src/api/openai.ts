@@ -46,7 +46,8 @@ export interface CompanyProfile {
 }
 
 export const generateCompanyProfile = async (
-  companyInfo: string
+  companyInfo: string,
+  logoUrl?: string
 ): Promise<CompanyProfile> => {
   const userId = Cookies.get("userId");
 
@@ -58,6 +59,7 @@ export const generateCompanyProfile = async (
     const response = await axios.post(`${API_URL}/openai/generate-profile`, {
       companyInfo,
       userId,
+      logoUrl,
     });
 
     if (!response.data || !response.data.success) {
