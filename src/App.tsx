@@ -4,11 +4,12 @@ import { Search, Building2 } from 'lucide-react';
 import { googleApi, type GoogleSearchResult } from './api/google';
 import { generateCompanyProfile, type CompanyProfile } from './api/openai';
 import { CompanyProfile as CompanyProfileComponent } from './components/CompanyProfile';
+import { CompanyLogo } from './components/CompanyLogo';
 import Cookies from 'js-cookie';
 
 
 function App() {
-  
+
   const [searchQuery, setSearchQuery] = React.useState('');
   const [redirectMessage, setRedirectMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,14 +34,14 @@ function App() {
         }
       }
     };
-  
+
     checkUserCompany();
   }, []);
-  
+
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    
+
     setIsLoading(true);
     setError(null);
     setSearchResults([]);
@@ -59,7 +60,7 @@ function App() {
   const handleSelectResult = async (result: GoogleSearchResult) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const companyInfo = `
         Company Name: ${result.title}
@@ -67,7 +68,7 @@ function App() {
         Description: ${result.snippet}
         Additional Info: ${result.pagemap?.metatags?.[0]?.['og:description'] || ''}
       `.trim();
-      
+
       const profile = await generateCompanyProfile(companyInfo);
       setCompanyProfile(profile);
     } catch (err) {
@@ -87,12 +88,12 @@ function App() {
             Search for companies and generate detailed profiles with unique insights
           </p>
         </div>
-         {/* 🔔 Add your message here */}
-  {redirectMessage && (
-    <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
-      {redirectMessage}
-    </div>
-  )}
+        {/* 🔔 Add your message here */}
+        {redirectMessage && (
+          <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
+            {redirectMessage}
+          </div>
+        )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
           <div className="relative">
@@ -131,9 +132,7 @@ function App() {
                   className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="text-indigo-600" size={20} />
-                    </div>
+                    <CompanyLogo result={result} />
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
                         {result.title}
