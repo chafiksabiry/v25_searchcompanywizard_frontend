@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, ArrowUpRight, Shield, Check, XCircle } from 'lucide-react';
+import { ChevronLeft, Zap, DollarSign, HeadphonesIcon, Shield, Check, XCircle } from 'lucide-react';
 
 import type { CompanyProfile } from '../api/openai';
 import { saveCompanyData } from '../api/companyApi';
@@ -19,27 +19,27 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   const differentiators = [
     {
       id: 'fast-payment',
-      title: 'Fast Payment',
-      description: 'Quick and reliable payment processing for all partners',
+      title: 'Direct Commission Payments',
+      description: 'Transparent and automated commission payouts directly to your account',
       icon: DollarSign,
     },
     {
-      id: 'continuous-support',
-      title: 'Continuous Support',
-      description: '24/7 dedicated support system for partners',
-      icon: HeadphonesIcon,
+      id: 'ai-coaching',
+      title: 'AI-Sales Coaching',
+      description: 'Real-time feedback and AI-driven insights to boost your sales performance',
+      icon: Zap,
     },
     {
-      id: 'growth-opportunities',
-      title: 'Growth Opportunities',
-      description: 'Clear career progression and advancement paths',
-      icon: ArrowUpRight,
-    },
-    {
-      id: 'support-system',
-      title: 'Support System',
-      description: 'Robust infrastructure and tools for success',
+      id: 'exclusive-network',
+      title: 'Exclusive HARX Network',
+      description: 'Access to top-tier verified companies and premium sales opportunities',
       icon: Shield,
+    },
+    {
+      id: 'dedicated-success',
+      title: 'Dedicated Partner Success',
+      description: 'One-on-one support to help you scale your sales activity and earnings',
+      icon: HeadphonesIcon,
     },
   ];
 
@@ -91,8 +91,8 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
             <span>Back</span>
           </button>
           <div className="text-right">
-            <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-            <p className="text-gray-500 mt-1">Select Your Key Differentiators</p>
+            <h1 className="text-3xl font-bold text-gray-900">HARX Partner Differentiators</h1>
+            <p className="text-gray-500 mt-1">Select the key factors that make partnering with {profile.name} attractive</p>
           </div>
         </div>
 

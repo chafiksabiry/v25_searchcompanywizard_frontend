@@ -7,7 +7,6 @@ import {
   Target,
   Users,
   Briefcase,
-  Code,
   Award,
   X,
   Rocket,
@@ -38,7 +37,7 @@ interface Props {
 }
 
 import { LucideProps } from "lucide-react";
-const userId= Cookies.get('userId');
+const userId = Cookies.get('userId');
 export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   // Ensure all required nested objects exist with default values
   const defaultProfile = {
@@ -165,6 +164,27 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     setEditingField(null);
   };
 
+  const handleDelete = (path: string) => {
+    const parts = path.split(".");
+    const newProfile = { ...profile } as any;
+    let current = newProfile;
+
+    for (let i = 0; i < parts.length - 1; i++) {
+      current = current[parts[i]];
+    }
+
+    const lastPart = parts[parts.length - 1];
+    const index = parseInt(lastPart);
+
+    if (!isNaN(index)) {
+      const arrayKey = parts[parts.length - 2];
+      const parent = parts.length > 2 ? parts.slice(0, -2).reduce((acc, p) => acc[p], newProfile) : newProfile;
+      parent[arrayKey] = parent[arrayKey].filter((_: any, i: number) => i !== index);
+    }
+
+    setProfile(newProfile);
+  };
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     setLogoUrl(url);
@@ -207,14 +227,24 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
       ) : (
         <div className="flex items-center gap-2">
           {Icon && <Icon size={18} className="text-gray-600" />}
-          <span>{value}</span>
+          <span className="flex-1">{value}</span>
           {editMode && (
-            <button
-              onClick={() => handleEdit(field, value)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
-            >
-              <Edit2 size={14} />
-            </button>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+              <button
+                onClick={() => handleEdit(field, value)}
+                className="p-1 text-gray-400 hover:text-indigo-600"
+              >
+                <Edit2 size={14} />
+              </button>
+              {(field.includes('culture.values') || field.includes('culture.benefits') || field.includes('opportunities.roles') || field.includes('technology.stack')) && (
+                <button
+                  onClick={() => handleDelete(field)}
+                  className="p-1 text-gray-400 hover:text-red-500"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -416,9 +446,8 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
               <div className="flex items-center gap-6">
                 <div className="relative group">
                   <div
-                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${
-                      editMode ? "cursor-pointer" : ""
-                    }`}
+                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${editMode ? "cursor-pointer" : ""
+                      }`}
                   >
                     {logoUrl ? (
                       <img
@@ -520,10 +549,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             </div>
 
             {/* What Makes Your Company Unique Button */}
-            <div className="absolute bottom-6 right-6">
+            <div className="absolute right-12 bottom-12">
               <button
                 onClick={() => setShowUniquenessPanel(true)}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-3 group"
+                className="px-6 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl hover:bg-white/20 transition-all shadow-lg flex items-center gap-3 group"
               >
                 <Trophy size={20} />
                 <span>What makes your company unique and attractive</span>
@@ -709,46 +738,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                 </div>
               </section>
 
-              {/* Technology Stack */}
-              <section className="space-y-8">
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <Code className="text-emerald-600" size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                      Technology & Innovation
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                          Tech Stack
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.technology.stack.map((tech, index) => (
-                            <EditableField
-                              key={index}
-                              value={tech}
-                              field={`technology.stack.${index}`}
-                              className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100"
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                          Innovation
-                        </h3>
-                        <EditableField
-                          value={profile.technology.innovation}
-                          field="technology.innovation"
-                          className="text-gray-700"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+
             </div>
           </div>
         </div>
@@ -757,11 +747,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
         <div className="absolute right-6 top-6 flex items-center gap-3 z-10">
           <button
             onClick={() => setEditMode(!editMode)}
-            className={`p-2 rounded-full transition-all duration-300 ${
-              editMode
-                ? "bg-green-500 text-white hover:bg-green-600"
-                : "bg-white text-gray-600 hover:bg-gray-100"
-            }`}
+            className={`p-2 rounded-full transition-all duration-300 ${editMode
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : "bg-white text-gray-600 hover:bg-gray-100"
+              }`}
           >
             <Edit2 size={20} />
           </button>

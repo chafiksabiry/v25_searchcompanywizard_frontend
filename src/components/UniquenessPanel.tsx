@@ -22,7 +22,7 @@ import { LucideProps } from "lucide-react";
 interface Props {
   profile: CompanyProfile;
   onBack: () => void;
-  
+
 }
 
 interface UniquenessCategory {
@@ -223,7 +223,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
       <DifferentiatorsPanel
         profile={profile}
         onBack={() => setShowDifferentiators(false)}
-        //onComplete={onBack}
+      //onComplete={onBack}
       />
     );
   }
@@ -242,19 +242,11 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           </button>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => setShowDifferentiators(true)}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-all transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl flex items-center gap-2"
-            >
-              Next: Choose Differentiators
-              <ArrowRight size={18} />
-            </button>
-            <button
               onClick={() => setEditMode(!editMode)}
-              className={`p-2 rounded-full transition-all duration-300 ${
-                editMode
+              className={`p-2 rounded-full transition-all duration-300 ${editMode
                   ? "bg-green-500 text-white hover:bg-green-600"
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
-              }`}
+                }`}
             >
               <Edit2 size={20} />
             </button>
@@ -303,11 +295,10 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
-                            className={`w-2 h-2 rounded-full ${
-                              i < category.score
+                            className={`w-2 h-2 rounded-full ${i < category.score
                                 ? "bg-indigo-500"
                                 : "bg-gray-200"
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
@@ -341,18 +332,36 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           </div>
 
           {/* Call to Action */}
-          <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-12 text-center">
+          <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 rounded-2xl p-12 text-center opacity-40 grayscale pointer-events-none border border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Explore Opportunities?
             </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
               Discover exciting gigs and partnership opportunities with{" "}
               {profile.name}. Browse our available opportunities and find the
               perfect match for your skills and interests.
             </p>
-            <button className="px-8 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
+            <button className="px-8 py-3 bg-gray-400 text-white rounded-xl flex items-center gap-2 mx-auto">
               <Search size={18} />
               Browse Available Gigs
+            </button>
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between items-center pt-8 border-t border-gray-100">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors font-medium"
+            >
+              <ChevronLeft size={20} />
+              Back to Profile
+            </button>
+            <button
+              onClick={() => setShowDifferentiators(true)}
+              className="px-10 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl hover:from-indigo-700 hover:to-blue-700 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-indigo-200 flex items-center gap-3 text-lg font-bold"
+            >
+              Next: Choose Differentiators
+              <ArrowRight size={20} />
             </button>
           </div>
         </div>

@@ -107,22 +107,62 @@ function App() {
         )}
 
         <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Enter company name..."
-              className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            />
-            <button
-              onClick={handleSearch}
-              disabled={isLoading || !searchQuery.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 disabled:text-gray-300"
-            >
-              <Search size={20} />
-            </button>
+          <div className="flex flex-col gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Enter company name..."
+                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+              />
+              <button
+                onClick={handleSearch}
+                disabled={isLoading || !searchQuery.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 disabled:text-gray-300"
+              >
+                <Search size={20} />
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setCompanyProfile({
+                  userId: Cookies.get('userId') || '',
+                  name: searchQuery || 'New Company',
+                  industry: '',
+                  overview: '',
+                  mission: '',
+                  culture: { values: [], benefits: [], workEnvironment: '' },
+                  opportunities: { roles: [], growthPotential: '', training: '' },
+                  technology: { stack: [], innovation: '' },
+                  contact: { email: '', phone: '', address: '', website: '' },
+                  socialMedia: { linkedin: '', twitter: '', facebook: '', instagram: '' }
+                })}
+                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
+              >
+                Create Manually
+              </button>
+              <button
+                onClick={async () => {
+                  if (!searchQuery.trim()) return;
+                  setIsLoading(true);
+                  try {
+                    const profile = await generateCompanyProfile(searchQuery);
+                    setCompanyProfile(profile);
+                  } catch (err) {
+                    setError('Failed to generate profile from description.');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={isLoading || !searchQuery.trim()}
+                className="flex-1 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 disabled:opacity-50"
+              >
+                Generate from Description
+              </button>
+            </div>
           </div>
 
           {error && (
