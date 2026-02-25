@@ -188,7 +188,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             type={type}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none"
+            style={{ color: '#111827', backgroundColor: 'white' }}
             onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
             autoFocus
             onBlur={() => handleSave(field)}
@@ -244,8 +245,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             <button
               onClick={() => setEditMode(!editMode)}
               className={`p-2 rounded-full transition-all duration-300 ${editMode
-                  ? "bg-green-500 text-white hover:bg-green-600"
-                  : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                ? "bg-green-500 text-white hover:bg-green-600"
+                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                 }`}
             >
               <Edit2 size={20} />
@@ -296,8 +297,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                           <div
                             key={i}
                             className={`w-2 h-2 rounded-full ${i < category.score
-                                ? "bg-indigo-500"
-                                : "bg-gray-200"
+                              ? "bg-indigo-500"
+                              : "bg-gray-200"
                               }`}
                           />
                         ))}
