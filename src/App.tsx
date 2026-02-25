@@ -81,6 +81,12 @@ function App() {
       }
 
       const profile = await generateCompanyProfile(companyInfo, logoUrl);
+
+      // Ensure logo is preserved if found during search but not in generated profile
+      if (!profile.logo && logoUrl) {
+        profile.logo = logoUrl;
+      }
+
       setCompanyProfile(profile);
     } catch (err) {
       console.error('Profile generation error:', err);

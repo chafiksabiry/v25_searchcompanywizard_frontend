@@ -119,13 +119,15 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   };
 
   useEffect(() => {
-    if (!profile.logo && profile.contact.website) {
-      const domain = new URL(profile.contact.website).hostname;
-      setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
-    } else if (!profile.logo) {
-      setLogoUrl(""); // Fallback si aucun logo ou URL n'est fourni
+    if (!logoUrl && profile.contact.website) {
+      try {
+        const domain = new URL(profile.contact.website).hostname;
+        setLogoUrl(`https://www.google.com/s2/favicons?domain=${domain}&sz=64`);
+      } catch (e) {
+        // Invalid URL
+      }
     }
-  }, [profile.logo, profile.contact.website]);
+  }, [profile.contact.website]);
 
   const getGoogleMapsDirectionsUrl = () => {
     if (profile.contact?.address) {
@@ -456,9 +458,18 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         src={logoUrl}
                         alt={profile.name}
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.currentTarget.src = "";
-                          setLogoUrl("");
+                        onError={() => {
+                          // Fallback to Clearbit if favicon/logo fails
+                          if (profile.contact.website && !logoUrl.includes('clearbit')) {
+                            try {
+                              const domain = new URL(profile.contact.website).hostname;
+                              setLogoUrl(`https://logo.clearbit.com/${domain}`);
+                            } catch (err) {
+                              setLogoUrl("");
+                            }
+                          } else {
+                            setLogoUrl("");
+                          }
                         }}
                       />
                     ) : (
