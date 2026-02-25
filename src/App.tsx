@@ -126,43 +126,6 @@ function App() {
               </button>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => setCompanyProfile({
-                  userId: Cookies.get('userId') || '',
-                  name: searchQuery || 'New Company',
-                  industry: '',
-                  overview: '',
-                  mission: '',
-                  culture: { values: [], benefits: [], workEnvironment: '' },
-                  opportunities: { roles: [], growthPotential: '', training: '' },
-                  technology: { stack: [], innovation: '' },
-                  contact: { email: '', phone: '', address: '', website: '' },
-                  socialMedia: { linkedin: '', twitter: '', facebook: '', instagram: '' }
-                })}
-                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-2"
-              >
-                Create Manually
-              </button>
-              <button
-                onClick={async () => {
-                  if (!searchQuery.trim()) return;
-                  setIsLoading(true);
-                  try {
-                    const profile = await generateCompanyProfile(searchQuery);
-                    setCompanyProfile(profile);
-                  } catch (err) {
-                    setError('Failed to generate profile from description.');
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                disabled={isLoading || !searchQuery.trim()}
-                className="flex-1 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 disabled:opacity-50"
-              >
-                Generate from Description
-              </button>
-            </div>
           </div>
 
           {error && (
