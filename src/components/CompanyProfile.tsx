@@ -261,438 +261,436 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[90vw] relative max-h-[90vh] overflow-hidden flex">
-        {/* Sidebar - Contact & Digital Presence */}
-        <div className="w-80 flex-shrink-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 overflow-y-auto">
-          <div className="p-6 space-y-8">
-            {/* Contact Information */}
-            {hasContactInfo && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <Mail className="text-blue-600" size={20} />
-                  Contact Information
-                </h3>
-                <div className="space-y-3">
-                  {profile.contact?.email && (
-                    <EditableField
-                      value={profile.contact.email}
-                      field="contact.email"
-                      icon={Mail}
-                      className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                    />
-                  )}
-                  {profile.contact?.phone && (
-                    <EditableField
-                      value={profile.contact.phone}
-                      field="contact.phone"
-                      icon={Phone}
-                      className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                    />
-                  )}
-                  {profile.contact?.website && (
-                    <EditableField
-                      value={profile.contact.website}
-                      field="contact.website"
-                      icon={Globe}
-                      className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                    />
-                  )}
-                  {profile.contact?.address && (
-                    <EditableField
-                      value={profile.contact.address}
-                      field="contact.address"
-                      icon={MapPin}
-                      className="flex items-start gap-3 text-gray-600 text-sm"
-                    />
-                  )}
-                </div>
-
-                {/* Map Integration */}
-                {(profile.contact?.address || hasLocation) && (
-                  <div className="mt-4">
-                    <div className="relative w-full h-[160px] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                      {getGoogleMapsUrl() ? (
-                        <>
-                          <iframe
-                            src={getGoogleMapsUrl()!}
-                            width="100%"
-                            height="100%"
-                            style={{ border: 0 }}
-                            allowFullScreen
-                            loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
-                            className="absolute inset-0"
-                          />
-                          {getGoogleMapsDirectionsUrl() && (
-                            <a
-                              href={getGoogleMapsDirectionsUrl()!}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 hover:bg-white text-sm text-blue-600 rounded-lg shadow-lg backdrop-blur-sm flex items-center gap-1.5 transition-all hover:scale-105"
-                            >
-                              <MapPin size={14} />
-                              Get Directions
-                            </a>
-                          )}
-                        </>
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
-                          <span>Map not available</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+    <div className="w-full h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex relative min-h-[800px]">
+      {/* Sidebar - Contact & Digital Presence */}
+      <div className="w-80 flex-shrink-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 overflow-y-auto">
+        <div className="p-6 space-y-8">
+          {/* Contact Information */}
+          {hasContactInfo && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Mail className="text-blue-600" size={20} />
+                Contact Information
+              </h3>
+              <div className="space-y-3">
+                {profile.contact?.email && (
+                  <EditableField
+                    value={profile.contact.email}
+                    field="contact.email"
+                    icon={Mail}
+                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
+                  />
+                )}
+                {profile.contact?.phone && (
+                  <EditableField
+                    value={profile.contact.phone}
+                    field="contact.phone"
+                    icon={Phone}
+                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
+                  />
+                )}
+                {profile.contact?.website && (
+                  <EditableField
+                    value={profile.contact.website}
+                    field="contact.website"
+                    icon={Globe}
+                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
+                  />
+                )}
+                {profile.contact?.address && (
+                  <EditableField
+                    value={profile.contact.address}
+                    field="contact.address"
+                    icon={MapPin}
+                    className="flex items-start gap-3 text-gray-600 text-sm"
+                  />
                 )}
               </div>
-            )}
 
-            {/* Digital Presence */}
-            {hasSocialMedia && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <Globe className="text-blue-600" size={20} />
-                  Digital Presence
-                </h3>
-                <div className="flex gap-3">
-                  {profile.socialMedia?.linkedin && (
-                    <a
-                      href={profile.socialMedia.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                    >
-                      <Linkedin size={20} />
-                    </a>
-                  )}
-                  {profile.socialMedia?.twitter && (
-                    <a
-                      href={profile.socialMedia.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                    >
-                      <Twitter size={20} />
-                    </a>
-                  )}
-                  {profile.socialMedia?.facebook && (
-                    <a
-                      href={profile.socialMedia.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                    >
-                      <Facebook size={20} />
-                    </a>
-                  )}
-                  {profile.socialMedia?.instagram && (
-                    <a
-                      href={profile.socialMedia.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                    >
-                      <Instagram size={20} />
-                    </a>
-                  )}
+              {/* Map Integration */}
+              {(profile.contact?.address || hasLocation) && (
+                <div className="mt-4">
+                  <div className="relative w-full h-[160px] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+                    {getGoogleMapsUrl() ? (
+                      <>
+                        <iframe
+                          src={getGoogleMapsUrl()!}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          className="absolute inset-0"
+                        />
+                        {getGoogleMapsDirectionsUrl() && (
+                          <a
+                            href={getGoogleMapsDirectionsUrl()!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 hover:bg-white text-sm text-blue-600 rounded-lg shadow-lg backdrop-blur-sm flex items-center gap-1.5 transition-all hover:scale-105"
+                          >
+                            <MapPin size={14} />
+                            Get Directions
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+                        <span>Map not available</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* Digital Presence */}
+          {hasSocialMedia && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <Globe className="text-blue-600" size={20} />
+                Digital Presence
+              </h3>
+              <div className="flex gap-3">
+                {profile.socialMedia?.linkedin && (
+                  <a
+                    href={profile.socialMedia.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
+                  >
+                    <Linkedin size={20} />
+                  </a>
+                )}
+                {profile.socialMedia?.twitter && (
+                  <a
+                    href={profile.socialMedia.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
+                  >
+                    <Twitter size={20} />
+                  </a>
+                )}
+                {profile.socialMedia?.facebook && (
+                  <a
+                    href={profile.socialMedia.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
+                  >
+                    <Facebook size={20} />
+                  </a>
+                )}
+                {profile.socialMedia?.instagram && (
+                  <a
+                    href={profile.socialMedia.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
+                  >
+                    <Instagram size={20} />
+                  </a>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Hero Section */}
-          <div className="relative h-80">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Hero Section */}
+        <div className="relative h-80">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage:
+                "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80')",
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-indigo-800/85 to-blue-900/80" />
+
             <div
-              className="absolute inset-0 bg-cover bg-center"
+              className="absolute inset-0 opacity-20"
               style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80')",
+                background:
+                  "linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.3) 25%, transparent 30%)",
+                animation: "shine 8s infinite linear",
               }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-indigo-800/85 to-blue-900/80" />
+            />
 
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  background:
-                    "linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.3) 25%, transparent 30%)",
-                  animation: "shine 8s infinite linear",
-                }}
-              />
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.4) 50%, transparent 55%)",
+                animation: "shine 6s infinite linear",
+              }}
+            />
 
-              <div
-                className="absolute inset-0 opacity-10"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.4) 50%, transparent 55%)",
-                  animation: "shine 6s infinite linear",
-                }}
-              />
-
-              <style>
-                {`
+            <style>
+              {`
                   @keyframes shine {
                     0% { transform: translateX(-200%); }
                     100% { transform: translateX(200%); }
                   }
                 `}
-              </style>
-            </div>
+            </style>
+          </div>
 
-            <div className="relative h-full flex flex-col justify-end p-12 space-y-6">
-              <div className="flex items-center gap-6">
-                <div className="relative group">
-                  <div
-                    className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${editMode ? "cursor-pointer" : ""
-                      }`}
-                  >
-                    {logoUrl ? (
-                      <img
-                        src={logoUrl}
-                        alt={profile.name}
-                        className="w-full h-full object-contain"
-                        onError={() => {
-                          // Fallback to Clearbit if favicon/logo fails
-                          if (profile.contact.website && !logoUrl.includes('clearbit')) {
-                            try {
-                              const domain = new URL(profile.contact.website).hostname;
-                              setLogoUrl(`https://logo.clearbit.com/${domain}`);
-                            } catch (err) {
-                              setLogoUrl("");
-                            }
-                          } else {
+          <div className="relative h-full flex flex-col justify-end p-12 space-y-6">
+            <div className="flex items-center gap-6">
+              <div className="relative group">
+                <div
+                  className={`w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center p-4 overflow-hidden ${editMode ? "cursor-pointer" : ""
+                    }`}
+                >
+                  {logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={profile.name}
+                      className="w-full h-full object-contain"
+                      onError={() => {
+                        // Fallback to Clearbit if favicon/logo fails
+                        if (profile.contact.website && !logoUrl.includes('clearbit')) {
+                          try {
+                            const domain = new URL(profile.contact.website).hostname;
+                            setLogoUrl(`https://logo.clearbit.com/${domain}`);
+                          } catch (err) {
                             setLogoUrl("");
                           }
-                        }}
-                      />
-                    ) : (
-                      <Globe className="w-full h-full text-indigo-600" />
-                    )}
-                    {editMode && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="text-white text-center">
-                          <Upload size={20} className="mx-auto mb-1" />
-                          <span className="text-xs">Edit Logo</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  {editMode && editingField === "logo" && (
-                    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
-                      <div className="space-y-2">
-                        <label className="text-sm text-gray-600 block">
-                          Logo URL
-                        </label>
-                        <input
-                          type="text"
-                          value={logoUrl}
-                          onChange={handleLogoChange}
-                          placeholder="Enter logo URL..."
-                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                        />
-                        <div className="flex justify-end gap-2 mt-2">
-                          <button
-                            onClick={() => setEditingField(null)}
-                            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => setEditingField(null)}
-                            className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                          >
-                            Save
-                          </button>
-                        </div>
+                        } else {
+                          setLogoUrl("");
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Globe className="w-full h-full text-indigo-600" />
+                  )}
+                  {editMode && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-white text-center">
+                        <Upload size={20} className="mx-auto mb-1" />
+                        <span className="text-xs">Edit Logo</span>
                       </div>
                     </div>
                   )}
-                  {editMode && (
-                    <button
-                      onClick={() =>
-                        setEditingField(editingField === "logo" ? null : "logo")
-                      }
-                      className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
-                    >
-                      <Edit2 size={12} />
-                    </button>
-                  )}
                 </div>
-                <div>
-                  <EditableField
-                    value={profile.name}
-                    field="name"
-                    className="text-5xl font-bold text-white mb-2 tracking-tight"
-                  />
-                  <div className="flex flex-wrap gap-6 text-white/90">
-                    {profile.industry && (
-                      <EditableField
-                        value={profile.industry}
-                        field="industry"
-                        icon={Factory}
-                        className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
+                {editMode && editingField === "logo" && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg p-3 border border-gray-200">
+                    <div className="space-y-2">
+                      <label className="text-sm text-gray-600 block">
+                        Logo URL
+                      </label>
+                      <input
+                        type="text"
+                        value={logoUrl}
+                        onChange={handleLogoChange}
+                        placeholder="Enter logo URL..."
+                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
                       />
-                    )}
-                    {profile.founded && (
-                      <EditableField
-                        value={profile.founded}
-                        field="founded"
-                        icon={Calendar}
-                        className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
-                      />
-                    )}
-                    {profile.headquarters && (
-                      <EditableField
-                        value={profile.headquarters}
-                        field="headquarters"
-                        icon={MapPin}
-                        className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
-                      />
-                    )}
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={() => setEditingField(null)}
+                          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => setEditingField(null)}
+                          className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                )}
+                {editMode && (
+                  <button
+                    onClick={() =>
+                      setEditingField(editingField === "logo" ? null : "logo")
+                    }
+                    className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
+                  >
+                    <Edit2 size={12} />
+                  </button>
+                )}
+              </div>
+              <div>
+                <EditableField
+                  value={profile.name}
+                  field="name"
+                  className="text-5xl font-bold text-white mb-2 tracking-tight"
+                />
+                <div className="flex flex-wrap gap-6 text-white/90">
+                  {profile.industry && (
+                    <EditableField
+                      value={profile.industry}
+                      field="industry"
+                      icon={Factory}
+                      className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
+                    />
+                  )}
+                  {profile.founded && (
+                    <EditableField
+                      value={profile.founded}
+                      field="founded"
+                      icon={Calendar}
+                      className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
+                    />
+                  )}
+                  {profile.headquarters && (
+                    <EditableField
+                      value={profile.headquarters}
+                      field="headquarters"
+                      icon={MapPin}
+                      className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
+                    />
+                  )}
                 </div>
               </div>
             </div>
-
           </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-12 space-y-16">
-              {/* Overview Section */}
-              <section className="relative">
-                <div className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full" />
-                <div className="space-y-8">
-                  <div className="flex items-start gap-6">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="text-indigo-600" size={24} />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                        Company Overview
-                      </h2>
-                      <EditableField
-                        value={profile.overview}
-                        field="overview"
-                        className="text-gray-700 leading-relaxed text-lg"
-                      />
-                    </div>
-                  </div>
+        </div>
 
-                  {profile.mission && (
-                    <div className="ml-18 p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-white rounded-2xl border border-indigo-100/50 shadow-sm">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center">
-                          <Target className="text-white" size={24} />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-indigo-700 mb-3">
-                            Our Mission
-                          </h3>
-                          <EditableField
-                            value={profile.mission}
-                            field="mission"
-                            className="text-gray-700"
-                          />
-                        </div>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-12 space-y-16">
+            {/* Overview Section */}
+            <section className="relative">
+              <div className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full" />
+              <div className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                    <Building2 className="text-indigo-600" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                      Company Overview
+                    </h2>
+                    <EditableField
+                      value={profile.overview}
+                      field="overview"
+                      className="text-gray-700 leading-relaxed text-lg"
+                    />
+                  </div>
+                </div>
+
+                {profile.mission && (
+                  <div className="ml-18 p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-white rounded-2xl border border-indigo-100/50 shadow-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center">
+                        <Target className="text-white" size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-indigo-700 mb-3">
+                          Our Mission
+                        </h3>
+                        <EditableField
+                          value={profile.mission}
+                          field="mission"
+                          className="text-gray-700"
+                        />
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Culture & Benefits Grid */}
+            <div className="grid md:grid-cols-2 gap-10">
+              {/* Culture Section */}
+              <section className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
+                    <Heart className="text-rose-600" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Culture & Values
+                    </h2>
+                    <div className="space-y-4">
+                      {profile.culture.values.map((value, index) => (
+                        <EditableField
+                          key={index}
+                          value={value}
+                          field={`culture.values.${index}`}
+                          icon={Coffee}
+                          className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </section>
 
-              {/* Culture & Benefits Grid */}
-              <div className="grid md:grid-cols-2 gap-10">
-                {/* Culture Section */}
-                <section className="space-y-8">
-                  <div className="flex items-start gap-6">
-                    <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
-                      <Heart className="text-rose-600" size={24} />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                        Culture & Values
-                      </h2>
-                      <div className="space-y-4">
-                        {profile.culture.values.map((value, index) => (
-                          <EditableField
-                            key={index}
-                            value={value}
-                            field={`culture.values.${index}`}
-                            icon={Coffee}
-                            className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
-                          />
-                        ))}
-                      </div>
+              {/* Benefits Section */}
+              <section className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Trophy className="text-amber-600" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Benefits & Perks
+                    </h2>
+                    <div className="space-y-4">
+                      {profile.culture.benefits.map((benefit, index) => (
+                        <EditableField
+                          key={index}
+                          value={benefit}
+                          field={`culture.benefits.${index}`}
+                          icon={Award}
+                          className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                        />
+                      ))}
                     </div>
                   </div>
-                </section>
+                </div>
+              </section>
+            </div>
 
-                {/* Benefits Section */}
-                <section className="space-y-8">
-                  <div className="flex items-start gap-6">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                      <Trophy className="text-amber-600" size={24} />
-                    </div>
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                        Benefits & Perks
-                      </h2>
-                      <div className="space-y-4">
-                        {profile.culture.benefits.map((benefit, index) => (
-                          <EditableField
-                            key={index}
-                            value={benefit}
-                            field={`culture.benefits.${index}`}
-                            icon={Award}
-                            className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              {/* What Makes Your Company Unique Button */}
-              <div className="pt-8 flex justify-center border-t border-gray-100">
-                <button
-                  onClick={() => setShowUniquenessPanel(true)}
-                  className="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-semibold w-full sm:w-auto justify-center"
-                >
-                  <Trophy size={24} className="text-yellow-300" />
-                  <span>What makes your company unique and attractive</span>
-                  <ArrowRight
-                    size={20}
-                    className="group-hover:translate-x-1 transition-transform"
-                  />
-                </button>
-              </div>
+            {/* What Makes Your Company Unique Button */}
+            <div className="pt-8 flex justify-center border-t border-gray-100">
+              <button
+                onClick={() => setShowUniquenessPanel(true)}
+                className="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-semibold w-full sm:w-auto justify-center"
+              >
+                <Trophy size={24} className="text-yellow-300" />
+                <span>What makes your company unique and attractive</span>
+                <ArrowRight
+                  size={20}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Edit and Close buttons */}
-        <div className="absolute right-6 top-6 flex items-center gap-3 z-10">
-          <button
-            onClick={() => setEditMode(!editMode)}
-            className={`p-2 rounded-full transition-all duration-300 ${editMode
-              ? "bg-green-500 text-white hover:bg-green-600"
-              : "bg-white text-gray-600 hover:bg-gray-100"
-              }`}
-          >
-            <Edit2 size={20} />
-          </button>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 transition-all duration-300"
-          >
-            <X size={20} />
-          </button>
-        </div>
+      {/* Edit and Close buttons */}
+      <div className="absolute right-6 top-6 flex items-center gap-3 z-10">
+        <button
+          onClick={() => setEditMode(!editMode)}
+          className={`p-2 rounded-full transition-all duration-300 ${editMode
+            ? "bg-green-500 text-white hover:bg-green-600"
+            : "bg-white text-gray-600 hover:bg-gray-100"
+            }`}
+        >
+          <Edit2 size={20} />
+        </button>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full bg-white text-gray-600 hover:bg-gray-100 transition-all duration-300"
+        >
+          <X size={20} />
+        </button>
       </div>
     </div>
   );
