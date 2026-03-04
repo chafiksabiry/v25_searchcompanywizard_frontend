@@ -5,12 +5,8 @@ import {
   Calendar,
   MapPin,
   Target,
-  Users,
-  Briefcase,
   Award,
   X,
-  Rocket,
-  GraduationCap,
   Heart,
   Globe,
   Trophy,
@@ -561,20 +557,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
               </div>
             </div>
 
-            {/* What Makes Your Company Unique Button */}
-            <div className="absolute right-12 bottom-12">
-              <button
-                onClick={() => setShowUniquenessPanel(true)}
-                className="px-6 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl hover:bg-white/20 transition-all shadow-lg flex items-center gap-3 group"
-              >
-                <Trophy size={20} />
-                <span>What makes your company unique and attractive</span>
-                <ArrowRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </button>
-            </div>
           </div>
 
           {/* Scrollable Content */}
@@ -675,83 +657,20 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                 </section>
               </div>
 
-              {/* Work Environment */}
-              <section className="bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-2xl p-8 border border-gray-100/50 shadow-sm">
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <Users className="text-purple-600" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                      Work Environment
-                    </h3>
-                    <EditableField
-                      value={profile.culture.workEnvironment}
-                      field="culture.workEnvironment"
-                      className="text-gray-700 leading-relaxed"
-                    />
-                  </div>
-                </div>
-              </section>
-
-              {/* Career Growth */}
-              <section className="space-y-8">
-                <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <Rocket className="text-blue-600" size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                      Career Growth & Opportunities
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-8">
-                      <div className="space-y-4">
-                        <h3 className="text-xl font-semibold text-gray-800">
-                          Available Roles
-                        </h3>
-                        {profile.opportunities.roles.map((role, index) => (
-                          <EditableField
-                            key={index}
-                            value={role}
-                            field={`opportunities.roles.${index}`}
-                            icon={Briefcase}
-                            className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
-                          />
-                        ))}
-                      </div>
-
-                      <div className="space-y-6">
-                        <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100/50">
-                          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-                            Growth Potential
-                          </h3>
-                          <EditableField
-                            value={profile.opportunities.growthPotential}
-                            field="opportunities.growthPotential"
-                            className="text-gray-700"
-                          />
-                        </div>
-                        <div className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-100/50">
-                          <h3 className="text-xl font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                            <GraduationCap
-                              size={20}
-                              className="text-indigo-500"
-                            />
-                            Training & Development
-                          </h3>
-                          <EditableField
-                            value={profile.opportunities.training}
-                            field="opportunities.training"
-                            className="text-gray-700"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-
+              {/* What Makes Your Company Unique Button */}
+              <div className="pt-8 flex justify-center border-t border-gray-100">
+                <button
+                  onClick={() => setShowUniquenessPanel(true)}
+                  className="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-semibold w-full sm:w-auto justify-center"
+                >
+                  <Trophy size={24} className="text-yellow-300" />
+                  <span>What makes your company unique and attractive</span>
+                  <ArrowRight
+                    size={20}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </div>
