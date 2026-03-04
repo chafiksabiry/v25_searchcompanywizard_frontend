@@ -98,82 +98,82 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4">
-      <div className="max-w-4xl mx-auto pt-12">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Company Profile Search</h1>
-          <p className="text-lg text-gray-600">
-            Search for companies and generate detailed profiles with unique insights
-          </p>
-        </div>
-        {/* 🔔 Add your message here */}
-        {redirectMessage && (
-          <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
-            {redirectMessage}
+      {!companyProfile ? (
+        <div className="max-w-4xl mx-auto pt-12">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Company Profile Search</h1>
+            <p className="text-lg text-gray-600">
+              Search for companies and generate detailed profiles with unique insights
+            </p>
           </div>
-        )}
-
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-          <div className="flex flex-col gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Enter company name..."
-                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-              />
-              <button
-                onClick={handleSearch}
-                disabled={isLoading || !searchQuery.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 disabled:text-gray-300"
-              >
-                <Search size={20} />
-              </button>
-            </div>
-
-          </div>
-
-          {error && (
-            <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg text-sm">
-              {error}
+          {/* 🔔 Add your message here */}
+          {redirectMessage && (
+            <div className="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg text-center text-sm">
+              {redirectMessage}
             </div>
           )}
 
-          <div className="mt-6 space-y-4">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : (
-              searchResults.map((result, index) => (
-                <div
-                  key={index}
-                  className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
+          <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
+            <div className="flex flex-col gap-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  placeholder="Enter company name..."
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+                />
+                <button
+                  onClick={handleSearch}
+                  disabled={isLoading || !searchQuery.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 disabled:text-gray-300"
                 >
-                  <div className="flex items-start gap-4">
-                    <CompanyLogo result={result} />
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {result.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
-                      <button
-                        onClick={() => handleSelectResult(result)}
-                        className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-                      >
-                        Generate Profile
-                      </button>
+                  <Search size={20} />
+                </button>
+              </div>
+
+            </div>
+
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="mt-6 space-y-4">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : (
+                searchResults.map((result, index) => (
+                  <div
+                    key={index}
+                    className="p-4 border border-gray-200 rounded-xl hover:border-indigo-300 transition-colors"
+                  >
+                    <div className="flex items-start gap-4">
+                      <CompanyLogo result={result} />
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {result.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-3">{result.snippet}</p>
+                        <button
+                          onClick={() => handleSelectResult(result)}
+                          className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                          Generate Profile
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            )}
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
-      {companyProfile && (
+      ) : (
         <CompanyProfileComponent
           profile={companyProfile}
           onClose={() => setCompanyProfile(null)}
