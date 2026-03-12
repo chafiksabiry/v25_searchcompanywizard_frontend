@@ -85,11 +85,7 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   return (
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-between mb-12">
-          <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors">
-            <ChevronLeft size={20} />
-            <span>Back</span>
-          </button>
+        <div className="flex items-center justify-end mb-12">
           <div className="text-right">
             <h1 className="text-3xl font-bold text-gray-900">Main Differentiators</h1>
             <p className="text-gray-500 mt-1">Select the key factors that make partnering with {profile.name} attractive</p>
@@ -131,14 +127,18 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
             ))}
           </div>
 
-          <div className="flex justify-end gap-4">
-            <button onClick={onBack} className="px-6 py-3 text-gray-700 hover:text-rose-500 transition-colors">
+          <div className="flex justify-between items-center">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors font-medium"
+            >
+              <ChevronLeft size={20} />
               Back
             </button>
             <button
               onClick={handleSave}
               disabled={selectedDifferentiators.length === 0}
-              className="px-8 py-3 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-xl hover:from-orange-500 hover:to-rose-600 transition-all shadow-lg hover:shadow-rose-100 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-10 py-4 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-2xl hover:from-orange-500 hover:to-rose-600 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-rose-200 flex items-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none"
             >
               <Zap size={18} />
               Complete Profile

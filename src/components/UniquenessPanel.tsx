@@ -233,14 +233,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors"
-          >
-            <ChevronLeft size={20} />
-            <span>Back to Profile</span>
-          </button>
+        <div className="flex items-center justify-end mb-12">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setEditMode(!editMode)}
