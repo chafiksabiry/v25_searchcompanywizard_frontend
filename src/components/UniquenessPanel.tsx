@@ -236,7 +236,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
         <div className="flex items-center justify-between mb-12">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors"
           >
             <ChevronLeft size={20} />
             <span>Back to Profile</span>
@@ -282,8 +282,8 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                 className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <category.icon className="text-indigo-600" size={24} />
+                  <div className="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
+                    <category.icon className="text-rose-500" size={24} />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
@@ -297,7 +297,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                           <div
                             key={i}
                             className={`w-2 h-2 rounded-full ${i < category.score
-                              ? "bg-indigo-500"
+                              ? "bg-rose-500"
                               : "bg-gray-200"
                               }`}
                           />
@@ -317,7 +317,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
                         >
                           <Zap
                             size={14}
-                            className="text-indigo-500 flex-shrink-0"
+                            className="text-orange-400 flex-shrink-0"
                           />
                           <EditableField
                             value={detail}
@@ -342,7 +342,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               {profile.name}. Browse our available opportunities and find the
               perfect match for your skills and interests.
             </p>
-            <button className="px-8 py-3 bg-gray-400 text-white rounded-xl flex items-center gap-2 mx-auto">
+            <button className="px-8 py-3 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-xl flex items-center gap-2 mx-auto shadow-lg hover:shadow-rose-100 transition-all transform hover:-translate-y-0.5">
               <Search size={18} />
               Browse Available Gigs
             </button>
@@ -352,14 +352,14 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           <div className="flex justify-between items-center pt-8 border-t border-gray-100">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors font-medium"
+              className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors font-medium"
             >
               <ChevronLeft size={20} />
               Back to Profile
             </button>
             <button
               onClick={() => setShowDifferentiators(true)}
-              className="px-10 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl hover:from-indigo-700 hover:to-blue-700 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-indigo-200 flex items-center gap-3 text-lg font-bold"
+              className="px-10 py-4 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-2xl hover:from-orange-500 hover:to-rose-600 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-rose-200 flex items-center gap-3 text-lg font-bold"
             >
               Next: Choose Differentiators
               <ArrowRight size={20} />
