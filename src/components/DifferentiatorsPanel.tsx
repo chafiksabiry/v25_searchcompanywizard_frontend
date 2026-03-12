@@ -86,12 +86,12 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
     <div className="fixed inset-0 bg-white z-50 overflow-auto">
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between mb-12">
-          <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
+          <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors">
             <ChevronLeft size={20} />
             <span>Back</span>
           </button>
           <div className="text-right">
-            <h1 className="text-3xl font-bold text-gray-900">HARX Partner Differentiators</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Main Differentiators</h1>
             <p className="text-gray-500 mt-1">Select the key factors that make partnering with {profile.name} attractive</p>
           </div>
         </div>
@@ -102,28 +102,28 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
               <button
                 key={diff.id}
                 onClick={() => toggleDifferentiator(diff.id)}
-                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${selectedDifferentiators.includes(diff.id) ? 'border-indigo-500 bg-indigo-50/50' : 'border-gray-200 hover:border-indigo-300 bg-white'
+                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${selectedDifferentiators.includes(diff.id) ? 'border-rose-500 bg-rose-50/50' : 'border-gray-200 hover:border-rose-300 bg-white'
                   }`}
               >
                 {selectedDifferentiators.includes(diff.id) && (
                   <div className="absolute top-4 right-4">
-                    <Check className="text-indigo-500" size={20} />
+                    <Check className="text-rose-500" size={20} />
                   </div>
                 )}
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'bg-indigo-100' : 'bg-gray-100 group-hover:bg-indigo-50'
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'bg-rose-100' : 'bg-gray-100 group-hover:bg-rose-50'
                   }`}>
                   <diff.icon
                     size={24}
                     className={
-                      selectedDifferentiators.includes(diff.id) ? 'text-indigo-600' : 'text-gray-600 group-hover:text-indigo-500'
+                      selectedDifferentiators.includes(diff.id) ? 'text-rose-600' : 'text-gray-600 group-hover:text-rose-500'
                     }
                   />
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-indigo-900' : 'text-gray-900'
+                <h3 className={`text-lg font-semibold mb-2 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-rose-900' : 'text-gray-900'
                   }`}>
                   {diff.title}
                 </h3>
-                <p className={`text-sm transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-indigo-700' : 'text-gray-600'
+                <p className={`text-sm transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-rose-700' : 'text-gray-600'
                   }`}>
                   {diff.description}
                 </p>
@@ -132,13 +132,13 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
           </div>
 
           <div className="flex justify-end gap-4">
-            <button onClick={onBack} className="px-6 py-3 text-gray-700 hover:text-gray-900 transition-colors">
+            <button onClick={onBack} className="px-6 py-3 text-gray-700 hover:text-rose-500 transition-colors">
               Back
             </button>
             <button
               onClick={handleSave}
               disabled={selectedDifferentiators.length === 0}
-              className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl hover:from-indigo-600 hover:to-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-8 py-3 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-xl hover:from-orange-500 hover:to-rose-600 transition-all shadow-lg hover:shadow-rose-100 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Zap size={18} />
               Complete Profile

@@ -188,7 +188,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
             type={type}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="flex-1 px-3 py-1 border border-rose-200 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-rose-400 outline-none"
             style={{ color: '#111827', backgroundColor: 'white' }}
             onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
             autoFocus
@@ -209,7 +209,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           {editMode && (
             <button
               onClick={() => handleEdit(field, value)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-indigo-600 transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-rose-500 transition-all"
             >
               <Edit2 size={14} />
             </button>
@@ -333,7 +333,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
           </div>
 
           {/* Call to Action */}
-          <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 rounded-2xl p-12 text-center opacity-40 grayscale pointer-events-none border border-gray-200">
+          <div className="bg-gradient-to-br from-orange-50/30 to-rose-50/30 rounded-2xl p-12 text-center opacity-40 grayscale pointer-events-none border border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Ready to Explore Opportunities?
             </h2>
