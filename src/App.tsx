@@ -109,7 +109,7 @@ function App() {
           <div className="text-center mb-8 animate-fade-in">
             <div className="relative w-32 h-32 mx-auto mb-6">
               <img
-                src={`${import.meta.env.BASE_URL || '/'}mascotte.png`}
+                src={`${import.meta.env.BASE_URL || '/'}mascotte.webp`}
                 alt="HARX Mascotte"
                 className="w-full h-auto object-contain animate-bounce-slow"
               />
