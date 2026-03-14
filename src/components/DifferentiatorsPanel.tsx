@@ -83,14 +83,21 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-auto">
+    <div className="fixed inset-0 bg-premium-gradient z-50 overflow-auto animate-fade-in">
+      {/* HARX-style background shapes */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none fixed">
+        <div className="absolute top-[10%] left-[20%] w-[40%] h-[40%] bg-harx-400/10 blur-[100px] rounded-full animate-float"></div>
+        <div className="absolute bottom-[10%] right-[10%] w-[50%] h-[50%] bg-harx-alt-400/10 blur-[150px] rounded-full animate-float" style={{ animationDelay: '3s' }}></div>
+      </div>
+
       <div className="max-w-5xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-end mb-12">
+        <div className="flex items-center justify-end mb-12 relative z-10">
           <div className="text-right">
-            <h1 className="text-3xl font-bold text-gray-900">Main Differentiators</h1>
-            <p className="text-gray-500 mt-1">Select the key factors that make partnering with {profile.name} attractive</p>
+            <h1 className="text-3xl font-black bg-gradient-harx bg-clip-text text-transparent">Main Differentiators</h1>
+            <p className="text-gray-500 mt-2 font-medium">Select the key factors that make partnering with {profile.name} attractive</p>
           </div>
         </div>
+
 
         <div className="space-y-12">
           <div className="grid md:grid-cols-2 gap-6">
@@ -98,52 +105,57 @@ export function DifferentiatorsPanel({ profile, onBack }: Props) {
               <button
                 key={diff.id}
                 onClick={() => toggleDifferentiator(diff.id)}
-                className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 text-left ${selectedDifferentiators.includes(diff.id) ? 'border-rose-500 bg-rose-50/50' : 'border-gray-200 hover:border-rose-300 bg-white'
+                className={`group relative p-8 rounded-3xl border-2 transition-all duration-300 text-left relative z-10 ${selectedDifferentiators.includes(diff.id) ? 'border-harx-500 bg-white shadow-xl shadow-harx-500/10 scale-[1.02]' : 'border-harx-100 bg-white/80 backdrop-blur-md hover:border-harx-300 hover:scale-[1.01]'
                   }`}
               >
+
                 {selectedDifferentiators.includes(diff.id) && (
-                  <div className="absolute top-4 right-4">
-                    <Check className="text-rose-500" size={20} />
+                  <div className="absolute top-6 right-6">
+                    <div className="w-8 h-8 rounded-full bg-gradient-harx flex items-center justify-center text-white shadow-lg animate-fade-in">
+                      <Check size={20} />
+                    </div>
                   </div>
                 )}
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'bg-rose-100' : 'bg-gray-100 group-hover:bg-rose-50'
+
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 ${selectedDifferentiators.includes(diff.id) ? 'bg-gradient-harx text-white rotate-12 scale-110' : 'bg-harx-50 text-harx-500 group-hover:bg-harx-100'
                   }`}>
+
                   <diff.icon
-                    size={24}
-                    className={
-                      selectedDifferentiators.includes(diff.id) ? 'text-rose-600' : 'text-gray-600 group-hover:text-rose-500'
-                    }
+                    size={28}
                   />
                 </div>
-                <h3 className={`text-lg font-semibold mb-2 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-rose-900' : 'text-gray-900'
+
+                <h3 className={`text-xl font-bold mb-3 transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-harx-900' : 'text-gray-900 group-hover:text-harx-600'
                   }`}>
                   {diff.title}
                 </h3>
-                <p className={`text-sm transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-rose-700' : 'text-gray-600'
+                <p className={`text-sm leading-relaxed transition-colors ${selectedDifferentiators.includes(diff.id) ? 'text-harx-700 font-medium' : 'text-gray-500'
                   }`}>
                   {diff.description}
                 </p>
+
               </button>
             ))}
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center relative z-10 pt-8 border-t border-harx-100">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 text-gray-600 hover:text-rose-500 transition-colors font-medium"
+              className="flex items-center gap-2 text-gray-500 hover:text-harx-600 transition-all font-bold group"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
               Back
             </button>
             <button
               onClick={handleSave}
               disabled={selectedDifferentiators.length === 0}
-              className="px-10 py-4 bg-gradient-to-r from-orange-400 to-rose-500 text-white rounded-2xl hover:from-orange-500 hover:to-rose-600 transition-all transform hover:-translate-y-1 shadow-xl hover:shadow-rose-200 flex items-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none disabled:transform-none"
+              className="px-12 py-5 bg-gradient-harx text-white rounded-2xl hover:shadow-2xl hover:shadow-harx-500/30 transition-all transform hover:-translate-y-1 shadow-xl flex items-center gap-3 text-lg font-black disabled:grayscale disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <Zap size={18} />
+              <Zap size={24} className="animate-pulse" />
               Complete Profile
             </button>
           </div>
+
         </div>
       </div>
 

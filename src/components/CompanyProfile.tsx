@@ -209,11 +209,12 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             type={type}
             value={tempValue}
             onChange={(e) => setTempValue(e.target.value)}
-            className="flex-1 px-3 py-1 border border-indigo-300 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-indigo-500 outline-none"
+            className="flex-1 px-3 py-1 border border-harx-200 rounded-md bg-white text-gray-900 focus:ring-2 focus:ring-harx-500 outline-none transition-all"
             style={{ color: '#111827', backgroundColor: 'white' }}
             onKeyDown={(e) => e.key === "Enter" && handleSave(field)}
             autoFocus
             onBlur={() => handleSave(field)}
+
           />
 
           <button
@@ -231,10 +232,11 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
               <button
                 onClick={() => handleEdit(field, value)}
-                className="p-1 text-gray-400 hover:text-indigo-600"
+                className="p-1 text-gray-400 hover:text-harx-600 transition-colors"
               >
                 <Edit2 size={14} />
               </button>
+
               {(field.includes('culture.values') || field.includes('culture.benefits') || field.includes('opportunities.roles') || field.includes('technology.stack')) && (
                 <button
                   onClick={() => handleDelete(field)}
@@ -261,7 +263,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   }
 
   return (
-    <div className="w-full h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex relative min-h-[800px]">
+    <div className="w-full h-full bg-white rounded-3xl shadow-2xl border border-harx-100 overflow-hidden flex relative min-h-[800px] animate-fade-in">
       {/* Sidebar - Contact & Digital Presence */}
       <div className="w-80 flex-shrink-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 overflow-y-auto">
         <div className="p-6 space-y-8">
@@ -269,9 +271,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
           {hasContactInfo && (
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Mail className="text-blue-600" size={20} />
+                <Mail className="text-harx-600" size={20} />
                 Contact Information
               </h3>
+
               <div className="space-y-3">
                 {profile.contact?.email && (
                   <EditableField
@@ -350,9 +353,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
           {hasSocialMedia && (
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Globe className="text-blue-600" size={20} />
+                <Globe className="text-harx-600" size={20} />
                 Digital Presence
               </h3>
+
               <div className="flex gap-3">
                 {profile.socialMedia?.linkedin && (
                   <a
@@ -411,7 +415,8 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                 "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80')",
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-indigo-800/85 to-blue-900/80" />
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-harx-900/90 to-gray-900" />
+
 
             <div
               className="absolute inset-0 opacity-20"
@@ -468,8 +473,9 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       }}
                     />
                   ) : (
-                    <Globe className="w-full h-full text-indigo-600" />
+                    <Globe className="w-full h-full text-harx-600" />
                   )}
+
                   {editMode && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="text-white text-center">
@@ -501,10 +507,11 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                         </button>
                         <button
                           onClick={() => setEditingField(null)}
-                          className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                          className="px-3 py-1 text-sm bg-harx-600 text-white rounded-md hover:bg-harx-700 transition-colors"
                         >
                           Save
                         </button>
+
                       </div>
                     </div>
                   </div>
@@ -514,10 +521,11 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                     onClick={() =>
                       setEditingField(editingField === "logo" ? null : "logo")
                     }
-                    className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-indigo-600 transition-colors"
+                    className="absolute -right-2 -top-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-harx-600 transition-colors"
                   >
                     <Edit2 size={12} />
                   </button>
+
                 )}
               </div>
               <div>
@@ -532,8 +540,9 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                       value={profile.industry}
                       field="industry"
                       icon={Factory}
-                      className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm"
+                      className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full backdrop-blur-md border border-white/10"
                     />
+
                   )}
                   {profile.founded && (
                     <EditableField
@@ -566,9 +575,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
               <div className="absolute -left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500 to-blue-500 rounded-full" />
               <div className="space-y-8">
                 <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <Building2 className="text-indigo-600" size={24} />
+                  <div className="w-12 h-12 rounded-2xl bg-harx-50 flex items-center justify-center flex-shrink-0 border border-harx-100">
+                    <Building2 className="text-harx-600" size={24} />
                   </div>
+
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold text-gray-900 mb-4">
                       Company Overview
@@ -584,13 +594,14 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                 {profile.mission && (
                   <div className="ml-18 p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-white rounded-2xl border border-indigo-100/50 shadow-sm">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-harx flex items-center justify-center shadow-lg shadow-harx-500/20">
                         <Target className="text-white" size={24} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-indigo-700 mb-3">
+                        <h3 className="text-xl font-bold text-harx-700 mb-3">
                           Our Mission
                         </h3>
+
                         <EditableField
                           value={profile.mission}
                           field="mission"
@@ -608,9 +619,10 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
               {/* Culture Section */}
               <section className="space-y-8">
                 <div className="flex items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0">
-                    <Heart className="text-rose-600" size={24} />
+                  <div className="w-12 h-12 rounded-2xl bg-harx-alt-50 flex items-center justify-center flex-shrink-0 border border-harx-alt-100">
+                    <Heart className="text-harx-alt-600" size={24} />
                   </div>
+
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
                       Culture & Values
@@ -660,15 +672,16 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             <div className="pt-8 flex justify-center border-t border-gray-100">
               <button
                 onClick={() => setShowUniquenessPanel(true)}
-                className="px-8 py-4 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-semibold w-full sm:w-auto justify-center"
+                className="px-8 py-4 bg-gradient-harx text-white rounded-2xl hover:shadow-2xl hover:shadow-harx-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-bold w-full sm:w-auto justify-center transform hover:-translate-y-1"
               >
-                <Trophy size={24} className="text-yellow-300" />
+                <Trophy size={24} className="text-yellow-300 animate-pulse" />
                 <span>What makes your company unique and attractive</span>
                 <ArrowRight
                   size={20}
                   className="group-hover:translate-x-1 transition-transform"
                 />
               </button>
+
             </div>
           </div>
         </div>
