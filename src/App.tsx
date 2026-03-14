@@ -109,12 +109,13 @@ function App() {
           <div className="text-center mb-8 animate-fade-in">
             <div className="relative w-32 h-32 mx-auto mb-6">
               <img
-                src="/mascotte.png"
+                src={`${import.meta.env.BASE_URL || '/'}mascotte.png`}
                 alt="HARX Mascotte"
                 className="w-full h-auto object-contain animate-bounce-slow"
               />
               <div className="absolute -inset-4 bg-gradient-to-r from-harx-400/20 to-harx-alt-400/20 rounded-full blur-xl -z-10" />
             </div>
+
             <h1 className="text-4xl font-bold mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-harx-500 to-harx-alt-500">
                 Company Profile Search

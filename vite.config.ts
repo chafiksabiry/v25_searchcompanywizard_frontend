@@ -18,7 +18,7 @@ const removeReactRefreshScript = () => {
 
 export default defineConfig(({ mode }) => {
   return {
-    base: 'https://harxv25searchcompanywizardfrontend.netlify.app',
+    base: 'https://harxv25searchcompanywizardfrontend.netlify.app/',
     plugins: [
       react({
         jsxRuntime: 'classic',
