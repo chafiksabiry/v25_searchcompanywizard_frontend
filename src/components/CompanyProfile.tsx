@@ -11,12 +11,6 @@ import {
   Globe,
   Trophy,
   Coffee,
-  Mail,
-  Phone,
-  Linkedin,
-  Twitter,
-  Facebook,
-  Instagram,
   Factory,
   Edit2,
   Check,
@@ -80,37 +74,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   const [logoUrl, setLogoUrl] = useState(profile.logo || "");
   console.log("Logoooooooooo : ", profile);
 
-  const hasContactInfo =
-    profile.contact?.email ||
-    profile.contact?.phone ||
-    profile.contact?.address ||
-    profile.contact?.website;
 
-  const hasSocialMedia =
-    profile.socialMedia?.linkedin ||
-    profile.socialMedia?.twitter ||
-    profile.socialMedia?.facebook ||
-    profile.socialMedia?.instagram;
-
-  const hasLocation =
-    profile.contact?.coordinates?.lat && profile.contact?.coordinates?.lng;
-
-  const getGoogleMapsUrl = () => {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    if (!apiKey) return null;
-
-    if (profile.contact?.address) {
-      const address = encodeURIComponent(profile.contact.address);
-      return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address}&zoom=15`;
-    }
-
-    if (hasLocation && profile.contact?.coordinates) {
-      const { lat, lng } = profile.contact.coordinates;
-      return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=15`;
-    }
-
-    return null;
-  };
 
   useEffect(() => {
     if (!logoUrl && profile.contact.website) {
@@ -123,20 +87,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     }
   }, [profile.contact.website]);
 
-  const getGoogleMapsDirectionsUrl = () => {
-    if (profile.contact?.address) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        profile.contact.address
-      )}`;
-    }
-
-    if (hasLocation && profile.contact?.coordinates) {
-      const { lat, lng } = profile.contact.coordinates;
-      return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-    }
-
-    return null;
-  };
 
   const handleEdit = (field: string, value: string) => {
     setEditingField(field);
