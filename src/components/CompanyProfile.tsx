@@ -124,7 +124,28 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
 
   const handlePublish = async () => {
     try {
-      const response = await saveCompanyData(profile);
+      const cleanData = (obj: any): any => {
+        if (Array.isArray(obj)) return obj.length > 0 ? obj : undefined;
+        if (obj && typeof obj === 'object') {
+          const result: any = {};
+          let hasValues = false;
+          Object.entries(obj).forEach(([k, v]) => {
+            const cleaned = cleanData(v);
+            if (cleaned !== undefined) {
+              result[k] = cleaned;
+              hasValues = true;
+            }
+          });
+          return hasValues ? result : undefined;
+        }
+        return obj === "" || obj === null ? undefined : obj;
+      };
+
+      const payload = cleanData(profile) || {};
+      // Ensure userId is always string (if undefined it might cause issues)
+      if (profile.userId) payload.userId = profile.userId;
+
+      const response = await saveCompanyData(payload);
       console.log('Publish response:', JSON.stringify(response, null, 2));
       if (response && response.data && response.data._id) {
         Cookies.set('companyId', response.data._id, { expires: 30 });
