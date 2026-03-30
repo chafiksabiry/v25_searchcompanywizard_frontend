@@ -6,6 +6,7 @@ import {
   MapPin,
   Target,
   X,
+  XCircle,
   Globe,
   Mail,
   Phone,
@@ -20,6 +21,7 @@ import {
   Upload,
 } from "lucide-react";
 import type { CompanyProfile as CompanyProfileType } from "../api/openai";
+import { saveCompanyData } from "../api/companyApi";
 // import type { LucideIcon } from 'lucide-react';
 
 interface Props {
@@ -74,6 +76,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
   const [logoUrl, setLogoUrl] = useState(profile.logo || "");
+  const [publishError, setPublishError] = useState<string | null>(null);
   console.log("Logoooooooooo : ", profile);
 
   const hasContactInfo =
@@ -118,6 +121,25 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
       }
     }
   }, [profile.contact.website]);
+
+  const handlePublish = async () => {
+    try {
+      const response = await saveCompanyData(profile);
+      console.log('Publish response:', JSON.stringify(response, null, 2));
+      if (response && response.data && response.data._id) {
+        Cookies.set('companyId', response.data._id, { expires: 30 });
+        console.log('Company ID saved:', response.data._id);
+      }
+      window.location.href = '/app11';
+    } catch (error: any) {
+      console.error('Error publishing company:', error);
+      setPublishError(error.response?.data?.message || 'Failed to publish company. Please try again.');
+    }
+  };
+
+  const handleCloseError = () => {
+    setPublishError(null);
+  };
 
   const getGoogleMapsDirectionsUrl = () => {
     if (profile.contact?.address) {
@@ -602,7 +624,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
             {/* Publish Company Button */}
             <div className="pt-8 flex justify-center border-t border-gray-100">
               <button
-                onClick={() => window.location.href = "/app11"}
+                onClick={handlePublish}
                 className="px-8 py-4 bg-gradient-harx text-white rounded-2xl hover:shadow-2xl hover:shadow-harx-500/30 transition-all duration-300 flex items-center gap-3 group text-lg font-bold w-full sm:w-auto justify-center transform hover:-translate-y-1"
               >
                 <Check size={24} className="text-white" />
@@ -636,6 +658,20 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
           <X size={20} />
         </button>
       </div>
+
+      {/* Error Modal */}
+      {publishError && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm">
+            <XCircle className="text-red-500 mx-auto" size={40} />
+            <h2 className="text-xl font-bold text-gray-900 mt-4">Error</h2>
+            <p className="text-gray-600 mt-2">{publishError}</p>
+            <button onClick={handleCloseError} className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
