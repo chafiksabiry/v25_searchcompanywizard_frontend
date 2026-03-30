@@ -37,14 +37,10 @@ export function UniquenessPanel({ profile, onBack }: Props) {
   const [editMode, setEditMode] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
-  const [categories, setCategories] = useState<UniquenessCategory[]>(
-    getIndustrySpecificFeatures(profile.industry)
-  );
+  const [categories, setCategories] = useState<UniquenessCategory[]>(getIndustrySpecificFeatures(profile.industry));
   const [showDifferentiators, setShowDifferentiators] = useState(false);
 
-  function getIndustrySpecificFeatures(
-    industry?: string
-  ): UniquenessCategory[] {
+  function getIndustrySpecificFeatures(industry?: string): UniquenessCategory[] {
     const baseCategories: UniquenessCategory[] = [
       {
         title: "Brand Recognition",
@@ -362,7 +358,7 @@ export function UniquenessPanel({ profile, onBack }: Props) {
               onClick={onBack}
               className="flex items-center gap-2 text-gray-600 hover:text-harx-600 transition-all font-bold"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={24} />4 
               Back to Profile
             </button>
             <button
