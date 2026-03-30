@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import {
   Building2,
   Calendar,
   MapPin,
   Target,
+  Award,
   X,
+  Heart,
   Globe,
-  Mail,
-  Phone,
-  Linkedin,
-  Twitter,
-  Facebook,
-  Instagram,
+  Trophy,
+  Coffee,
   Factory,
   Edit2,
   Check,
@@ -76,37 +74,7 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
   const [logoUrl, setLogoUrl] = useState(profile.logo || "");
   console.log("Logoooooooooo : ", profile);
 
-  const hasContactInfo =
-    profile.contact?.email ||
-    profile.contact?.phone ||
-    profile.contact?.address ||
-    profile.contact?.website;
 
-  const hasSocialMedia =
-    profile.socialMedia?.linkedin ||
-    profile.socialMedia?.twitter ||
-    profile.socialMedia?.facebook ||
-    profile.socialMedia?.instagram;
-
-  const hasLocation =
-    profile.contact?.coordinates?.lat && profile.contact?.coordinates?.lng;
-
-  const getGoogleMapsUrl = () => {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    if (!apiKey) return null;
-
-    if (profile.contact?.address) {
-      const address = encodeURIComponent(profile.contact.address);
-      return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${address}&zoom=15`;
-    }
-
-    if (hasLocation && profile.contact?.coordinates) {
-      const { lat, lng } = profile.contact.coordinates;
-      return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${lat},${lng}&zoom=15`;
-    }
-
-    return null;
-  };
 
   useEffect(() => {
     if (!logoUrl && profile.contact.website) {
@@ -119,20 +87,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
     }
   }, [profile.contact.website]);
 
-  const getGoogleMapsDirectionsUrl = () => {
-    if (profile.contact?.address) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        profile.contact.address
-      )}`;
-    }
-
-    if (hasLocation && profile.contact?.coordinates) {
-      const { lat, lng } = profile.contact.coordinates;
-      return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-    }
-
-    return null;
-  };
 
   const handleEdit = (field: string, value: string) => {
     setEditingField(field);
@@ -249,146 +203,6 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
 
   return (
     <div className="w-full h-full bg-white rounded-3xl shadow-2xl border border-harx-100 overflow-hidden flex relative min-h-[800px] animate-fade-in">
-      {/* Sidebar - Contact & Digital Presence */}
-      <div className="w-80 flex-shrink-0 bg-gradient-to-b from-gray-50 to-white border-r border-gray-200 overflow-y-auto">
-        <div className="p-6 space-y-8">
-          {/* Contact Information */}
-          {hasContactInfo && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Mail className="text-harx-600" size={20} />
-                Contact Information
-              </h3>
-
-              <div className="space-y-3">
-                {profile.contact?.email && (
-                  <EditableField
-                    value={profile.contact.email}
-                    field="contact.email"
-                    icon={Mail}
-                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                  />
-                )}
-                {profile.contact?.phone && (
-                  <EditableField
-                    value={profile.contact.phone}
-                    field="contact.phone"
-                    icon={Phone}
-                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                  />
-                )}
-                {profile.contact?.website && (
-                  <EditableField
-                    value={profile.contact.website}
-                    field="contact.website"
-                    icon={Globe}
-                    className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors text-sm"
-                  />
-                )}
-                {profile.contact?.address && (
-                  <EditableField
-                    value={profile.contact.address}
-                    field="contact.address"
-                    icon={MapPin}
-                    className="flex items-start gap-3 text-gray-600 text-sm"
-                  />
-                )}
-              </div>
-
-              {/* Map Integration */}
-              {(profile.contact?.address || hasLocation) && (
-                <div className="mt-4">
-                  <div className="relative w-full h-[160px] rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                    {getGoogleMapsUrl() ? (
-                      <>
-                        <iframe
-                          src={getGoogleMapsUrl()!}
-                          width="100%"
-                          height="100%"
-                          style={{ border: 0 }}
-                          allowFullScreen
-                          loading="lazy"
-                          referrerPolicy="no-referrer-when-downgrade"
-                          className="absolute inset-0"
-                        />
-                        {getGoogleMapsDirectionsUrl() && (
-                          <a
-                            href={getGoogleMapsDirectionsUrl()!}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="absolute bottom-2 right-2 px-3 py-1.5 bg-white/90 hover:bg-white text-sm text-blue-600 rounded-lg shadow-lg backdrop-blur-sm flex items-center gap-1.5 transition-all hover:scale-105"
-                          >
-                            <MapPin size={14} />
-                            Get Directions
-                          </a>
-                        )}
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
-                        <span>Map not available</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Digital Presence */}
-          {hasSocialMedia && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <Globe className="text-harx-600" size={20} />
-                Digital Presence
-              </h3>
-
-              <div className="flex gap-3">
-                {profile.socialMedia?.linkedin && (
-                  <a
-                    href={profile.socialMedia.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                  >
-                    <Linkedin size={20} />
-                  </a>
-                )}
-                {profile.socialMedia?.twitter && (
-                  <a
-                    href={profile.socialMedia.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                  >
-                    <Twitter size={20} />
-                  </a>
-                )}
-                {profile.socialMedia?.facebook && (
-                  <a
-                    href={profile.socialMedia.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                  >
-                    <Facebook size={20} />
-                  </a>
-                )}
-                {profile.socialMedia?.instagram && (
-                  <a
-                    href={profile.socialMedia.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 transition-all duration-300 text-gray-600"
-                  >
-                    <Instagram size={20} />
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Hero Section */}
@@ -598,6 +412,60 @@ export function CompanyProfile({ profile: initialProfile, onClose }: Props) {
                 )}
               </div>
             </section>
+
+            {/* Culture & Benefits Grid */}
+            <div className="grid md:grid-cols-2 gap-10">
+              {/* Culture Section */}
+              <section className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-2xl bg-harx-alt-50 flex items-center justify-center flex-shrink-0 border border-harx-alt-100">
+                    <Heart className="text-harx-alt-600" size={24} />
+                  </div>
+
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Culture & Values
+                    </h2>
+                    <div className="space-y-4">
+                      {profile.culture.values.map((value, index) => (
+                        <EditableField
+                          key={index}
+                          value={value}
+                          field={`culture.values.${index}`}
+                          icon={Coffee}
+                          className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Benefits Section */}
+              <section className="space-y-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Trophy className="text-amber-600" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      Benefits & Perks
+                    </h2>
+                    <div className="space-y-4">
+                      {profile.culture.benefits.map((benefit, index) => (
+                        <EditableField
+                          key={index}
+                          value={benefit}
+                          field={`culture.benefits.${index}`}
+                          icon={Award}
+                          className="p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
 
             {/* Publish Company Button */}
             <div className="pt-8 flex justify-center border-t border-gray-100">
